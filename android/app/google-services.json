@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "120611530859",
+    "project_id": "namaaprojectapp",
+    "storage_bucket": "namaaprojectapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120611530859:android:31956a2b543d2ac4e8a92e",
+        "android_client_info": {
+          "package_name": "com.example.namaa_project_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120611530859-5jrkeoeguhp1iuv4snn1fiulpah9j1im.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.namaa_project_app",
+            "certificate_hash": "344b9645ef936a178b8ff65476774daa516b75b6"
+          }
+        },
+        {
+          "client_id": "120611530859-a7v2c58srj65dnbdhhdrsjneufdcit74.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbzF4P5s6DuXw2APQODoWhQMLoGE81bx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120611530859-a7v2c58srj65dnbdhhdrsjneufdcit74.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120611530859-32p93hp9t21ce6gcrc7fns2vapfcqii9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.namaaProjectApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
