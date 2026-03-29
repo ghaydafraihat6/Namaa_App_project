@@ -19,6 +19,39 @@ class _EcoActionPageState extends State<EcoActionPage> {
   int _tabIndex = 0;
   bool _uploading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadCompletedTasks();
+  }
+
+  Future<void> _loadCompletedTasks() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    
+    final today    = DateTime.now();
+    final todayStr = '${today.year}-${today.month}-${today.day}';
+    
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('completedTasks')
+          .where('date', isEqualTo: todayStr)
+          .get();
+
+      if (query.docs.isNotEmpty && mounted) {
+        setState(() {
+          for (var doc in query.docs) {
+            _completedTasks.add(doc.data()['taskId'] as String);
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading tasks: $e");
+    }
+  }
+
   final _dailyTasks = const [
     {
       'id':    'cloth_bags',

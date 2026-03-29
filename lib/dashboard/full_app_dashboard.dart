@@ -31,12 +31,13 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
     return 1;
   }
 
-  String _getLevelName(int pts) {
-    if (pts >= 500) return 'غابة';
-    if (pts >= 300) return 'شجرة كبيرة';
-    if (pts >= 150) return 'شجرة صغيرة';
-    if (pts >= 50) return 'بذرة نامية';
-    return 'بذرة';
+  // ✅ تعديل لجعل مسميات المستويات تدعم الترجمة
+  String _getLevelName(int pts, AppLocalizations l10n) {
+    if (pts >= 500) return l10n.forest;
+    if (pts >= 300) return l10n.tree_title;
+    if (pts >= 150) return l10n.tree_title; // يمكنك إضافة مسمى "شجرة صغيرة" في الـ arb
+    if (pts >= 50) return l10n.tree_seed_unit;
+    return l10n.tree_seed_unit;
   }
 
   double _getProgress(int pts) {
@@ -46,19 +47,18 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
     return (pts - levels[lv]) / (levels[lv + 1] - levels[lv]);
   }
 
-  // ✅ شاشات الـ MainWrapper
-  // 0=الرئيسية 1=المهام 2=شجرتي 3=المتجر 4=حسابي
   void _goTo(int index) {
     mainWrapperKey.currentState?.setIndex(index);
   }
 
   @override
   Widget build(BuildContext context) {
-
+    final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('يرجى تسجيل الدخول أولاً')),
+      return Scaffold(
+        body: Center(child: Text(l10n.login)),
       );
     }
 
@@ -76,7 +76,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
 
         final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
         final int pts = data['points'] ?? 0;
-        final String name = data['fullName'] ?? data['name'] ?? 'مستخدم';
+        final String name = data['fullName'] ?? data['name'] ?? l10n.profile;
         final int lvl = _getLevel(pts);
         final String emoji = _getTreeEmoji(pts);
         final double prog = _getProgress(pts);
@@ -90,8 +90,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
               Container(
                 decoration: const BoxDecoration(
                   color: Color(0xFF2D5A3F),
-                  borderRadius:
-                      BorderRadius.vertical(bottom: Radius.circular(28)),
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
                 ),
                 padding: const EdgeInsets.fromLTRB(20, 52, 20, 20),
                 child: Column(
@@ -116,10 +115,10 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                               ),
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 70),
-                            child: Text('نماء',
-                                style: TextStyle(
+                          Padding(
+                            padding: const EdgeInsets.only(left: 70, right: 70), // إضافة Padding للجهتين لدعم العربي/إنجليزي
+                            child: Text(l10n.appName,
+                                style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 22,
                                     fontWeight: FontWeight.w900,
@@ -130,11 +129,11 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                       const Spacer(),
                       _iconBtn('🔔', () {}),
                       const SizedBox(width: 10),
-                      // ✅ روح لشاشة حسابي عبر Bottom Nav
                       _iconBtn('👤', () => _goTo(4)),
                     ]),
                     const SizedBox(height: 10),
-                    Text('مرحباً، $name 👋',
+                    // ✅ استخدام الترحيب المترجم مع تمرير الاسم
+                    Text(l10n.welcome_user(name),
                         style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 13,
@@ -152,7 +151,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.07),
+                        color: Colors.black.withOpacity(0.07),
                         blurRadius: 16,
                         offset: const Offset(0, 4))
                   ],
@@ -161,8 +160,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('نقاطك البيئية',
-                            style: TextStyle(
+                        Text(l10n.ecoPoints,
+                            style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 12,
                                 color: Colors.grey)),
@@ -172,8 +171,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                                 fontSize: 38,
                                 fontWeight: FontWeight.w900,
                                 color: Color(0xFF386641))),
-                        const Text('نقطة مكتسبة',
-                            style: TextStyle(
+                        Text(l10n.pointsEarned,
+                            style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 12,
                                 color: Colors.grey)),
@@ -181,14 +180,13 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   const Spacer(),
                   Column(children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                             colors: [Color(0xFFF4A261), Color(0xFFE8852A)]),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text('🏅 المستوى $lvl',
+                      child: Text('${l10n.level} $lvl',
                           style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 12,
@@ -196,6 +194,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                               color: Colors.white)),
                     ),
                     const SizedBox(height: 8),
+                    // يمكنك أيضاً ترجمة الـ Streak إذا أردت
                     const Text('🔥 12 يوم متواصل',
                         style: TextStyle(
                             fontFamily: 'Cairo',
@@ -207,7 +206,6 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
 
               // ── كارد الشجرة ──
               GestureDetector(
-                // ✅ روح لشجرتي عبر Bottom Nav
                 onTap: () => _goTo(2),
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -217,7 +215,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.06),
+                          color: Colors.black.withOpacity(0.06),
                           blurRadius: 14,
                           offset: const Offset(0, 4))
                     ],
@@ -229,42 +227,41 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                          const Text('شجرتي',
-                              style: TextStyle(
-                                  fontFamily: 'Cairo',
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1B2E1F))),
-                          Text('المستوى $lvl · ${_getLevelName(pts)}',
-                              style: const TextStyle(
-                                  fontFamily: 'Cairo',
-                                  fontSize: 11,
-                                  color: Color(0xFF52B788))),
-                          const SizedBox(height: 6),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: LinearProgressIndicator(
-                              value: prog,
-                              minHeight: 7,
-                              backgroundColor: const Color(0xFFEBF4DD),
-                              valueColor: const AlwaysStoppedAnimation(
-                                  Color(0xFF386641)),
-                            ),
-                          ),
-                        ])),
-                    const Icon(Icons.chevron_left,
-                        color: Colors.grey, size: 22),
+                              Text(l10n.myTree,
+                                  style: const TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF1B2E1F))),
+                              Text('${l10n.level} $lvl · ${_getLevelName(pts, l10n)}',
+                                  style: const TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontSize: 11,
+                                      color: Color(0xFF52B788))),
+                              const SizedBox(height: 6),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: LinearProgressIndicator(
+                                  value: prog,
+                                  minHeight: 7,
+                                  backgroundColor: const Color(0xFFEBF4DD),
+                                  valueColor: const AlwaysStoppedAnimation(Color(0xFF386641)),
+                                ),
+                              ),
+                            ])),
+                    const Icon(Icons.chevron_left, color: Colors.grey, size: 22),
                   ]),
                 ),
               ),
-              // في الـ ListView بعد كارد الشجرة
+
               const DailyReminderWidget(),
               Co2StatsWidget(points: pts),
+
               // ── مهام اليوم ──
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 10),
-                child: Text('⚡ مهام اليوم',
-                    style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: Text(l10n.dailyTasks,
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -272,17 +269,16 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
               ),
 
               // ── التحدي الأسبوعي ──
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 4, 16, 10),
-                child: Text('📅 التحدي الأسبوعي',
-                    style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+                child: Text(l10n.weeklyChallenge,
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1B2E1F))),
               ),
               GestureDetector(
-                // ✅ روح للمهام عبر Bottom Nav
                 onTap: () => _goTo(1),
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -292,8 +288,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                          color:
-                              const Color(0xFF386641).withValues(alpha: 0.35),
+                          color: const Color(0xFF386641).withOpacity(0.35),
                           blurRadius: 16,
                           offset: const Offset(0, 6))
                     ],
@@ -327,21 +322,20 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                             value: 0.4,
                             minHeight: 7,
                             backgroundColor: Color(0x26FFFFFF),
-                            valueColor:
-                                AlwaysStoppedAnimation(Color(0xFF52B788)),
+                            valueColor: AlwaysStoppedAnimation(Color(0xFF52B788)),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Row(
+                        Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('40% مكتمل',
-                                  style: TextStyle(
+                              Text(l10n.completed.replaceFirst('تم الإنجاز', '40% مكتمل'), // مثال للتعديل
+                                  style: const TextStyle(
                                       fontFamily: 'Cairo',
                                       fontSize: 12,
                                       color: Color(0xFF52B788),
                                       fontWeight: FontWeight.w700)),
-                              Text('🎁 +200 نقطة',
+                              const Text('🎁 +200 نقطة',
                                   style: TextStyle(
                                       fontFamily: 'Cairo',
                                       fontSize: 12,
@@ -352,10 +346,10 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
               ),
 
               // ── استكشف ──
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 0, 16, 10),
-                child: Text('🌿 استكشف',
-                    style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: Text(l10n.explore,
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -371,22 +365,14 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.3,
                   children: [
-                    // ✅ شاشات داخل MainWrapper — عبر setIndex
-                    _gridItem('🌳', 'شجرتي', () => _goTo(2)),
-                    _gridItem('🏆', 'الصدارة',
-                        () => Navigator.pushNamed(context, '/leaderboard')),
-                    _gridItem('🛍️', 'المتجر',
-                        () => mainWrapperKey.currentState?.setIndex(3)),
-                    _gridItem('📅', 'التحديات', () => _goTo(1)),
-                    // ✅ شاشات خارج MainWrapper — عبر Navigator
-                    _gridItem('🧪', 'تجارب بيئية',
-                        () => Navigator.pushNamed(context, '/eco-experiments')),
-                    _gridItem('🏅', 'الشارات',
-                        () => Navigator.pushNamed(context, '/achievements')),
-                    _gridItem('🚴', 'تحدي الدراجة',
-                        () => Navigator.pushNamed(context, '/bike-challenge')),
-                    _gridItem('📸', 'قبل وبعد',
-                        () => Navigator.pushNamed(context, '/before-after')),
+                    _gridItem('🌳', l10n.myTree, () => _goTo(2)),
+                    _gridItem('🏆', l10n.leaderboard, () => Navigator.pushNamed(context, '/leaderboard')),
+                    _gridItem('🛍️', l10n.store, () => _goTo(3)),
+                    _gridItem('📅', l10n.tasks, () => _goTo(1)),
+                    _gridItem('🧪', 'تجارب بيئية', () => Navigator.pushNamed(context, '/eco-experiments')),
+                    _gridItem('🏅', l10n.badges, () => Navigator.pushNamed(context, '/achievements')),
+                    _gridItem('🚴', 'تحدي الدراجة', () => Navigator.pushNamed(context, '/bike-challenge')),
+                    _gridItem('📸', 'قبل وبعد', () => Navigator.pushNamed(context, '/before-after')),
                   ],
                 ),
               ),
@@ -406,7 +392,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Colors.black.withOpacity(0.06),
                   blurRadius: 12,
                   offset: const Offset(0, 3))
             ],
@@ -415,6 +401,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
             Text(icon, style: const TextStyle(fontSize: 30)),
             const SizedBox(height: 8),
             Text(label,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 13,
@@ -425,15 +412,14 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
       );
 
   Widget _iconBtn(String icon, VoidCallback onTap) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12)),
-          child:
-              Center(child: Text(icon, style: const TextStyle(fontSize: 18))),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12)),
+      child: Center(child: Text(icon, style: const TextStyle(fontSize: 18))),
+    ),
+  );
 }

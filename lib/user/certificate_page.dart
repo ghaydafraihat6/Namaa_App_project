@@ -30,6 +30,20 @@ class CertificatePage extends StatelessWidget {
             .doc(user?.uid ?? '')
             .snapshots(),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF386641)),
+            );
+          }
+          if (snapshot.hasError) {
+            return const Center(
+              child: Text(
+                "حدث خطأ أثناء تحميل البيانات",
+                style: TextStyle(fontFamily: 'Cairo', color: Colors.red),
+              ),
+            );
+          }
+
           final data =
               snapshot.data?.data() as Map<String, dynamic>? ?? {};
           final completedAt = data['treeCompletedAt'] as dynamic;

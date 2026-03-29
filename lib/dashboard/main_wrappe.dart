@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:namaa_project_app/dashboard/full_app_dashboard.dart';
 import 'package:namaa_project_app/tasks/eco_action_page.dart';
 import 'package:namaa_project_app/screen/tree_page.dart';
-import 'package:namaa_project_app/store/eco_store_with_discount.dart'; // ← غير هذا
+import 'package:namaa_project_app/store/eco_store_with_discount.dart';
 import 'package:namaa_project_app/user/user_profile_page.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد ملف الترجمة
+import 'package:namaa_project_app/app_routes.dart';
 
-final GlobalKey<MainWrapperState> mainWrapperKey =
-GlobalKey<MainWrapperState>();
+// تعريف الـ GlobalKey للتحكم في التنقل من خارج هذا الـ Widget
+final GlobalKey<MainWrapperState> mainWrapperKey = GlobalKey<MainWrapperState>();
 
 class MainWrapper extends StatefulWidget {
-  MainWrapper() : super(key: mainWrapperKey);
+  MainWrapper({Key? key}) : super(key: mainWrapperKey); // ✅ تمرير الـ Key للسوبر
   static const routeName = '/home';
 
   @override
@@ -19,48 +21,107 @@ class MainWrapper extends StatefulWidget {
 class MainWrapperState extends State<MainWrapper> {
   int _currentIndex = 0;
 
+  final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
+
+  // دالة لتغيير الشاشة (تُستدعى من الـ Dashboard مثلاً)
   void setIndex(int index) {
-    setState(() => _currentIndex = index);
+    if (_currentIndex == index) {
+      _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() => _currentIndex = index);
+    }
   }
 
+  // مصفوفة الشاشات
   final List<Widget> _screens = [
     const FullAppDashboard(),       // 0 - 🏠
     const EcoActionPage(),          // 1 - 🌿
     const TreePage(),               // 2 - 🌳
-    EcoStoreWithDiscountPage(),     // 3 - 🛒 ← بدون const
-    const ProfilePage  (),            // 4 - 👤
+    EcoStoreWithDiscountPage(),     // 3 - 🛒
+    const ProfilePage(),            // 4 - 👤
   ];
+
+  Widget _buildOffstageNavigator(int index) {
+    return Offstage(
+      offstage: _currentIndex != index,
+      child: Navigator(
+        key: _navigatorKeys[index],
+        onGenerateRoute: (routeSettings) {
+          if (routeSettings.name == '/' || routeSettings.name == null) {
+            return MaterialPageRoute(
+              builder: (context) => _screens[index],
+              settings: routeSettings,
+            );
+          }
+          final builder = appRoutes[routeSettings.name];
+          if (builder != null) {
+            return MaterialPageRoute(builder: builder, settings: routeSettings);
+          }
+          return null;
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+    // ✅ استدعاء المترجم
+    final l10n = AppLocalizations.of(context)!;
+
+    return WillPopScope(
+      onWillPop: () async {
+        final isFirstRouteInCurrentTab =
+            !await _navigatorKeys[_currentIndex].currentState!.maybePop();
+        if (isFirstRouteInCurrentTab) {
+          if (_currentIndex != 0) {
+            setIndex(0);
+            return false;
+          }
+        }
+        return isFirstRouteInCurrentTab;
+      },
+      child: Scaffold(
+        body: Stack(
+          children: List.generate(
+            _screens.length,
+            (index) => _buildOffstageNavigator(index),
+          ),
+        ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(top: BorderSide(color: Color(0x12000000))),
-          boxShadow: [BoxShadow(
+          boxShadow: [
+            BoxShadow(
               color: Color(0x0A000000),
               blurRadius: 10,
-              offset: Offset(0, -4))],
+              offset: Offset(0, -4),
+            )
+          ],
         ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(children: [
-              _navItem(0, '🏠', 'الرئيسية'),
-              _navItem(1, '🌿', 'المهام'),
-              _navItem(2, '🌳', 'شجرتي'),
-              _navItem(3, '🛒', 'المتجر'),
-              _navItem(4, '👤', 'حسابي'),
-            ]),
+            child: Row(
+              children: [
+                // ✅ استخدام النصوص المترجمة بدلاً من الثابتة
+                _navItem(0, '🏠', l10n.home),
+                _navItem(1, '🌿', l10n.tasks),
+                _navItem(2, '🌳', l10n.myTree),
+                _navItem(3, '🛒', l10n.store),
+                _navItem(4, '👤', l10n.profile),
+              ],
+            ),
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _navItem(int index, String icon, String label) {
@@ -76,19 +137,22 @@ class MainWrapperState extends State<MainWrapper> {
             color: active ? const Color(0xFFEBF4DD) : Colors.transparent,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(icon, style: const TextStyle(fontSize: 22)),
-            const SizedBox(height: 3),
-            Text(label,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(icon, style: const TextStyle(fontSize: 22)),
+              const SizedBox(height: 3),
+              Text(
+                label,
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: active
-                      ? const Color(0xFF386641)
-                      : const Color(0xFF8A9E8D),
-                )),
-          ]),
+                  color: active ? const Color(0xFF386641) : const Color(0xFF8A9E8D),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

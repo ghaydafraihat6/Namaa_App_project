@@ -368,7 +368,7 @@ class AboutPage extends StatelessWidget {
 
   Widget _buildTeamSection() {
     final List<Map<String, String>> team = [
-      {"name": "غيداء ", "role": "مطور التطبيق", "emoji": "👨‍💻"},
+      {"name": "غيداء", "role": "مطور التطبيق", "emoji": "👩‍💻"},
       {"name": "فريق نماء", "role": "التصميم والمحتوى", "emoji": "🎨"},
       {"name": "المجتمع", "role": "شركاء التغيير", "emoji": "🌍"},
     ];

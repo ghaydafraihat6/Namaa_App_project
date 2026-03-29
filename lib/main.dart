@@ -10,6 +10,7 @@ import 'firebase_options.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:namaa_project_app/dashboard/main_wrappe.dart';
+import 'package:namaa_project_app/app_routes.dart';
 
 // ── Screens ──
 import 'package:namaa_project_app/screen/splash_screen.dart';
@@ -120,35 +121,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
 
       // ── جميع الـ Routes ──
-      routes: {
-        SplashScreen.routeName: (context) => const SplashScreen(),
-        LoginPage.routeName: (context) => const LoginPage(),
-        CreateAccountPage.routeName: (context) => const CreateAccountPage(),
-        ForgotPasswordPage.routeName: (context) => const ForgotPasswordPage(),
-        '/home': (context) => MainWrapper(),
-        '/dashboard': (context) => const FullAppDashboard(),
-        '/tree': (context) => const TreePage(),
-        '/profile': (context) => const ProfilePage(),
-        '/settings': (context) => const SettingsPage(),
-        '/about': (context) => const AboutPage(),
-        '/invite': (context) => const InviteFriendPage(),
-        '/store': (context) => EcoStoreWithDiscountPage(),
-        '/recycle': (context) => const RecyclePage(),
-        '/recycle-materials': (context) => const RecycleMaterialsPage(),
-        '/save-resources': (context) => const SaveResourcesPage(),
-        '/eco-action': (context) => const EcoActionPage(),
-        '/weekly-challenges': (context) => const WeeklyChallengesPage(),
-        '/bike-challenge': (context) => const BikeChallengePage(),
-        '/eco-experiments': (context) => const EcoExperimentsPage(),
-        '/achievements': (context) => const AchievementsPage(),
-        '/global-counter': (context) => const GlobalCounterPage(),
-        '/before-after': (context) => const BeforeAfterPage(),
-        '/leaderboard': (context) => const LeaderboardPage(),
-        '/advanced-tree': (context) => const AdvancedTreePage(),
-        '/certificate': (context) => CertificatePage(userName: ''),
-        '/forest': (context) => const ForestPage(),
-        '/friend-challenge': (context) => const FriendChallengePage(),
-      },
+      routes: appRoutes,
     );
   }
 }

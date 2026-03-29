@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // تأكد من المسار الصحيح
 
 class EcoExperimentsPage extends StatefulWidget {
   const EcoExperimentsPage({super.key});
@@ -10,15 +11,18 @@ class EcoExperimentsPage extends StatefulWidget {
 }
 
 class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
-  final List<Map<String, dynamic>> experiments = const [
-    {"title": "🌱 زراعة نبتة منزلية", "points": 20, "requiredPoints": 0},
-    {"title": "💧 تقليل استهلاك الماء", "points": 15, "requiredPoints": 50},
-    {"title": "♻ تدوير 5 قطع بلاستيك", "points": 25, "requiredPoints": 150},
-    {"title": "🚶 استخدام المشي اليوم", "points": 30, "requiredPoints": 300},
-  ];
-
-  // ✅ تعديل 2: flag لمنع تكرار الـ reset
+  // ✅ العلم الذي يمنع تكرار التحقق من اليوم الجديد في نفس الجلسة
   bool _resetChecked = false;
+
+  // ✅ دالة لجلب المهام مترجمة بناءً على اللغة الحالية
+  List<Map<String, dynamic>> _getLocalizedExperiments(AppLocalizations l10n) {
+    return [
+      {"title": l10n.exp_plant, "points": 20, "requiredPoints": 0},
+      {"title": l10n.exp_water, "points": 15, "requiredPoints": 50},
+      {"title": l10n.exp_recycle, "points": 25, "requiredPoints": 150},
+      {"title": l10n.exp_walk, "points": 30, "requiredPoints": 300},
+    ];
+  }
 
   bool _isDifferentDay(DateTime date1, DateTime date2) {
     return date1.year != date2.year ||
@@ -26,11 +30,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         date1.day != date2.day;
   }
 
-  // ✅ تعديل 2: الـ reset مرة واحدة فقط
-  void _resetIfNewDay(
-      Map<String, dynamic> userData,
-      DocumentReference userDoc,
-      ) {
+  void _resetIfNewDay(Map<String, dynamic> userData, DocumentReference userDoc) {
     if (_resetChecked) return;
     _resetChecked = true;
 
@@ -45,13 +45,13 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
     }
   }
 
-  // ✅ تعديل 3: استخدام Transaction لضمان دقة النقاط
   Future<void> _completeExperiment(
       BuildContext context,
       String title,
       int rewardPoints,
       List completed,
       DocumentReference userDoc,
+      AppLocalizations l10n,
       ) async {
     if (completed.contains(title)) return;
 
@@ -70,7 +70,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("🎉 مبروك! حصلت على $rewardPoints نقطة"),
+            content: Text(l10n.experiments_success_snack(rewardPoints)),
             backgroundColor: const Color(0xFF386641),
             behavior: SnackBarBehavior.floating,
           ),
@@ -80,7 +80,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("حدث خطأ: $e"),
+            content: Text("${l10n.error_default}: $e"),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -91,27 +91,28 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final experiments = _getLocalizedExperiments(l10n);
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text("يرجى تسجيل الدخول")),
+      return Scaffold(
+        body: Center(child: Text(l10n.login)),
       );
     }
 
-    final userDoc =
-    FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "🧪 التجارب اليومية",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.experiments_title,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         elevation: 0,
-        // ✅ تعديل 1: لون سهم الرجوع
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -121,30 +122,25 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final userData =
-              snapshot.data!.data() as Map<String, dynamic>? ?? {};
-
-          // ✅ تعديل 2: يُستدعى مرة واحدة فقط
+          final userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
           _resetIfNewDay(userData, userDoc);
 
           int userPoints = userData['points'] ?? 0;
           List completed = userData['completedExperiments'] ?? [];
-          double progress =
-          experiments.isEmpty ? 0 : completed.length / experiments.length;
+          double progress = experiments.isEmpty ? 0 : completed.length / experiments.length;
 
           return Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProgressHeader(progress),
+                _buildProgressHeader(l10n, progress),
                 const SizedBox(height: 25),
-                const Text(
-                  "التجارب المتاحة لمستواك:",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.experiments_available_for_level,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
-
                 Expanded(
                   child: ListView.builder(
                     itemCount: experiments.length,
@@ -168,19 +164,16 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
                             ),
                             title: Text(
                               exp['title'],
-                              style:
-                              const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: isLocked
                                 ? Text(
-                              "يفتح عند ${exp['requiredPoints']} نقطة 🔒",
-                              style:
-                              const TextStyle(color: Colors.red),
+                              l10n.experiments_locked_msg(exp['requiredPoints']),
+                              style: const TextStyle(color: Colors.red),
                             )
                                 : Text(
-                              "${exp['points']} نقطة مكافأة 🌟",
-                              style:
-                              const TextStyle(color: Colors.green),
+                              l10n.experiments_reward_msg(exp['points']),
+                              style: const TextStyle(color: Colors.green),
                             ),
                             trailing: _buildTrailingWidget(
                               context,
@@ -189,6 +182,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
                               exp,
                               completed,
                               userDoc,
+                              l10n,
                             ),
                           ),
                         ),
@@ -204,7 +198,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
     );
   }
 
-  Widget _buildProgressHeader(double progress) {
+  Widget _buildProgressHeader(AppLocalizations l10n, double progress) {
     return Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -216,9 +210,9 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "إنجاز تجارب اليوم",
-                style: TextStyle(
+              Text(
+                l10n.experiments_progress_header,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF386641),
                 ),
@@ -251,6 +245,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
       Map exp,
       List completed,
       DocumentReference userDoc,
+      AppLocalizations l10n,
       ) {
     if (isLocked) return const Icon(Icons.lock_outline, color: Colors.grey);
     if (isDone) {
@@ -268,8 +263,12 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         exp['points'],
         completed,
         userDoc,
+        l10n,
       ),
-      child: const Text("تنفيذ", style: TextStyle(color: Colors.white)),
+      child: Text(
+        l10n.experiments_button_execute,
+        style: const TextStyle(color: Colors.white),
+      ),
     );
   }
 }

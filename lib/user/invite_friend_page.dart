@@ -9,8 +9,10 @@ class InviteFriendPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final String referralCode =
-        user?.uid.substring(0, 8).toUpperCase() ?? "NAMAA2026";
+    final String uid = user?.uid ?? "";
+    final String referralCode = uid.length >= 8 
+        ? uid.substring(0, 8).toUpperCase() 
+        : "NAMAA2026";
 
     return Scaffold(
       backgroundColor: Colors.white,

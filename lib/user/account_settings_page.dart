@@ -6,8 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
-import 'package:namaa_project_app/l10n/app_localizations.dart';
-
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
 

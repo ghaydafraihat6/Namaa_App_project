@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -26,13 +27,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final String _selectedCountryCode = "+962";
 
   bool _isLoading = false;
-  // ✅ تعديل 3: visibility منفصل لكل حقل
   bool _isPasswordObscured = true;
   bool _isConfirmObscured = true;
 
   final Color customFillColor = const Color(0xFFEBF4DD);
 
-  // ✅ تعديل 2: تصحيح الـ regex (إزالة المسافة الخاطئة)
   final RegExp _passwordRegex = RegExp(
     r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
   );
@@ -76,27 +75,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   Future<void> _handleSignUp() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
       try {
         final String username = _nameController.text.trim();
-        final String fullPhoneNumber =
-            "$_selectedCountryCode${_phoneController.text.trim()}";
+        final String fullPhoneNumber = "$_selectedCountryCode${_phoneController.text.trim()}";
 
-        // تحقق من تكرار الاسم
         final usernameQuery = await FirebaseFirestore.instance
             .collection('users')
             .where('fullName', isEqualTo: username)
             .get();
 
         if (usernameQuery.docs.isNotEmpty) {
-          if (mounted) {
-            _showSnackBar(
-              "Username already taken. Please choose another.",
-              Colors.red,
-            );
-          }
+          if (mounted) _showSnackBar(l10n.arabic == "العربية" ? "هذا الاسم مستخدم مسبقاً" : "This name is already in use", Colors.red);
           setState(() => _isLoading = false);
           return;
         }
@@ -118,8 +111,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           'dob': _dobController.text.trim(),
           'gender': _selectedGender,
           'points': 0,
-          // ✅ إضافة referralCode لدعم نظام الدعوة
-          'referralCode': userCredential.user!.uid.substring(0, 8).toUpperCase(),
+          'referralCode': userCredential.user!.uid.length >= 8 ? userCredential.user!.uid.substring(0, 8).toUpperCase() : "NAMAA2026",
           'createdAt': FieldValue.serverTimestamp(),
         });
 
@@ -127,16 +119,16 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         await prefs.setBool('isLoggedIn', true);
 
         if (mounted) {
-          _showSnackBar("Account created successfully!", Colors.green);
+          _showSnackBar(l10n.accountCreated, Colors.green);
           Navigator.pushReplacementNamed(context, '/home');
         }
       } on FirebaseAuthException catch (e) {
-        String message = "Registration failed";
-        if (e.code == 'email-already-in-use') message = "Email already in use.";
-        if (e.code == 'weak-password') message = "Password is too weak.";
+        String message = l10n.error_default;
+        if (e.code == 'email-already-in-use') message = l10n.emailInUse;
+        if (e.code == 'weak-password') message = l10n.passwordWeak;
         if (mounted) _showSnackBar(message, Colors.red);
       } catch (e) {
-        if (mounted) _showSnackBar("An error occurred. Try again.", Colors.red);
+        if (mounted) _showSnackBar(l10n.error_default, Colors.red);
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -145,16 +137,14 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: color,
-        behavior: SnackBarBehavior.floating,
-      ),
+      SnackBar(content: Text(message), backgroundColor: color, behavior: SnackBarBehavior.floating),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -169,12 +159,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   Center(
                     child: Opacity(
                       opacity: 0.5,
-                      child: Image.asset(
-                        'assets/images/logo_namaa.png',
-                        width: 250,
-                        height: 250,
-                        fit: BoxFit.contain,
-                      ),
+                      child: Image.asset('assets/images/logo_namaa.png', width: 250, height: 250, fit: BoxFit.contain),
                     ),
                   ),
                   Container(
@@ -182,11 +167,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        // ✅ تعديل 1: withValues بدل withOpacity
-                        colors: [
-                          Colors.white,
-                          Colors.white.withValues(alpha: 0.0),
-                        ],
+                        colors: [Colors.white, Colors.white.withAlpha(0)],
                         stops: const [0.0, 0.5],
                       ),
                     ),
@@ -204,99 +185,57 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 180),
-                    const Text(
-                      "Create Account",
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D5A3F),
-                      ),
-                    ),
-                    const Text(
-                      "Start your journey with us",
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    Text(
+                      l10n.login_signup,
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF2D5A3F)),
                     ),
                     const SizedBox(height: 25),
 
-                    // 1. Username
                     _buildInputField(
                       controller: _nameController,
-                      hint: "Username",
+                      hint: l10n.fullName,
                       icon: Icons.person_outline,
                       validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return "Username is required";
-                        }
-                        if (val.length < 3) return "Username too short";
+                        if (val == null || val.isEmpty) return l10n.error_field_required;
+                        if (val.length < 3) return l10n.usernameTooShort;
                         return null;
                       },
                     ),
                     const SizedBox(height: 15),
 
-                    // 2. Email
                     _buildInputField(
                       controller: _emailController,
-                      hint: "Email Address",
+                      hint: l10n.email,
                       icon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return "Email is required";
-                        }
-                        if (!val.contains('@')) return "Enter a valid email";
+                        if (val == null || val.isEmpty) return l10n.error_field_required;
+                        if (!val.contains('@')) return l10n.error_invalid_email;
                         return null;
                       },
                     ),
                     const SizedBox(height: 15),
 
-                    // 3. Phone Number
                     Container(
-                      decoration: BoxDecoration(
-                        color: customFillColor,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      decoration: BoxDecoration(color: customFillColor, borderRadius: BorderRadius.circular(15)),
                       child: Row(
                         children: [
                           const SizedBox(width: 15),
-                          const Icon(
-                            Icons.phone_android_outlined,
-                            color: Color(0xFF426B4F),
-                          ),
+                          const Icon(Icons.phone_android_outlined, color: Color(0xFF426B4F)),
                           const SizedBox(width: 12),
-                          Text(
-                            _selectedCountryCode,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D5A3F),
-                            ),
-                          ),
+                          Text(_selectedCountryCode, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2D5A3F))),
                           const SizedBox(width: 8),
-                          // ✅ تعديل 1: withValues بدل withOpacity
-                          Container(
-                            height: 20,
-                            width: 1,
-                            color: Colors.grey.withValues(alpha: 0.4),
-                          ),
+                          Container(height: 20, width: 1, color: Colors.grey.withAlpha(100)),
                           Expanded(
                             child: TextFormField(
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               validator: (val) {
-                                if (val == null || val.isEmpty) {
-                                  return "Phone required";
-                                }
-                                if (val.length != 9) {
-                                  return "Must be 9 digits";
-                                }
+                                if (val == null || val.isEmpty) return l10n.phoneRequired;
+                                if (val.length != 9) return l10n.phoneInvalid;
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                hintText: "7XXXXXXXX",
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                ),
-                              ),
+                              decoration: const InputDecoration(hintText: "7XXXXXXXX", border: InputBorder.none, contentPadding: EdgeInsets.symmetric(horizontal: 10)),
                             ),
                           ),
                         ],
@@ -304,65 +243,47 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                     const SizedBox(height: 15),
 
-                    // 4. Date of Birth
                     GestureDetector(
                       onTap: () => _selectDate(context),
                       child: AbsorbPointer(
                         child: _buildInputField(
                           controller: _dobController,
-                          hint: "Date of Birth",
+                          hint: l10n.birthDate,
                           icon: Icons.cake_outlined,
-                          validator: (val) => (val == null || val.isEmpty)
-                              ? "Choose your birthday"
-                              : null,
+                          validator: (val) => (val == null || val.isEmpty) ? l10n.chooseBirthDate : null,
                         ),
                       ),
                     ),
                     const SizedBox(height: 15),
 
-                    // 5. Gender
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 15,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: customFillColor,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      decoration: BoxDecoration(color: customFillColor, borderRadius: BorderRadius.circular(15)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.wc, color: Color(0xFF426B4F)),
-                              SizedBox(width: 12),
-                              Text(
-                                "Gender",
-                                style: TextStyle(
-                                  color: Color(0xFF2D5A3F),
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              const Icon(Icons.wc, color: Color(0xFF426B4F)),
+                              const SizedBox(width: 12),
+                              Text(l10n.gender, style: const TextStyle(color: Color(0xFF2D5A3F), fontWeight: FontWeight.bold)),
                             ],
                           ),
                           Row(
                             children: [
-                              const Text("Male"),
+                              Text(l10n.male),
                               Radio<String>(
                                 value: "Male",
                                 groupValue: _selectedGender,
                                 activeColor: const Color(0xFF386641),
-                                onChanged: (v) =>
-                                    setState(() => _selectedGender = v!),
+                                onChanged: (v) => setState(() => _selectedGender = v!),
                               ),
-                              const Text("Female"),
+                              Text(l10n.female),
                               Radio<String>(
                                 value: "Female",
                                 groupValue: _selectedGender,
                                 activeColor: const Color(0xFF386641),
-                                onChanged: (v) =>
-                                    setState(() => _selectedGender = v!),
+                                onChanged: (v) => setState(() => _selectedGender = v!),
                               ),
                             ],
                           ),
@@ -371,58 +292,34 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     ),
                     const SizedBox(height: 15),
 
-                    // 6. Password
-                    // ✅ تعديل 2: استخدام الـ regex في الـ validator
                     _buildInputField(
                       controller: _passwordController,
-                      hint: "Password",
+                      hint: l10n.password,
                       icon: Icons.lock_outline,
                       isPassword: true,
                       obscured: _isPasswordObscured,
                       validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return "Enter a password";
-                        }
-                        if (!_passwordRegex.hasMatch(val)) {
-                          return "Min 8 chars, upper, lower, number & symbol";
-                        }
+                        if (val == null || val.isEmpty) return l10n.error_field_required;
+                        if (!_passwordRegex.hasMatch(val)) return l10n.passwordRequirements;
                         return null;
                       },
                       suffix: IconButton(
-                        icon: Icon(
-                          _isPasswordObscured
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
-                        // ✅ تعديل 3: toggle منفصل
-                        onPressed: () => setState(
-                              () => _isPasswordObscured = !_isPasswordObscured,
-                        ),
+                        icon: Icon(_isPasswordObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        onPressed: () => setState(() => _isPasswordObscured = !_isPasswordObscured),
                       ),
                     ),
                     const SizedBox(height: 15),
 
-                    // 7. Confirm Password
                     _buildInputField(
                       controller: _confirmPasswordController,
-                      hint: "Confirm Password",
+                      hint: l10n.password,
                       icon: Icons.lock_reset_outlined,
                       isPassword: true,
                       obscured: _isConfirmObscured,
-                      validator: (val) =>
-                      (val != _passwordController.text)
-                          ? "Passwords do not match"
-                          : null,
+                      validator: (val) => (val != _passwordController.text) ? l10n.passwordNotMatch : null,
                       suffix: IconButton(
-                        icon: Icon(
-                          _isConfirmObscured
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
-                        // ✅ تعديل 3: toggle منفصل
-                        onPressed: () => setState(
-                              () => _isConfirmObscured = !_isConfirmObscured,
-                        ),
+                        icon: Icon(_isConfirmObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        onPressed: () => setState(() => _isConfirmObscured = !_isConfirmObscured),
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -432,40 +329,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       height: 55,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _handleSignUp,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF386641),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
+                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                         child: _isLoading
-                            ? const CircularProgressIndicator(
-                          color: Colors.white,
-                        )
-                            : const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(l10n.login_signup, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Already have an account? "),
+                        Text(l10n.haveAccount),
                         GestureDetector(
                           onTap: () => Navigator.pop(context),
-                          child: const Text(
-                            "Login",
-                            style: TextStyle(
-                              color: Color(0xFF386641),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: Text(l10n.login, style: const TextStyle(color: Color(0xFF386641), fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -480,7 +357,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     );
   }
 
-  // ✅ تعديل 3: إضافة `obscured` كـ parameter
   Widget _buildInputField({
     required TextEditingController controller,
     required String hint,
@@ -492,10 +368,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     String? Function(String?)? validator,
   }) {
     return Container(
-      decoration: BoxDecoration(
-        color: customFillColor,
-        borderRadius: BorderRadius.circular(15),
-      ),
+      decoration: BoxDecoration(color: customFillColor, borderRadius: BorderRadius.circular(15)),
       child: TextFormField(
         controller: controller,
         obscureText: isPassword ? obscured : false,
@@ -506,10 +379,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           prefixIcon: Icon(icon, color: const Color(0xFF426B4F)),
           suffixIcon: suffix,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 18,
-            horizontal: 10,
-          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
           errorStyle: const TextStyle(fontSize: 12, height: 1),
         ),
       ),

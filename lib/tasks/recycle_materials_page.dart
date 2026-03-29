@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:io';
 
 class RecycleMaterialsPage extends StatefulWidget {
@@ -24,6 +26,41 @@ class _RecycleMaterialsPageState extends State<RecycleMaterialsPage> {
   final TextEditingController descriptionController = TextEditingController();
   File? selectedImage;
   bool isSubmitting = false;
+  Position? _currentPosition;
+  bool _isLocating = false;
+
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) throw 'خدمات الموقع معطلة. يرجى تفعيل الـ GPS.';
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) throw 'تم رفض صلاحية الوصول للموقع.';
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw 'صلاحية الموقع مرفوضة دائماً. يجب السماح بها من الإعدادات.';
+      }
+
+      final position = await Geolocator.getCurrentPosition();
+      if (mounted) {
+        setState(() => _currentPosition = position);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: const Text('📍 تم تحديد الموقع بنجاح!'), backgroundColor: Colors.green.shade700)
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red)
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLocating = false);
+    }
+  }
 
   @override
   void dispose() {
@@ -55,9 +92,33 @@ class _RecycleMaterialsPageState extends State<RecycleMaterialsPage> {
       return;
     }
 
+    if (_currentPosition == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("يرجى تحديد موقعك أولاً 📍 ليتمكن المندوب من استلام المواد"),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() => isSubmitting = true);
 
     try {
+      String? photoUrl;
+      if (selectedImage != null) {
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('recycled_materials')
+            .child(user.uid)
+            .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+            
+        await ref.putFile(selectedImage!);
+        photoUrl = await ref.getDownloadURL();
+      }
+
       final userDoc =
       FirebaseFirestore.instance.collection('users').doc(user.uid);
       const int pointsToAdd = 20;
@@ -71,9 +132,11 @@ class _RecycleMaterialsPageState extends State<RecycleMaterialsPage> {
         'type': selectedType,
         'description': descriptionController.text.trim(),
         'timestamp': FieldValue.serverTimestamp(),
-        'imageName': selectedImage != null
-            ? selectedImage!.path.split('/').last
-            : null,
+        'photoUrl': photoUrl,
+        'location': {
+          'lat': _currentPosition!.latitude,
+          'lng': _currentPosition!.longitude,
+        },
       });
 
       if (!mounted) return;
@@ -89,6 +152,7 @@ class _RecycleMaterialsPageState extends State<RecycleMaterialsPage> {
         selectedImage = null;
         descriptionController.clear();
         selectedType = materialTypes[0];
+        _currentPosition = null;
         isSubmitting = false;
       });
     } catch (e) {
@@ -227,6 +291,44 @@ class _RecycleMaterialsPageState extends State<RecycleMaterialsPage> {
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF386641),
+              ),
+            ),
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: _isLocating || isSubmitting ? null : _getCurrentLocation,
+              borderRadius: BorderRadius.circular(15),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                decoration: BoxDecoration(
+                  color: _currentPosition != null ? Colors.green.shade50 : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: _currentPosition != null ? Colors.green : Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      _currentPosition != null ? Icons.check_circle : Icons.location_on, 
+                      color: _currentPosition != null ? Colors.green : Colors.grey.shade600
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _currentPosition != null 
+                             ? "تم بنجاح! الإحداثيات محفوظة 📍" 
+                             : (_isLocating ? "جاري تحديد الموقع..." : "اضغط هنا لتحديد موقعك الحالي"),
+                        style: TextStyle(
+                          color: _currentPosition != null ? Colors.green.shade700 : Colors.grey.shade700,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    ),
+                    if (_isLocating)
+                      const SizedBox(
+                        width: 20, height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2)
+                      ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 30),

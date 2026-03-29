@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/providers/locale_provider.dart';
 import 'package:namaa_project_app/screen/login_screen.dart';
 import 'account_settings_page.dart';
 import 'notifications_page.dart';
@@ -21,12 +23,14 @@ class SettingsPage extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final localeProvider = Provider.of<LocaleProvider>(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('⚙️ الإعدادات',
-            style: TextStyle(
+        title: Text('⚙️ ${l10n.settings}',
+            style: const TextStyle(
                 fontFamily: 'Cairo',
                 fontWeight: FontWeight.w800,
                 color: Colors.white)),
@@ -39,40 +43,52 @@ class SettingsPage extends StatelessWidget {
         children: [
 
           // ── الإعدادات ──
-          _sectionTitle('الإعدادات'),
+          _sectionTitle(l10n.settings),
           _menuCard([
+            _menuItem(
+              icon: Icons.language,
+              color: const Color(0xFF9C27B0),
+              label: localeProvider.isArabic ? 'English' : 'العربية',
+              onTap: () {
+                final newLocale = localeProvider.isArabic 
+                    ? const Locale('en', 'US') 
+                    : const Locale('ar', 'AE');
+                localeProvider.setLocale(newLocale);
+              },
+            ),
             _menuItem(
               icon: Icons.person_outline,
               color: const Color(0xFF386641),
-              label: 'إعدادات الحساب',
+              label: l10n.accountSettings,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const AccountSettingsPage())),
             ),
             _menuItem(
               icon: Icons.notifications_none,
               color: const Color(0xFF2196F3),
-              label: 'التنبيهات',
+              label: l10n.notifications,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const NotificationsPage())),
+              showDivider: false,
             ),
           ]),
 
           const SizedBox(height: 16),
 
           // ── الدعم ──
-          _sectionTitle('الدعم'),
+          _sectionTitle(localeProvider.isArabic ? 'الدعم' : 'Support'),
           _menuCard([
             _menuItem(
               icon: Icons.help_outline,
               color: const Color(0xFFF4A261),
-              label: 'مركز المساعدة',
+              label: l10n.helpCenter,
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const HelpCenterPage())),
             ),
             _menuItem(
               icon: Icons.info_outline,
               color: const Color(0xFF52B788),
-              label: 'عن نماء',
+              label: l10n.about,
               onTap: () => Navigator.pushNamed(context, '/about'),
               showDivider: false,
             ),
@@ -91,13 +107,13 @@ class SettingsPage extends StatelessWidget {
                 border: const Border.fromBorderSide(
                     BorderSide(color: Color(0xFFFFD0D0), width: 1.5)),
               ),
-              child: const Row(
+              child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.logout, color: Color(0xFFE63946), size: 20),
-                    SizedBox(width: 8),
-                    Text('تسجيل الخروج',
-                        style: TextStyle(
+                    const Icon(Icons.logout, color: Color(0xFFE63946), size: 20),
+                    const SizedBox(width: 8),
+                    Text(l10n.logout,
+                        style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 15,
                             fontWeight: FontWeight.w700,

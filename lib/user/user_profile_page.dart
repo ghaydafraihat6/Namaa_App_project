@@ -28,11 +28,12 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('يرجى تسجيل الدخول أولاً')),
+      return Scaffold(
+        body: Center(child: Text(l10n.error_login_first)),
       );
     }
 
@@ -42,6 +43,12 @@ class ProfilePage extends StatelessWidget {
           .doc(user.uid)
           .snapshots(),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFF0F5F0),
+            body: Center(child: CircularProgressIndicator(color: Color(0xFF386641))),
+          );
+        }
         final data =
             snapshot.data?.data() as Map<String, dynamic>? ?? {};
         final int pts      = data['points'] ?? 0;
@@ -108,7 +115,7 @@ class ProfilePage extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text('🏅 المستوى $lvl',
+                    child: Text('🏅 ${l10n.level} $lvl',
                         style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 13,
@@ -135,30 +142,30 @@ class ProfilePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(children: [
                   _menuItem(context, '🌳', const Color(0xFFEBF4DD),
-                      'شجرتي', () =>
+                      l10n.myTree, () =>
                           Navigator.pushNamed(context, '/tree')),
                   _menuItem(context, '🏆', const Color(0xFFFFF8E1),
-                      'لوحة الصدارة', () =>
+                      l10n.leaderboard, () =>
                           Navigator.pushNamed(context, '/leaderboard')),
 
                   // ✅ زر تحدي مع صديق
                   _menuItem(context, '👥', const Color(0xFFE8F0FF),
-                      'تحدي مع صديق', () => Navigator.push(context,
+                      l10n.challengeFriend, () => Navigator.push(context,
                           MaterialPageRoute(
                               builder: (_) =>
                               const FriendChallengePage()))),
 
                   _menuItem(context, '🤝', const Color(0xFFF0F4FF),
-                      'دعوة صديق', () =>
+                      l10n.inviteFriend, () =>
                           Navigator.pushNamed(context, '/invite')),
                   _menuItem(context, '🛍️', const Color(0xFFFFF0E8),
-                      'المتجر البيئي', () =>
+                      l10n.ecoStore, () =>
                           Navigator.pushNamed(context, '/store')),
                   _menuItem(context, '⚙️', const Color(0xFFF5F5F5),
-                      'الإعدادات', () =>
+                      l10n.settings, () =>
                           Navigator.pushNamed(context, '/settings')),
                   _menuItem(context, 'ℹ️', const Color(0xFFEBF4DD),
-                      'من نحن', () =>
+                      l10n.about, () =>
                           Navigator.pushNamed(context, '/about')),
                 ]),
               ),
@@ -176,13 +183,13 @@ class ProfilePage extends StatelessWidget {
                       border: const Border.fromBorderSide(BorderSide(
                           color: Color(0xFFFFD0D0), width: 1.5)),
                     ),
-                    child: const Row(
+                    child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('🚪', style: TextStyle(fontSize: 18)),
-                          SizedBox(width: 8),
-                          Text('تسجيل الخروج',
-                              style: TextStyle(
+                          const Text('🚪', style: TextStyle(fontSize: 18)),
+                          const SizedBox(width: 8),
+                          Text(l10n.logout,
+                              style: const TextStyle(
                                   fontFamily: 'Cairo',
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,

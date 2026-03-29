@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class AdvancedTreePage extends StatelessWidget {
   const AdvancedTreePage({super.key});
@@ -15,41 +16,47 @@ class AdvancedTreePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // تعريف متغير الترجمة
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text("يرجى تسجيل الدخول أولاً")),
+      return Scaffold(
+        // استخدام نص مترجم بدل النص الثابت
+        body: Center(child: Text(l10n.login)),
       );
     }
 
-    final userDocRef =
-    FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("شجرتي 🌳"),
+        // استخدام نص مترجم من ملفات الـ ARB
+        title: Text("${l10n.myTree} 🌳"),
         centerTitle: true,
         backgroundColor: Colors.green,
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: userDocRef.snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final data =
-              snapshot.data!.data() as Map<String, dynamic>? ?? {};
+          if (!snapshot.hasData || snapshot.data?.data() == null) {
+            return const Center(child: Text("No Data Found"));
+          }
 
-          final points = data['points'] ?? 0;
+          final data = snapshot.data!.data() as Map<String, dynamic>;
+          final int points = data['points'] ?? 0;
 
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "نقاطك: $points",
+                  // دمج كلمة "نقاط" المترجمة مع الرقم
+                  "${l10n.points}: $points",
                   style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -58,11 +65,16 @@ class AdvancedTreePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
 
-                Image.asset(
-                  _getTreeImage(points),
-                  height: 260,
-                  errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.eco, size: 100, color: Colors.green),
+                // إضافة تأثير انتقال ناعم عند تغير صورة الشجرة
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child: Image.asset(
+                    _getTreeImage(points),
+                    key: ValueKey<int>(points ~/ 50), // لتحديث الصورة عند تغير المستوى فقط
+                    height: 260,
+                    errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.eco, size: 100, color: Colors.green),
+                  ),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -20,15 +21,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Future<void> _resetPassword() async {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      _showSnackBar("Please enter your email address", Colors.orange);
+      _showSnackBar(l10n.error_field_required, Colors.orange);
       return;
     }
 
+    // تحقق من صيغة البريد الإلكتروني
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      _showSnackBar("Please enter a valid email address", Colors.redAccent);
+      _showSnackBar(l10n.error_invalid_email, Colors.redAccent);
       return;
     }
 
@@ -38,8 +41,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
       if (mounted) {
+        // رسالة نجاح الإرسال
         _showSnackBar(
-          "A password reset link has been sent to your email.",
+          l10n.arabic == "العربية"
+              ? "تم إرسال رابط استعادة كلمة المرور إلى بريدك"
+              : "A password reset link has been sent to your email.",
           Colors.green,
         );
         Future.delayed(const Duration(seconds: 2), () {
@@ -47,11 +53,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         });
       }
     } on FirebaseAuthException catch (e) {
-      String message = "An error occurred. Please try again.";
+      String message = l10n.error_default;
       if (e.code == 'user-not-found') {
-        message = "There is no account with this email address.";
+        message = l10n.error_user_not_found;
       } else if (e.code == 'invalid-email') {
-        message = "The email address is not valid.";
+        message = l10n.error_invalid_email;
       }
       if (mounted) _showSnackBar(message, Colors.red);
     } finally {
@@ -71,6 +77,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
@@ -105,10 +113,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        // ✅ التعديل الوحيد: withValues بدل withOpacity
                         colors: [
                           Colors.white,
-                          Colors.white.withValues(alpha: 0.0),
+                          Colors.white.withAlpha(0), // استخدام withAlpha للثبات
                         ],
                         stops: const [0.0, 0.5],
                       ),
@@ -132,19 +139,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     color: Color(0xFF386641),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    "Reset Password",
-                    style: TextStyle(
+                  Text(
+                    l10n.login_forgot_password, // مترجم
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2D5A3F),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    "Enter your email address and we will send you a link to reset your password.",
+                  Text(
+                    l10n.arabic == "العربية"
+                        ? "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور."
+                        : "Enter your email address and we will send you a link to reset your password.",
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                    style: const TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                   const SizedBox(height: 40),
                   Container(
@@ -155,14 +164,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     child: TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        hintText: "Email Address",
-                        prefixIcon: Icon(
+                      decoration: InputDecoration(
+                        hintText: l10n.email, // مترجم
+                        prefixIcon: const Icon(
                           Icons.email_outlined,
                           color: Color(0xFF426B4F),
                         ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           vertical: 18,
                           horizontal: 10,
                         ),
@@ -183,12 +192,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         elevation: 0,
                       ),
                       child: _isLoading
-                          ? const CircularProgressIndicator(
-                        color: Colors.white,
-                      )
-                          : const Text(
-                        "Send Reset Link",
-                        style: TextStyle(
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                        l10n.arabic == "العربية" ? "إرسال الرابط" : "Send Reset Link",
+                        style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

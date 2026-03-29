@@ -15,7 +15,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get welcome => 'أهلاً بعودتك!';
 
   @override
-  String get login => 'تسجيل الدخول';
+  String get login => 'تسجيل الدخول / يرجى تسجيل الدخول أولاً';
 
   @override
   String get logout => 'تسجيل الخروج';
@@ -42,13 +42,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get home => 'الرئيسية';
 
   @override
-  String get points => 'نقطة';
+  String get points => 'النقاط';
 
   @override
   String get level => 'المستوى';
 
   @override
-  String get badges => 'الشارات';
+  String get badges => '🏅 شاراتي';
 
   @override
   String get settings => 'الإعدادات';
@@ -117,7 +117,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderSuccess => 'تم تأكيد طلبك!';
 
   @override
-  String get completed => 'تم الإنجاز';
+  String get completed => 'تم الإنجاز 🎉';
 
   @override
   String get takePhoto => 'التقط صورة كدليل';
@@ -148,4 +148,323 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get greenDistance => 'مسافة خضراء';
+
+  @override
+  String get error_user_not_found => 'لا يوجد حساب مسجل بهذا البريد الإلكتروني';
+
+  @override
+  String get error_wrong_password => 'كلمة المرور خاطئة.';
+
+  @override
+  String get error_invalid_email => 'صيغة البريد الإلكتروني غير صحيحة';
+
+  @override
+  String get error_too_many_requests => 'محاولات كثيرة، حاول لاحقاً.';
+
+  @override
+  String get error_default => 'حدث خطأ، حاول مرة أخرى.';
+
+  @override
+  String get error_field_required => 'هذا الحقل مطلوب';
+
+  @override
+  String get error_login_first => 'يرجى تسجيل الدخول أولاً';
+
+  @override
+  String get login_welcome => 'مرحباً بعودتك';
+
+  @override
+  String get login_subtitle => 'سجل دخولك بالإيميل أو اسم المستخدم';
+
+  @override
+  String get login_hint_id => 'الإيميل أو اسم المستخدم';
+
+  @override
+  String get login_hint_password => 'كلمة المرور';
+
+  @override
+  String get login_remember_me => 'تذكرني';
+
+  @override
+  String get login_forgot_password => 'نسيت كلمة المرور؟';
+
+  @override
+  String get login_button => 'تسجيل الدخول';
+
+  @override
+  String get login_or => 'أو';
+
+  @override
+  String get login_google => 'المتابعة باستخدام جوجل';
+
+  @override
+  String get login_no_account => 'ليس لديك حساب؟ ';
+
+  @override
+  String get login_signup => 'سجل الآن';
+
+  @override
+  String get tree_title => 'شجرتي';
+
+  @override
+  String get tree_current_points => 'نقاطك الحالية';
+
+  @override
+  String get tree_seed_unit => 'بذرة';
+
+  @override
+  String get tree_streak => 'يوم متواصل';
+
+  @override
+  String get tree_level => 'المستوى';
+
+  @override
+  String tree_points_stat(num count) {
+    return '$count نقطة';
+  }
+
+  @override
+  String get tree_progress_label => 'التقدم للمستوى التالي';
+
+  @override
+  String get tree_max_level => 'وصلت للمستوى الأعلى! 🎉';
+
+  @override
+  String get nav_home => 'الرئيسية';
+
+  @override
+  String get nav_tasks => 'المهام';
+
+  @override
+  String get nav_tree => 'شجرتي';
+
+  @override
+  String get nav_store => 'المتجر';
+
+  @override
+  String get nav_profile => 'حسابي';
+
+  @override
+  String get gender => 'الجنس';
+
+  @override
+  String get male => 'ذكر';
+
+  @override
+  String get female => 'أنثى';
+
+  @override
+  String get birthDate => 'تاريخ الميلاد';
+
+  @override
+  String get chooseBirthDate => 'اختر تاريخ ميلادك';
+
+  @override
+  String get usernameTooShort => 'اسم المستخدم قصير جداً';
+
+  @override
+  String get emailInUse => 'هذا البريد مستخدم مسبقاً';
+
+  @override
+  String get passwordWeak => 'كلمة المرور ضعيفة جداً';
+
+  @override
+  String get passwordNotMatch => 'كلمة المرور غير متطابقة';
+
+  @override
+  String get passwordRequirements => '8 رموز على الأقل، حرف كبير، صغير، ورقم';
+
+  @override
+  String get phoneRequired => 'رقم الهاتف مطلوب';
+
+  @override
+  String get phoneInvalid => 'يجب أن يتكون من 9 أرقام';
+
+  @override
+  String get haveAccount => 'لديك حساب بالفعل؟ ';
+
+  @override
+  String get accountCreated => 'تم إنشاء الحساب بنجاح!';
+
+  @override
+  String get resetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get resetPasswordInstructions =>
+      'أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.';
+
+  @override
+  String get sendResetLink => 'إرسال الرابط';
+
+  @override
+  String get resetPasswordEmailSent =>
+      'تم إرسال رابط استعادة كلمة المرور إلى بريدك';
+
+  @override
+  String get forest => 'الغابة';
+
+  @override
+  String get currentPoints => 'نقاطك الحالية';
+
+  @override
+  String get progressToLevel => 'التقدم للمستوى';
+
+  @override
+  String get maxLevelReached => '🎉 وصلت للمستوى الأعلى!';
+
+  @override
+  String get certificate_view => '🏅 عرض الشهادة';
+
+  @override
+  String get ecoPoints => 'نقاطك البيئية';
+
+  @override
+  String get pointsEarned => 'نقطة مكتسبة';
+
+  @override
+  String get tree_stage_1 => 'بذرة';
+
+  @override
+  String get tree_stage_2 => 'بذرة نامية';
+
+  @override
+  String get tree_stage_3 => 'شجرة صغيرة';
+
+  @override
+  String get tree_stage_4 => 'شجرة كبيرة';
+
+  @override
+  String get tree_stage_5 => 'غابة نماء';
+
+  @override
+  String get ecoExperiments => 'تجارب بيئية';
+
+  @override
+  String get bikeChallenge => 'تحدي الدراجة';
+
+  @override
+  String get beforeAfter => 'قبل وبعد';
+
+  @override
+  String get before => 'قبل';
+
+  @override
+  String get after => 'بعد';
+
+  @override
+  String get upload_initiative => 'نشر المبادرة';
+
+  @override
+  String get uploading => 'جارٍ الرفع...';
+
+  @override
+  String get bike_challenge_title => 'تحدي الدراجة';
+
+  @override
+  String get bike_start => 'ابدأ 🚴';
+
+  @override
+  String get bike_stop => '⏸ إيقاف';
+
+  @override
+  String get bike_completed_msg => '✅ أنهيت التحدي اليوم!';
+
+  @override
+  String get bike_reset_btn => '🔄 إعادة التحدي اليومي';
+
+  @override
+  String get bike_master_badge => '🏅 وسام بطل الدراجة';
+
+  @override
+  String get bike_reset_snack => 'تم إعادة ضبط التحدي، ابدأ من جديد! 🚴';
+
+  @override
+  String get experiments_title => '🧪 التجارب اليومية';
+
+  @override
+  String get experiments_progress_header => 'إنجاز تجارب اليوم';
+
+  @override
+  String get experiments_available_for_level => 'التجارب المتاحة لمستواك:';
+
+  @override
+  String get experiments_button_execute => 'تنفيذ';
+
+  @override
+  String get exp_plant => '🌱 زراعة نبتة منزلية';
+
+  @override
+  String get exp_water => '💧 تقليل استهلاك الماء';
+
+  @override
+  String get exp_recycle => '♻ تدوير 5 قطع بلاستيك';
+
+  @override
+  String get exp_walk => '🚶 استخدام المشي اليوم';
+
+  @override
+  String get forest_subtitle => 'كل شجرة هنا زرعها إنسان أحب البيئة 💚';
+
+  @override
+  String get no_trees_yet => 'لا يوجد أشجار بعد!';
+
+  @override
+  String get be_the_first_to_plant => 'كن أول من يزرع شجرة في غابة نماء';
+
+  @override
+  String get by_user => 'بواسطة';
+
+  @override
+  String get challenge_leading_msg => '🏆 أنت في المقدمة! واصل! 💪';
+
+  @override
+  String get challenge_keep_going_msg => '🔥 تحدَّ نفسك وتجاوز صديقك! 🚀';
+
+  @override
+  String welcome_user(String name) {
+    return 'مرحباً، $name 👋';
+  }
+
+  @override
+  String dayStreak(Object days) {
+    return '$days يوم متواصل';
+  }
+
+  @override
+  String tree_next_level_needs(Object pts) {
+    return 'تحتاج $pts نقطة للمستوى التالي';
+  }
+
+  @override
+  String needsPointsForNext(Object pts) {
+    return 'تحتاج $pts نقطة للمستوى التالي';
+  }
+
+  @override
+  String bike_minutes_limit(Object min) {
+    return '$min / 20 دقيقة';
+  }
+
+  @override
+  String get bike_success_snack => '🔥 تهانينا! أنهيت التحدي اليوم +40 نقطة';
+
+  @override
+  String experiments_locked_msg(Object pts) {
+    return 'يفتح عند $pts نقطة 🔒';
+  }
+
+  @override
+  String experiments_reward_msg(Object pts) {
+    return '$pts نقطة مكافأة 🌟';
+  }
+
+  @override
+  String experiments_success_snack(Object pts) {
+    return '🎉 مبروك! حصلت على $pts نقطة';
+  }
+
+  @override
+  String planted_trees_count(int count) {
+    return '🌲 $count شجرة مزروعة حتى الآن';
+  }
 }

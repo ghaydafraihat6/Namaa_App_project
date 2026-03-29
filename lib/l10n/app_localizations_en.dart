@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcome => 'Welcome Back!';
 
   @override
-  String get login => 'Login';
+  String get login => 'Login / Please login first';
 
   @override
   String get logout => 'Logout';
@@ -48,7 +48,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get level => 'Level';
 
   @override
-  String get badges => 'Badges';
+  String get badges => '🏅 My Badges';
 
   @override
   String get settings => 'Settings';
@@ -117,7 +117,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderSuccess => 'Order Confirmed!';
 
   @override
-  String get completed => 'Completed';
+  String get completed => 'Completed 🎉';
 
   @override
   String get takePhoto => 'Take a Photo as Proof';
@@ -148,4 +148,328 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get greenDistance => 'Green Distance';
+
+  @override
+  String get error_user_not_found =>
+      'There is no account with this email address.';
+
+  @override
+  String get error_wrong_password => 'Incorrect password.';
+
+  @override
+  String get error_invalid_email => 'The email address is not valid.';
+
+  @override
+  String get error_too_many_requests => 'Too many attempts. Try again later.';
+
+  @override
+  String get error_default => 'An error occurred, try again.';
+
+  @override
+  String get error_field_required => 'This field is required';
+
+  @override
+  String get error_login_first => 'Please login first';
+
+  @override
+  String get login_welcome => 'Welcome Back';
+
+  @override
+  String get login_subtitle => 'Login with Email or Username';
+
+  @override
+  String get login_hint_id => 'Email or Username';
+
+  @override
+  String get login_hint_password => 'Password';
+
+  @override
+  String get login_remember_me => 'Remember Me';
+
+  @override
+  String get login_forgot_password => 'Forgot Password?';
+
+  @override
+  String get login_button => 'Login';
+
+  @override
+  String get login_or => 'OR';
+
+  @override
+  String get login_google => 'Continue with Google';
+
+  @override
+  String get login_no_account => 'Don\'t have an account? ';
+
+  @override
+  String get login_signup => 'Sign up';
+
+  @override
+  String get tree_title => 'My Tree';
+
+  @override
+  String get tree_current_points => 'Current Points';
+
+  @override
+  String get tree_seed_unit => 'Seeds';
+
+  @override
+  String get tree_streak => 'Streak Days';
+
+  @override
+  String get tree_level => 'Level';
+
+  @override
+  String tree_points_stat(num count) {
+    return '$count Points';
+  }
+
+  @override
+  String get tree_progress_label => 'Progress to Next Level';
+
+  @override
+  String get tree_max_level => 'Max Level Reached! 🎉';
+
+  @override
+  String get nav_home => 'Home';
+
+  @override
+  String get nav_tasks => 'Tasks';
+
+  @override
+  String get nav_tree => 'My Tree';
+
+  @override
+  String get nav_store => 'Store';
+
+  @override
+  String get nav_profile => 'Profile';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get birthDate => 'Date of Birth';
+
+  @override
+  String get chooseBirthDate => 'Choose your birthday';
+
+  @override
+  String get usernameTooShort => 'Username too short';
+
+  @override
+  String get emailInUse => 'Email already in use';
+
+  @override
+  String get passwordWeak => 'Password is too weak';
+
+  @override
+  String get passwordNotMatch => 'Passwords do not match';
+
+  @override
+  String get passwordRequirements =>
+      'Min 8 chars, upper, lower, number & symbol';
+
+  @override
+  String get phoneRequired => 'Phone number required';
+
+  @override
+  String get phoneInvalid => 'Must be 9 digits';
+
+  @override
+  String get haveAccount => 'Already have an account? ';
+
+  @override
+  String get accountCreated => 'Account created successfully!';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get resetPasswordInstructions =>
+      'Enter your email address and we will send you a link to reset your password.';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get resetPasswordEmailSent =>
+      'A password reset link has been sent to your email.';
+
+  @override
+  String get forest => 'Forest';
+
+  @override
+  String get currentPoints => 'Current Points';
+
+  @override
+  String get progressToLevel => 'Progress to Level';
+
+  @override
+  String get maxLevelReached => '🎉 Max Level Reached!';
+
+  @override
+  String get certificate_view => '🏅 View Certificate';
+
+  @override
+  String get ecoPoints => 'Eco Points';
+
+  @override
+  String get pointsEarned => 'Points Earned';
+
+  @override
+  String get tree_stage_1 => 'Seed';
+
+  @override
+  String get tree_stage_2 => 'Growing Seed';
+
+  @override
+  String get tree_stage_3 => 'Small Tree';
+
+  @override
+  String get tree_stage_4 => 'Big Tree';
+
+  @override
+  String get tree_stage_5 => 'Namaa Forest';
+
+  @override
+  String get ecoExperiments => 'Eco Experiments';
+
+  @override
+  String get bikeChallenge => 'Bike Challenge';
+
+  @override
+  String get beforeAfter => 'Before & After';
+
+  @override
+  String get before => 'Before';
+
+  @override
+  String get after => 'After';
+
+  @override
+  String get upload_initiative => 'Publish Initiative';
+
+  @override
+  String get uploading => 'Uploading...';
+
+  @override
+  String get bike_challenge_title => 'Bike Challenge';
+
+  @override
+  String get bike_start => 'Start 🚴';
+
+  @override
+  String get bike_stop => '⏸ Stop';
+
+  @override
+  String get bike_completed_msg => '✅ Challenge Completed Today!';
+
+  @override
+  String get bike_reset_btn => '🔄 Reset Daily Challenge';
+
+  @override
+  String get bike_master_badge => '🏅 Bike Master Badge';
+
+  @override
+  String get bike_reset_snack => 'Challenge reset, start again! 🚴';
+
+  @override
+  String get experiments_title => '🧪 Daily Experiments';
+
+  @override
+  String get experiments_progress_header => 'Today\'s Experiments Progress';
+
+  @override
+  String get experiments_available_for_level => 'Available for your level:';
+
+  @override
+  String get experiments_button_execute => 'Execute';
+
+  @override
+  String get exp_plant => '🌱 Plant a home plant';
+
+  @override
+  String get exp_water => '💧 Reduce water usage';
+
+  @override
+  String get exp_recycle => '♻ Recycle 5 plastic items';
+
+  @override
+  String get exp_walk => '🚶 Walk instead of driving today';
+
+  @override
+  String get forest_subtitle =>
+      'Every tree here was planted by someone who loves the environment 💚';
+
+  @override
+  String get no_trees_yet => 'No trees yet!';
+
+  @override
+  String get be_the_first_to_plant =>
+      'Be the first to plant a tree in Namaa Forest';
+
+  @override
+  String get by_user => 'By';
+
+  @override
+  String get challenge_leading_msg => '🏆 You are in the lead! Keep going! 💪';
+
+  @override
+  String get challenge_keep_going_msg =>
+      '🔥 Challenge yourself and overtake your friend! 🚀';
+
+  @override
+  String welcome_user(String name) {
+    return 'Welcome, $name 👋';
+  }
+
+  @override
+  String dayStreak(Object days) {
+    return '$days Day Streak';
+  }
+
+  @override
+  String tree_next_level_needs(Object pts) {
+    return 'You need $pts points for the next level';
+  }
+
+  @override
+  String needsPointsForNext(Object pts) {
+    return 'You need $pts points for next level';
+  }
+
+  @override
+  String bike_minutes_limit(Object min) {
+    return '$min / 20 min';
+  }
+
+  @override
+  String get bike_success_snack => '🔥 Congrats! Challenge finished +40 Points';
+
+  @override
+  String experiments_locked_msg(Object pts) {
+    return 'Unlocks at $pts points 🔒';
+  }
+
+  @override
+  String experiments_reward_msg(Object pts) {
+    return '$pts Reward Points 🌟';
+  }
+
+  @override
+  String experiments_success_snack(Object pts) {
+    return '🎉 Congrats! You earned $pts points';
+  }
+
+  @override
+  String planted_trees_count(int count) {
+    return '🌲 $count trees planted so far';
+  }
 }

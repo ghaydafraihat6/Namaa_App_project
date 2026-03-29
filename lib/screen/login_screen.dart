@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:namaa_project_app/screen/forget_pasword_screen.dart';
 import 'create_account_screen.dart';
@@ -54,8 +55,10 @@ class _LoginPageState extends State<LoginPage> {
           if (userQuery.docs.isNotEmpty) {
             email = userQuery.docs.first.get('email');
           } else {
-            // ✅ تعديل 4: التحقق من mounted قبل showSnackBar
-            if (mounted) _showErrorSnackBar("No user found with this username.");
+            if (mounted) {
+              // استخدام الترجمة هنا للخطأ
+              _showErrorSnackBar(AppLocalizations.of(context)!.error_user_not_found);
+            }
             setState(() => _isLoading = false);
             return;
           }
@@ -76,9 +79,12 @@ class _LoginPageState extends State<LoginPage> {
 
           if (!docSnapshot.exists) {
             await userDoc.set({
+              'uid': user.uid,
               'points': 0,
               'email': user.email,
               'fullName': input.contains('@') ? '' : input,
+              'referralCode': user.uid.length >= 8 ? user.uid.substring(0, 8).toUpperCase() : "NAMAA2026",
+              'createdAt': FieldValue.serverTimestamp(),
             });
           }
 
@@ -87,19 +93,33 @@ class _LoginPageState extends State<LoginPage> {
           }
 
           if (mounted) {
-
             Navigator.pushReplacementNamed(context, '/home');
           }
         }
-
       } on FirebaseAuthException catch (e) {
-        String errorMessage = "Login Failed";
-        if (e.code == 'user-not-found') errorMessage = "No user found.";
-        if (e.code == 'wrong-password') errorMessage = "Incorrect password.";
-        // ✅ تعديل 4: التحقق من mounted
+        final l10n = AppLocalizations.of(context)!;
+        String errorMessage;
+
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = l10n.error_user_not_found;
+            break;
+          case 'wrong-password':
+            errorMessage = l10n.error_wrong_password;
+            break;
+          case 'invalid-email':
+            errorMessage = l10n.error_invalid_email;
+            break;
+          case 'too-many-requests':
+            errorMessage = l10n.error_too_many_requests;
+            break;
+          default:
+            errorMessage = l10n.error_default;
+        }
+
         if (mounted) _showErrorSnackBar(errorMessage);
       } catch (e) {
-        if (mounted) _showErrorSnackBar("An unexpected error occurred.");
+        if (mounted) _showErrorSnackBar("An error occurred. Please try again.");
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -115,39 +135,32 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final userCredential =
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       final user = userCredential.user;
 
       if (user != null) {
-        final userDoc = FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid);
+        final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
         final docSnapshot = await userDoc.get();
 
         if (!docSnapshot.exists) {
           await userDoc.set({
+            'uid': user.uid,
             'points': 0,
             'email': user.email,
             'fullName': user.displayName ?? '',
+            'referralCode': user.uid.length >= 8 ? user.uid.substring(0, 8).toUpperCase() : "NAMAA2026",
+            'createdAt': FieldValue.serverTimestamp(),
           });
         }
 
-        if (_rememberMe) {
-          await _setLoggedInStatus(true);
-        }
-
-        if (mounted) {
-          // ✅ تعديل 3: التوجيه لـ /home
-          Navigator.pushReplacementNamed(context, '/home');
-        }
+        if (_rememberMe) await _setLoggedInStatus(true);
+        if (mounted) Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
       if (mounted) _showErrorSnackBar("Google Sign-In failed.");
@@ -168,10 +181,13 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // متغير لتسهيل الوصول للترجمة
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
+          // Background Header
           Positioned(
             top: 0, left: 0, right: 0,
             child: Container(
@@ -182,9 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                   Center(
                     child: Image.asset(
                       'assets/images/logo_namaa.png',
-                      width: 250,
-                      height: 250,
-                      fit: BoxFit.contain,
+                      width: 250, height: 250, fit: BoxFit.contain,
                     ),
                   ),
                   Container(
@@ -192,10 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [
-                          Colors.white,
-                          Colors.white.withValues(alpha: 0.0)
-                        ],
+                        colors: [Colors.white, Colors.white.withOpacity(0.0)],
                         stops: const [0.0, 0.5],
                       ),
                     ),
@@ -204,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
+
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -212,46 +224,35 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     const SizedBox(height: 260),
-                    const Text(
-                      "Welcome Back",
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D5A3F),
-                      ),
+                    Text(
+                      l10n.login_welcome, // مترجم
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF2D5A3F)),
                     ),
-                    const Text(
-                      "Login with Email or Username",
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                    Text(
+                      l10n.login_subtitle, // مترجم
+                      style: const TextStyle(color: Colors.grey, fontSize: 16),
                     ),
                     const SizedBox(height: 40),
 
+                    // Identifier Field
                     _buildInputField(
                       controller: _identifierController,
-                      hint: "Email or Username",
+                      hint: l10n.login_hint_id, // مترجم
                       icon: Icons.person_outline,
-                      validator: (val) => (val == null || val.isEmpty)
-                          ? "Please enter email or username"
-                          : null,
+                      validator: (val) => (val == null || val.isEmpty) ? l10n.error_field_required : null,
                     ),
                     const SizedBox(height: 20),
 
+                    // Password Field
                     _buildInputField(
                       controller: _passwordController,
-                      hint: "Password",
+                      hint: l10n.login_hint_password, // مترجم
                       icon: Icons.lock_outline,
                       isPassword: true,
-                      validator: (val) => (val == null || val.isEmpty)
-                          ? "Please enter your password"
-                          : null,
+                      validator: (val) => (val == null || val.isEmpty) ? l10n.error_field_required : null,
                       suffix: IconButton(
-                        icon: Icon(
-                          _isObscured
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
-                        onPressed: () =>
-                            setState(() => _isObscured = !_isObscured),
+                        icon: Icon(_isObscured ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        onPressed: () => setState(() => _isObscured = !_isObscured),
                       ),
                     ),
 
@@ -263,32 +264,21 @@ class _LoginPageState extends State<LoginPage> {
                             Checkbox(
                               value: _rememberMe,
                               activeColor: const Color(0xFF426B4F),
-                              onChanged: (val) =>
-                                  setState(() => _rememberMe = val!),
+                              onChanged: (val) => setState(() => _rememberMe = val!),
                             ),
-                            const Text(
-                              "Remember Me",
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                            Text(l10n.login_remember_me, style: const TextStyle(color: Colors.grey)),
                           ],
                         ),
                         TextButton(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage(),
-                            ),
-                          ),
-                          child: const Text(
-                            "Forgot Password?",
-                            style: TextStyle(color: Color(0xFF426B4F)),
-                          ),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordPage())),
+                          child: Text(l10n.login_forgot_password, style: const TextStyle(color: Color(0xFF426B4F))),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 30),
 
+                    // Login Button
                     SizedBox(
                       width: double.infinity,
                       height: 55,
@@ -296,52 +286,29 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF386641),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                         ),
                         child: _isLoading
-                            ? const CircularProgressIndicator(
-                            color: Colors.white)
-                            : const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : Text(l10n.login_button, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     ),
 
                     const SizedBox(height: 25),
-                    const Text(
-                      "OR",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    Text(l10n.login_or, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 25),
 
-                    _buildGoogleButton(),
+                    _buildGoogleButton(l10n.login_google),
 
                     const SizedBox(height: 35),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account? "),
+                        Text(l10n.login_no_account),
                         GestureDetector(
-                          onTap: () => Navigator.pushNamed(
-                              context, CreateAccountPage.routeName),
-                          child: const Text(
-                            "Sign up",
-                            style: TextStyle(
-                              color: Color(0xFF386641),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          onTap: () => Navigator.pushNamed(context, CreateAccountPage.routeName),
+                          child: Text(l10n.login_signup, style: const TextStyle(color: Color(0xFF386641), fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -361,33 +328,27 @@ class _LoginPageState extends State<LoginPage> {
     required String hint,
     required IconData icon,
     bool isPassword = false,
-    TextInputType keyboardType = TextInputType.text,
     Widget? suffix,
     String? Function(String?)? validator,
   }) {
     return Container(
-      decoration: BoxDecoration(
-        color: customFillColor,
-        borderRadius: BorderRadius.circular(15),
-      ),
+      decoration: BoxDecoration(color: customFillColor, borderRadius: BorderRadius.circular(15)),
       child: TextFormField(
         controller: controller,
         obscureText: isPassword ? _isObscured : false,
         validator: validator,
-        keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hint,
           prefixIcon: Icon(icon, color: const Color(0xFF426B4F)),
           suffixIcon: suffix,
           border: InputBorder.none,
-          contentPadding:
-          const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
+          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
         ),
       ),
     );
   }
 
-  Widget _buildGoogleButton() {
+  Widget _buildGoogleButton(String label) {
     return InkWell(
       onTap: _isLoading ? null : _handleGoogleSignIn,
       borderRadius: BorderRadius.circular(15),
@@ -402,21 +363,9 @@ class _LoginPageState extends State<LoginPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ✅ تعديل 2: استخدام asset بدل network
-            Image.asset(
-              'assets/images/google_logo.png',
-              width: 24,
-              height: 24,
-            ),
+            Image.asset('assets/images/google_logo.png', width: 24, height: 24),
             const SizedBox(width: 12),
-            const Text(
-              "Continue with Google",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            Text(label, style: const TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500)),
           ],
         ),
       ),

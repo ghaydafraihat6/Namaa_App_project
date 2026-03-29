@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:share_plus/share_plus.dart'; // ✅ أضف هذه المكتبة للمشاركة
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
 
 class FriendChallengePage extends StatefulWidget {
   const FriendChallengePage({super.key});
@@ -13,7 +15,6 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
   final _codeCtrl = TextEditingController();
   bool _loading   = false;
   Map<String, dynamic>? _friendData;
-  String? _friendId;
 
   @override
   void dispose() {
@@ -21,8 +22,13 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
     super.dispose();
   }
 
-  // ── البحث عن صديق بالكود ──
-  Future<void> _searchFriend() async {
+  // ✅ دالة المشاركة الجديدة
+  void _shareMyCode(String code, AppLocalizations l10n) {
+    final String message = "${l10n.yourCode}: $code\n${l10n.inviteFriend}";
+    Share.share(message);
+  }
+
+  Future<void> _searchFriend(AppLocalizations l10n) async {
     if (_codeCtrl.text.trim().isEmpty) return;
     setState(() { _loading = true; _friendData = null; });
 
@@ -35,8 +41,8 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
 
       if (query.docs.isEmpty) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('⚠️ لم يتم العثور على مستخدم بهذا الكود'),
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.error_user_not_found), // ✅ نصوص مترجمة
             backgroundColor: Colors.orange,
             behavior: SnackBarBehavior.floating,
           ));
@@ -44,13 +50,12 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
       } else {
         setState(() {
           _friendData = query.docs.first.data();
-          _friendId   = query.docs.first.id;
         });
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('حدث خطأ: $e'),
+          content: Text('${l10n.error_default}: $e'), // ✅ نصوص مترجمة
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ));
@@ -78,13 +83,14 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // ✅ تعريف كائن الترجمة
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('👥 تحدي مع صديق',
-            style: TextStyle(
+        title: Text(l10n.challengeFriend, // ✅ نص مترجم
+            style: const TextStyle(
                 fontFamily: 'Cairo',
                 fontWeight: FontWeight.w800,
                 color: Colors.white)),
@@ -98,57 +104,57 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
             .doc(user?.uid ?? '')
             .snapshots(),
         builder: (context, snapshot) {
-          final myData =
-              snapshot.data?.data() as Map<String, dynamic>? ?? {};
+          final myData = snapshot.data?.data() as Map<String, dynamic>? ?? {};
           final myPoints = myData['points'] ?? 0;
-          final myName   = myData['fullName'] ?? myData['name'] ?? 'أنت';
-          final myCode   = myData['referralCode'] ?? user?.uid?.substring(0, 6) ?? '------';
+          final myName   = myData['fullName'] ?? myData['name'] ?? l10n.profile;
+          final myCode   = myData['referralCode'] ?? '------';
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-
               // ── كودك ──
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF1B4332), Color(0xFF386641)],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [BoxShadow(
-                      color: const Color(0xFF386641).withValues(alpha: 0.3),
-                      blurRadius: 16, offset: const Offset(0, 6))],
-                ),
-                child: Column(children: [
-                  const Text('كودك الخاص 🎯',
-                      style: TextStyle(
-                          fontFamily: 'Cairo',
-                          fontSize: 13,
-                          color: Color(0xBFFFFFFF))),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(14),
+              GestureDetector( // ✅ إضافة إمكانية الضغط للمشاركة
+                onTap: () => _shareMyCode(myCode, l10n),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1B4332), Color(0xFF386641)],
                     ),
-                    child: Text(myCode.toUpperCase(),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [BoxShadow(
+                        color: const Color(0xFF386641).withOpacity(0.3),
+                        blurRadius: 16, offset: const Offset(0, 6))],
+                  ),
+                  child: Column(children: [
+                    Text(l10n.yourCode + " 🎯", // ✅ نص مترجم
                         style: const TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: 6)),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text('شارك هذا الكود مع أصدقائك!',
-                      style: TextStyle(
-                          fontFamily: 'Cairo',
-                          fontSize: 12,
-                          color: Color(0xBFFFFFFF))),
-                ]),
+                            fontSize: 13,
+                            color: Color(0xBFFFFFFF))),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(myCode.toUpperCase(),
+                          style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: 6)),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(l10n.inviteFriend, // ✅ نص مترجم
+                        style: const TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: 12,
+                            color: Color(0xBFFFFFFF))),
+                  ]),
+                ),
               ),
 
               const SizedBox(height: 20),
@@ -160,14 +166,14 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: Colors.black.withOpacity(0.05),
                       blurRadius: 8)],
                 ),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('ابحث عن صديق',
-                          style: TextStyle(
+                      Text(l10n.searchFriend, // ✅ نص مترجم
+                          style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
@@ -176,8 +182,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
                       Row(children: [
                         Expanded(
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                             decoration: BoxDecoration(
                               color: const Color(0xFFEBF4DD),
                               borderRadius: BorderRadius.circular(12),
@@ -189,10 +194,10 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 3),
-                              decoration: const InputDecoration(
-                                hintText: 'أدخل كود الصديق',
+                              decoration: InputDecoration(
+                                hintText: l10n.login_hint_id, // ✅ استخدام تلميح مترجم
                                 border: InputBorder.none,
-                                hintStyle: TextStyle(
+                                hintStyle: const TextStyle(
                                     fontFamily: 'Cairo',
                                     color: Colors.grey,
                                     letterSpacing: 1),
@@ -202,21 +207,15 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
                         ),
                         const SizedBox(width: 10),
                         ElevatedButton(
-                          onPressed: _loading ? null : _searchFriend,
+                          onPressed: _loading ? null : () => _searchFriend(l10n),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF386641),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           ),
                           child: _loading
-                              ? const SizedBox(
-                              width: 20, height: 20,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white, strokeWidth: 2))
-                              : const Icon(Icons.search,
-                              color: Colors.white),
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : const Icon(Icons.search, color: Colors.white),
                         ),
                       ]),
                     ]),
@@ -225,10 +224,10 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
               // ── نتيجة البحث + المقارنة ──
               if (_friendData != null) ...[
                 const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: Text('🏆 المقارنة',
-                      style: TextStyle(
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text('🏆 ${l10n.leaderboard}', // ✅ نص مترجم
+                      style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
@@ -236,38 +235,23 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
                 ),
 
                 Row(children: [
-                  // أنت
                   Expanded(
                     child: _playerCard(
+                      l10n: l10n,
                       name: myName,
                       points: myPoints,
                       isMe: true,
                       isWinner: myPoints >= (_friendData!['points'] ?? 0),
                     ),
                   ),
-                  // VS
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF4A261),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text('VS',
-                          style: TextStyle(
-                              fontFamily: 'Cairo',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white)),
-                    ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text('VS', style: TextStyle(fontWeight: FontWeight.w900, color: Color(0xFFF4A261))),
                   ),
-                  // الصديق
                   Expanded(
                     child: _playerCard(
-                      name: _friendData!['fullName'] ??
-                          _friendData!['name'] ?? 'صديق',
+                      l10n: l10n,
+                      name: _friendData!['fullName'] ?? _friendData!['name'] ?? l10n.profile,
                       points: _friendData!['points'] ?? 0,
                       isMe: false,
                       isWinner: (_friendData!['points'] ?? 0) > myPoints,
@@ -277,39 +261,29 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
 
                 const SizedBox(height: 16),
 
-                // النتيجة
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: myPoints >= (_friendData!['points'] ?? 0)
-                        ? const Color(0xFFEBF4DD)
-                        : const Color(0xFFFFF3E8),
+                    color: myPoints >= (_friendData!['points'] ?? 0) ? const Color(0xFFEBF4DD) : const Color(0xFFFFF3E8),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: myPoints >= (_friendData!['points'] ?? 0)
-                          ? const Color(0xFF52B788)
-                          : const Color(0xFFF4A261),
-                    ),
+                    border: Border.all(color: myPoints >= (_friendData!['points'] ?? 0) ? const Color(0xFF52B788) : const Color(0xFFF4A261)),
                   ),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           myPoints >= (_friendData!['points'] ?? 0)
-                              ? '🏆 أنت في المقدمة! واصل! 💪'
-                              : '🔥 تحدَّ نفسك وتجاوز صديقك! 🚀',
+                              ? l10n.challenge_leading_msg // ✅ نص مترجم
+                              : l10n.challenge_keep_going_msg, // ✅ نص مترجم
                           style: TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: myPoints >= (_friendData!['points'] ?? 0)
-                                  ? const Color(0xFF386641)
-                                  : const Color(0xFFF4A261)),
+                              color: myPoints >= (_friendData!['points'] ?? 0) ? const Color(0xFF386641) : const Color(0xFFF4A261)),
                         ),
                       ]),
                 ),
               ],
-
               const SizedBox(height: 20),
             ],
           );
@@ -318,71 +292,31 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
     );
   }
 
-  Widget _playerCard({
-    required String name,
-    required int points,
-    required bool isMe,
-    required bool isWinner,
-  }) {
+  Widget _playerCard({required AppLocalizations l10n, required String name, required int points, required bool isMe, required bool isWinner}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isWinner
-            ? const Color(0xFFEBF4DD)
-            : Colors.white,
+        color: isWinner ? const Color(0xFFEBF4DD) : Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-            color: isWinner
-                ? const Color(0xFF52B788)
-                : const Color(0xFFEEEEEE),
-            width: isWinner ? 2 : 1),
-        boxShadow: [BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10)],
+        border: Border.all(color: isWinner ? const Color(0xFF52B788) : const Color(0xFFEEEEEE), width: isWinner ? 2 : 1),
       ),
       child: Column(children: [
-        if (isWinner)
-          const Text('👑', style: TextStyle(fontSize: 20)),
-        Text(_getTreeEmoji(points),
-            style: const TextStyle(fontSize: 40)),
+        if (isWinner) const Text('👑', style: TextStyle(fontSize: 20)),
+        Text(_getTreeEmoji(points), style: const TextStyle(fontSize: 40)),
         const SizedBox(height: 8),
-        Text(name,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1B2E1F))),
+        Text(name, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
-        Text('$points نقطة',
-            style: const TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 16,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF386641))),
+        Text(l10n.tree_points_stat(points), // ✅ قيمة مترجمة تأخذ البارامتر
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF386641))),
         const SizedBox(height: 4),
-        Text('المستوى ${_getLevel(points)}',
-            style: const TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 11,
-                color: Colors.grey)),
+        Text('${l10n.tree_level} ${_getLevel(points)}', // ✅ نص مترجم
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.grey)),
         if (isMe)
           Container(
             margin: const EdgeInsets.only(top: 6),
-            padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFF386641),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Text('أنت',
-                style: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white)),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(color: const Color(0xFF386641), borderRadius: BorderRadius.circular(8)),
+            child: Text(l10n.profile, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white)),
           ),
       ]),
     );

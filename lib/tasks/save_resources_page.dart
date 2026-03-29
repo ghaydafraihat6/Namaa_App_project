@@ -13,6 +13,36 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
   // ✅ تعديل 1: تتبع المهام المنجزة
   final Set<String> _completedTasks = {};
 
+  @override
+  void initState() {
+    super.initState();
+    _loadCompletedTasks();
+  }
+
+  Future<void> _loadCompletedTasks() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('completedTasks')
+          .where('type', isEqualTo: 'save_resources_basic')
+          .get();
+
+      if (query.docs.isNotEmpty && mounted) {
+        setState(() {
+          for (var doc in query.docs) {
+            _completedTasks.add(doc.data()['taskId'] as String);
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("Error loading tasks: $e");
+    }
+  }
+
   Future<void> _addPoints(int pointsToAdd, String taskId) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -33,6 +63,16 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         transaction.update(docRef, {'points': currentPoints + pointsToAdd});
       }
     });
+
+    try {
+      await docRef.collection('completedTasks').doc('save_$taskId').set({
+        'taskId': taskId,
+        'type': 'save_resources_basic',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint("Error saving task: $e");
+    }
 
     if (mounted) {
       setState(() => _completedTasks.add(taskId));

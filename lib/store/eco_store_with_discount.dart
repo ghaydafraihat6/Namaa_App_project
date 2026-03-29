@@ -14,12 +14,12 @@ class EcoStoreWithDiscountPage extends StatefulWidget {
 class _EcoStoreWithDiscountPageState
     extends State<EcoStoreWithDiscountPage> {
   final List<Map<String, dynamic>> products = const [
-    {'id': 'p1', 'name': 'كيس قماش',     'image': 'assets/images/recycle-bag.png', 'price': 5,  'disc': 4.0},
-    {'id': 'p2', 'name': 'زجاجة ماء',    'image': 'assets/images/water-bottle.png','price': 10, 'disc': 8.0},
-    {'id': 'p3', 'name': 'مصابيح LED',   'image': 'assets/images/led-light.png',   'price': 15, 'disc': 12.0},
-    {'id': 'p4', 'name': 'فرشاة خشبية', 'image': 'assets/images/tooth-brush.png', 'price': 3,  'disc': 2.4},
-    {'id': 'p5', 'name': 'حقيبة قش',    'image': 'assets/images/basket.png',      'price': 8,  'disc': 6.4},
-    {'id': 'p6', 'name': 'منتج بيئي',   'image': 'assets/images/product.png',     'price': 6,  'disc': 4.8},
+    {'id': 'p1', 'name': 'كيس قماش',     'image': 'assets/images/recycle-bag.png', 'price': 5},
+    {'id': 'p2', 'name': 'زجاجة ماء',    'image': 'assets/images/water-bottle.png','price': 10},
+    {'id': 'p3', 'name': 'مصابيح LED',   'image': 'assets/images/led-light.png',   'price': 15},
+    {'id': 'p4', 'name': 'فرشاة خشبية', 'image': 'assets/images/tooth-brush.png', 'price': 3},
+    {'id': 'p5', 'name': 'حقيبة قش',    'image': 'assets/images/basket.png',      'price': 8},
+    {'id': 'p6', 'name': 'منتج بيئي',   'image': 'assets/images/product.png',     'price': 6},
   ];
 
   final Map<String, int> _cart = {};
@@ -411,14 +411,8 @@ class _EcoStoreWithDiscountPageState
         'createdAt':       FieldValue.serverTimestamp(),
       });
 
-      final userDoc =
-      FirebaseFirestore.instance.collection('users').doc(userId);
-      await FirebaseFirestore.instance.runTransaction((tx) async {
-        final snap   = await tx.get(userDoc);
-        final cur    = (snap.data()?['points'] ?? 0) as int;
-        final newPts = (cur - total.toInt()).clamp(0, 999999);
-        tx.update(userDoc, {'points': newPts});
-      });
+      // تم إزالة كود خصم النقاط؛ النقاط هنا تحدد فئة الخصم المالي للعميل، 
+      // ولا يتم استهلاكها كعملة عند الشراء بالدنانير.
 
       if (context.mounted) {
         Navigator.pop(context);

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
 
 class BeforeAfterPage extends StatefulWidget {
   const BeforeAfterPage({super.key});
@@ -19,7 +20,6 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
   bool isUploading = false;
   final ImagePicker picker = ImagePicker();
 
-  // ✅ تعديل 3: إضافة dispose للـ controller
   @override
   void dispose() {
     descriptionController.dispose();
@@ -41,12 +41,13 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
   Future<void> uploadInitiative() async {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!; // ✅ تعريف المترجم هنا
+
     if (user == null) return;
 
     if (beforeImage == null || afterImage == null) {
-      // mounted مضمون هنا لأننا قبل أي await
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("يرجى اختيار صورتي قبل وبعد")),
+        SnackBar(content: Text(l10n.takePhoto)), // استخدمنا "التقط صورة كدليل" أو أضف مفتاحاً جديداً
       );
       return;
     }
@@ -56,9 +57,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     try {
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child(
-        'initiatives/${user.uid}/${DateTime.now().millisecondsSinceEpoch}',
-      );
+          .child('initiatives/${user.uid}/${DateTime.now().millisecondsSinceEpoch}');
 
       final beforeRef = storageRef.child('before.jpg');
       final afterRef = storageRef.child('after.jpg');
@@ -82,8 +81,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      final userDoc =
-      FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final snapshot = await transaction.get(userDoc);
@@ -91,7 +89,6 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         transaction.update(userDoc, {'points': currentPoints + 10});
       });
 
-      // ✅ تعديل 1: mounted check بعد كل await
       if (!mounted) return;
 
       setState(() {
@@ -101,18 +98,17 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("🎉 تم رفع المبادرة وإضافة 10 نقاط!"),
-          backgroundColor: Color(0xFF386641),
+        SnackBar(
+          content: Text("${l10n.orderSuccess} (+10 ${l10n.points})"), // مثال لاستخدام النقاط
+          backgroundColor: const Color(0xFF386641),
           behavior: SnackBarBehavior.floating,
         ),
       );
     } catch (e) {
-      // ✅ تعديل 1: mounted check في catch
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("حدث خطأ أثناء الرفع: $e"),
+            content: Text("${l10n.error_default}: $e"),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -123,11 +119,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     }
   }
 
-  Widget _buildImagePlaceholder(
-      String label,
-      XFile? image,
-      bool isBefore,
-      ) {
+  Widget _buildImagePlaceholder(String label, XFile? image, bool isBefore) {
     return GestureDetector(
       onTap: isUploading ? null : () => pickImage(isBefore),
       child: Container(
@@ -139,10 +131,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.grey.shade400),
           image: image != null
-              ? DecorationImage(
-            image: FileImage(File(image.path)),
-            fit: BoxFit.cover,
-          )
+              ? DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.cover)
               : null,
         ),
         child: image == null
@@ -150,18 +139,11 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                isBefore ? Icons.history : Icons.auto_awesome,
-                size: 50,
-                color: Colors.grey.shade600,
-              ),
+              Icon(isBefore ? Icons.history : Icons.auto_awesome, size: 50, color: Colors.grey.shade600),
               const SizedBox(height: 10),
               Text(
-                "اضغط لإضافة صورة $label",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade700,
-                ),
+                label, // النص سيمرر مترجماً من الـ build
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -174,16 +156,17 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: const Text(
-          "قبل وبعد نماء ✨",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.beforeAfter, // ✅ "قبل وبعد" من ملف الترجمة
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
-        // ✅ تعديل 2: لون سهم الرجوع
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
@@ -191,47 +174,28 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "وثّق تغييرك الإيجابي! 📸",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF386641),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "شارك صوراً لمبادراتك البيئية وشاهد الفرق.",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+            Text(
+              l10n.explore, // أو أي عنوان ترحيبي مترجم
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF386641)),
             ),
             const SizedBox(height: 30),
-
             Row(
               children: [
-                Expanded(
-                  child: _buildImagePlaceholder("قبل", beforeImage, true),
-                ),
+                Expanded(child: _buildImagePlaceholder("Before", beforeImage, true)),
                 const SizedBox(width: 15),
-                Expanded(
-                  child: _buildImagePlaceholder("بعد", afterImage, false),
-                ),
+                Expanded(child: _buildImagePlaceholder("After", afterImage, false)),
               ],
             ),
-
             const SizedBox(height: 30),
             TextField(
               controller: descriptionController,
               enabled: !isUploading,
-              decoration: const InputDecoration(
-                labelText: "وصف المبادرة (اختياري)",
-                hintText: "مثلاً: تنظيف حديقة الحي",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                ),
+              decoration: InputDecoration(
+                labelText: l10n.explore, // يمكنك إضافة "وصف المبادرة" للملفات
+                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
               ),
               maxLines: 3,
             ),
-
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
@@ -239,27 +203,15 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF386641),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: isUploading ? null : uploadInitiative,
                 icon: isUploading
-                    ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                     : const Icon(Icons.cloud_upload, color: Colors.white),
                 label: Text(
-                  isUploading ? "جارٍ الرفع..." : "نشر المبادرة",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  isUploading ? "..." : l10n.saveChanges, // أو زر النشر المترجم
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

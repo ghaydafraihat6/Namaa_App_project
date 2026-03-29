@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
 
 class BikeChallengePage extends StatefulWidget {
   const BikeChallengePage({super.key});
@@ -16,7 +17,6 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
   Timer? timer;
   bool isRunning = false;
 
-  // ✅ تعديل 3: إلغاء الـ timer عند الخروج
   @override
   void dispose() {
     timer?.cancel();
@@ -43,13 +43,13 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     setState(() => isRunning = false);
   }
 
-  // ✅ تعديل 1: SnackBar خارج الـ Transaction
   Future<void> _onChallengeComplete() async {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!; // ✅ المترجم
+
     if (user == null) return;
 
-    final userDoc =
-    FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -64,6 +64,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
         Timestamp? lastDate = data['lastBikeDate'];
         DateTime today = DateTime.now();
 
+        // منطق الـ Streak
         if (lastDate != null) {
           DateTime last = lastDate.toDate();
           if (today.difference(last).inDays == 1) {
@@ -83,12 +84,11 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
         });
       });
 
-      // ✅ تعديل 1: SnackBar بعد انتهاء الـ transaction
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("🔥 تهانينا! أنهيت التحدي اليوم +40 نقطة"),
-            backgroundColor: Color(0xFF386641),
+          SnackBar(
+            content: Text("${l10n.completed} (+40 ${l10n.points})"), // ✅ ترجمة النجاح
+            backgroundColor: const Color(0xFF386641),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -97,7 +97,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("حدث خطأ: $e"),
+            content: Text("${l10n.error_default}: $e"),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -106,16 +106,16 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     }
   }
 
-  // ✅ تعديل 5: reset التحدي اليومي بشكل صحيح
   Future<void> _resetDailyChallenge(DocumentReference userDoc) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await userDoc.update({'bikeCompleted': false});
       setState(() => currentSeconds = 0);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("تم إعادة ضبط التحدي، ابدأ من جديد! 🚴"),
-            backgroundColor: Color(0xFF386641),
+          SnackBar(
+            content: Text(l10n.resetPassword), // استخدمت Reset كمثال أو أضف مفتاح جديد
+            backgroundColor: const Color(0xFF386641),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -123,7 +123,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("حدث خطأ: $e")),
+          SnackBar(content: Text("${l10n.error_default}: $e")),
         );
       }
     }
@@ -131,29 +131,25 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ تعديل 2: التحقق من وجود مستخدم
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
+
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text("يرجى تسجيل الدخول أولاً")),
+      return Scaffold(
+        body: Center(child: Text(l10n.login)), // ✅ ترجمة تسجيل الدخول
       );
     }
 
-    final userDoc =
-    FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: const Text(
-          "🚴 تحدي الدراجة",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        title: Text(
+          "🚴 ${l10n.bikeChallenge}", // ✅ "تحدي الدراجة"
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: const Color(0xFF386641),
-        // ✅ تعديل 4: لون سهم الرجوع
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -163,8 +159,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final userData =
-              snapshot.data!.data() as Map<String, dynamic>? ?? {};
+          final userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
           bool completedToday = userData['bikeCompleted'] ?? false;
           int streak = userData['bikeStreak'] ?? 0;
           int points = userData['points'] ?? 0;
@@ -176,19 +171,11 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const Icon(
-                  Icons.directions_bike,
-                  size: 100,
-                  color: Color(0xFF386641),
-                ),
+                const Icon(Icons.directions_bike, size: 100, color: Color(0xFF386641)),
                 const SizedBox(height: 20),
                 Text(
-                  "$minutes / 20 دقيقة",
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF386641),
-                  ),
+                  "$minutes / 20 ${l10n.arabic == 'العربية' ? 'دقيقة' : 'min'}",
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF386641)),
                 ),
                 const SizedBox(height: 15),
                 ClipRRect(
@@ -205,53 +192,32 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
                 if (!completedToday)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isRunning
-                          ? Colors.red.shade400
-                          : const Color(0xFF386641),
+                      backgroundColor: isRunning ? Colors.red.shade400 : const Color(0xFF386641),
                       minimumSize: const Size(150, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     ),
                     onPressed: isRunning ? stopTimer : startTimer,
                     child: Text(
-                      isRunning ? "⏸ إيقاف" : "ابدأ 🚴",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                      isRunning ? "⏸" : "🚴",
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
 
                 if (completedToday)
                   Column(
                     children: [
-                      const Text(
-                        "✅ أنهيت التحدي اليوم!",
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                      Text(
+                        "✅ ${l10n.completed}",
+                        style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       const SizedBox(height: 10),
-                      // ✅ تعديل 5: reset بدل استدعاء completeChallenge مرة ثانية
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange.shade600,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                         ),
                         onPressed: () => _resetDailyChallenge(userDoc),
-                        child: const Text(
-                          "🔄 إعادة التحدي اليومي",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: const Icon(Icons.refresh, color: Colors.white),
                       ),
                     ],
                   ),
@@ -260,13 +226,10 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.local_fire_department,
-                      color: Colors.orange,
-                    ),
+                    const Icon(Icons.local_fire_department, color: Colors.orange),
                     const SizedBox(width: 8),
                     Text(
-                      "🔥 أيام متتالية: $streak",
+                      l10n.dayStreak(streak), // ✅ استخدام الـ Placeholder للأيام
                       style: const TextStyle(fontSize: 18),
                     ),
                   ],
@@ -274,18 +237,15 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
 
                 const SizedBox(height: 15),
                 if (streak >= 7)
-                  const Chip(
-                    label: Text("🏅 Bike Master Badge"),
+                  Chip(
+                    label: Text(l10n.badges),
                     backgroundColor: Colors.orange,
                   ),
 
                 const SizedBox(height: 20),
                 Text(
-                  "نقاطك الحالية: $points",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  "${l10n.tree_current_points}: $points", // ✅ "نقاطك الحالية"
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

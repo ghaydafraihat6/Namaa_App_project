@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class HelpCenterPage extends StatelessWidget {
   const HelpCenterPage({super.key});
@@ -56,11 +55,20 @@ class HelpCenterPage extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(20),
             ),
-            child:  Column(children: [
-              Image.asset(
-                'assets/images/logo_namaa.png',
-                width: 80,
-                height: 80,
+            child: Column(children: [
+              Container(
+                width: 150, // حجم المربع (مثلاً)
+                height: 150,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Color(0xFFEBF4DD).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(30),
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/logo_namaa.png'),
+                    fit: BoxFit.contain, // يملأ المربع ويحافظ على نسبة الصورة
+                    alignment: Alignment.center, // يضعها في الوسط
+                  ),
+                ),
               ),
               SizedBox(height: 10),
               Text('كيف يمكننا مساعدتك؟',
@@ -75,7 +83,7 @@ class HelpCenterPage extends StatelessWidget {
                       fontFamily: 'Cairo',
                       fontSize: 13,
                       color: Color(0xBFFFFFFF))),
-            ]),
+        ]),
           ),
 
           const SizedBox(height: 20),
@@ -126,7 +134,7 @@ class HelpCenterPage extends StatelessWidget {
                 Icon(Icons.email_outlined,
                     color: Color(0xFF386641), size: 18),
                 SizedBox(width: 6),
-                Text('namaa.support@gmail.com',
+                Text('namaa.app@gmail.com',
                     style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 13,

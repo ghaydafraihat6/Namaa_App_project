@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
 
 class AchievementsPage extends StatelessWidget {
   const AchievementsPage({super.key});
@@ -15,11 +16,13 @@ class AchievementsPage extends StatelessWidget {
   }
 
   Widget buildBadge({
+    required BuildContext context, // ✅ أضفنا الـ Context لاستدعاء الترجمة داخل الدالة
     required String title,
     required int requiredPoints,
     required int userPoints,
     required String emoji,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     bool unlocked = userPoints >= requiredPoints;
     double progress = (userPoints / requiredPoints).clamp(0.0, 1.0);
 
@@ -50,8 +53,8 @@ class AchievementsPage extends StatelessWidget {
             ),
             subtitle: Text(
               unlocked
-                  ? "تم فتح الشارة بنجاح 🎉"
-                  : "تحتاج $requiredPoints نقطة للفتح",
+                  ? l10n.completed // ✅ "تم الإنجاز" من ملف الترجمة
+                  : l10n.tree_next_level_needs(requiredPoints), // ✅ "تحتاج X نقطة"
               style: TextStyle(
                 fontSize: 13,
                 color: unlocked ? Colors.green : Colors.grey,
@@ -76,17 +79,18 @@ class AchievementsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "🏅 الشارات والميداليات",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.badges, // ✅ "🏅 شاراتي" من ملف الترجمة
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         elevation: 0,
-        // ✅ تعديل 1: لون سهم الرجوع
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -99,7 +103,7 @@ class AchievementsPage extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data?.data() == null) {
-            return const Center(child: Text("لا توجد بيانات حالياً"));
+            return Center(child: Text(l10n.error_default)); // ✅ رسالة خطأ مترجمة
           }
 
           int points = snapshot.data!['points'] ?? 0;
@@ -119,7 +123,7 @@ class AchievementsPage extends StatelessWidget {
                     const Icon(Icons.stars, color: Colors.orange),
                     const SizedBox(width: 10),
                     Text(
-                      "نقاطك الحالية: $points",
+                      "${l10n.tree_current_points}: $points", // ✅ "نقاطك الحالية"
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -131,27 +135,31 @@ class AchievementsPage extends StatelessWidget {
               ),
               const SizedBox(height: 25),
 
-              // ✅ تعديل 2: أسماء محايدة للجنسين
+              // الشارات باستخدام المفاتيح الموحدة
               buildBadge(
-                title: "🌿 صديق البيئة المبتدئ",
+                context: context,
+                title: l10n.tree_stage_2, // ✅ بذرة نامية (مستوى 50)
                 requiredPoints: 50,
                 userPoints: points,
                 emoji: "🌿",
               ),
               buildBadge(
-                title: "🌳 حامي الطبيعة",
+                context: context,
+                title: l10n.tree_stage_3, // ✅ شجرة صغيرة (مستوى 150)
                 requiredPoints: 150,
                 userPoints: points,
                 emoji: "🌳",
               ),
               buildBadge(
-                title: "🍎 بطل الاستدامة",
+                context: context,
+                title: l10n.tree_stage_4, // ✅ شجرة كبيرة (مستوى 300)
                 requiredPoints: 300,
                 userPoints: points,
                 emoji: "🍎",
               ),
               buildBadge(
-                title: "🌲 حامي الغابة الأسطوري",
+                context: context,
+                title: l10n.tree_stage_5, // ✅ غابة نماء (مستوى 500)
                 requiredPoints: 500,
                 userPoints: points,
                 emoji: "🌲",

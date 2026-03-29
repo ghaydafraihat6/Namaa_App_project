@@ -22,7 +22,6 @@ class MyOrdersPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('orders')
             .where('userId', isEqualTo: userId)
-            .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState ==
@@ -50,11 +49,27 @@ class MyOrdersPage extends StatelessWidget {
             );
           }
 
+          if (snapshot.hasError) {
+             return Center(child: Text('حدث خطأ', style: const TextStyle(fontFamily: 'Cairo')));
+          }
+
+          final docs = snapshot.data!.docs.toList();
+          docs.sort((a, b) {
+            final aData = a.data() as Map<String, dynamic>;
+            final bData = b.data() as Map<String, dynamic>;
+            final tsA = aData['createdAt'] as Timestamp?;
+            final tsB = bData['createdAt'] as Timestamp?;
+            if (tsA == null && tsB == null) return 0;
+            if (tsA == null) return 1; // Put nulls at the end
+            if (tsB == null) return -1;
+            return tsB.compareTo(tsA); // Descending order
+          });
+
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: snapshot.data!.docs.length,
+            itemCount: docs.length,
             itemBuilder: (_, i) {
-              final order = snapshot.data!.docs[i].data()
+              final order = docs[i].data()
               as Map<String, dynamic>;
               final items =
                   order['items'] as List<dynamic>? ?? [];
