@@ -1,0 +1,91 @@
+﻿Analyzing Namaa_Project_App...                                  
+
+warning - Unnecessary cast - lib\challenges\bike_challenge_page.dart:57:22 - unnecessary_cast
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\challenges\eco_experiments_page.dart:71:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\challenges\eco_experiments_page.dart:81:30 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\friend_challenge_page.dart:126:56 - deprecated_member_use
+   info - Use interpolation to compose strings and values - lib\challenges\friend_challenge_page.dart:130:26 - prefer_interpolation_to_compose_strings
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\friend_challenge_page.dart:139:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\friend_challenge_page.dart:169:43 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:164:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:228:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:301:58 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:405:39 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:430:31 - deprecated_member_use
+   info - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\dashboard\main_wrappe.dart:77:12 - deprecated_member_use
+warning - Unused import: 'package:namaa_project_app/challenges/forest_page.dart' - lib\main.dart:5:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/friend_challenge_page.dart' - lib\main.dart:6:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/user/certificate_page.dart' - lib\main.dart:7:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/dashboard/main_wrappe.dart' - lib\main.dart:12:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/screen/login_screen.dart' - lib\main.dart:17:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/screen/create_account_screen.dart' - lib\main.dart:18:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/screen/forget_pasword_screen.dart' - lib\main.dart:19:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/screen/tree_page.dart' - lib\main.dart:20:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/dashboard/full_app_dashboard.dart' - lib\main.dart:23:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/dashboard/advanced_tree_page.dart' - lib\main.dart:24:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/tasks/recycle_page.dart' - lib\main.dart:27:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/tasks/recycle_materials_page.dart' - lib\main.dart:28:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/tasks/save_resources_page.dart' - lib\main.dart:29:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/tasks/eco_action_page.dart' - lib\main.dart:30:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/weekly_challenges_page.dart' - lib\main.dart:33:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/bike_challenge_page.dart' - lib\main.dart:34:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/eco_experiments_page.dart' - lib\main.dart:35:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/achievements_page.dart' - lib\main.dart:36:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/global_counter_page.dart' - lib\main.dart:37:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/before_after_page.dart' - lib\main.dart:38:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/challenges/leaderboard_page.dart' - lib\main.dart:39:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/store/eco_store_with_discount.dart' - lib\main.dart:42:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/user/user_profile_page.dart' - lib\main.dart:45:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/user/settings_page.dart' - lib\main.dart:46:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/user/invite_friend_page.dart' - lib\main.dart:47:8 - unused_import
+warning - Unused import: 'package:namaa_project_app/user/about_page.dart' - lib\main.dart:48:8 - unused_import
+   info - Parameter 'key' could be a super parameter - lib\recycle\recycle_submission_page.dart:11:9 - use_super_parameters
+   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:72:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:169:28 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_submission_page.dart:229:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_submission_page.dart:265:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_submission_page.dart:301:62 - deprecated_member_use
+   info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:277:33 - deprecated_member_use
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:279:33 - deprecated_member_use
+   info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:284:33 - deprecated_member_use
+   info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:286:33 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\screen\login_screen.dart:100:42 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screen\login_screen.dart:209:61 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screen\splash_screen.dart:70:51 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:59:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:61:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:63:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:65:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:235:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:237:13 - curly_braces_in_flow_control_structures
+warning - Unused import: 'package:namaa_project_app/l10n/app_localizations.dart' - lib\tasks\eco_action_page.dart:8:8 - unused_import
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\tasks\recycle_materials_page.dart:200:15 - deprecated_member_use
+  error - The named parameter 'size' isn't defined - lib\tasks\recycle_page.dart:114:21 - undefined_named_parameter
+  error - Expected to find ']' - lib\tasks\recycle_page.dart:116:17 - expected_token
+  error - Expected an identifier - lib\tasks\recycle_page.dart:195:11 - missing_identifier
+  error - Expected to find ')' - lib\tasks\recycle_page.dart:195:11 - expected_token
+  error - Expected to find ';' - lib\tasks\recycle_page.dart:197:7 - expected_token
+warning - Dead code - lib\tasks\recycle_page.dart:197:8 - dead_code
+  error - Expected an identifier - lib\tasks\recycle_page.dart:197:8 - missing_identifier
+  error - Expected to find ';' - lib\tasks\recycle_page.dart:197:8 - expected_token
+  error - Unexpected text ';' - lib\tasks\recycle_page.dart:197:8 - unexpected_token
+  error - Expected an identifier - lib\tasks\recycle_page.dart:198:5 - missing_identifier
+  error - Unexpected text ';' - lib\tasks\recycle_page.dart:198:5 - unexpected_token
+   info - Unnecessary empty statement - lib\tasks\recycle_page.dart:198:6 - empty_statements
+  error - Invalid constant value - lib\tasks\recycle_page.dart:221:51 - invalid_constant
+  error - Invalid constant value - lib\tasks\save_resources_page.dart:223:51 - invalid_constant
+  error - Invalid constant value - lib\user\about_page.dart:481:28 - invalid_constant
+  error - Invalid constant value - lib\user\certificate_page.dart:219:46 - invalid_constant
+  error - Invalid constant value - lib\user\certificate_page.dart:235:46 - invalid_constant
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\help_center_page.dart:64:44 - deprecated_member_use
+  error - Invalid constant value - lib\user\help_center_page.dart:98:28 - invalid_constant
+  error - Invalid constant value - lib\user\help_center_page.dart:131:30 - invalid_constant
+  error - Invalid constant value - lib\user\invite_friend_page.dart:48:53 - invalid_constant
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\notifications_list_page.dart:76:39 - deprecated_member_use
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\user\notifications_page.dart:159:13 - deprecated_member_use
+warning - Unused import: 'about_page.dart' - lib\user\settings_page.dart:11:8 - unused_import
+  error - Invalid constant value - lib\user\settings_page.dart:131:28 - invalid_constant
+  error - Invalid constant value - lib\user\settings_page.dart:145:20 - invalid_constant
+  error - Invalid constant value - lib\user\user_profile_page.dart:231:24 - invalid_constant
+   info - Unnecessary use of string interpolation - lib\widgets\co2_stats.dart:50:24 - unnecessary_string_interpolations
+
