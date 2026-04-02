@@ -43,7 +43,7 @@ class MainWrapperState extends State<MainWrapper> {
     const FullAppDashboard(),       // 0 - 🏠
     const EcoActionPage(),          // 1 - 🌿
     const TreePage(),               // 2 - 🌳
-    EcoStoreWithDiscountPage(),     // 3 - 🛒
+    EcoStorePage(),     // 3 - 🛒
     const ProfilePage(),            // 4 - 👤
   ];
 

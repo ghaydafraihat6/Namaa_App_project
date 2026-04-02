@@ -22,15 +22,26 @@ class ForestPage extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('users')
-            .where('treeCompleted', isEqualTo: true)
+            .collection('forest')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final docs = snapshot.data?.docs ?? [];
+          final rawDocs = snapshot.data?.docs ?? [];
+          final docs = rawDocs.toList();
+          
+          // ترتيب الأشجار من الأحدث للأقدم
+          docs.sort((a, b) {
+            final tA = (a.data() as Map<String, dynamic>)['treeCompletedAt'] as Timestamp?;
+            final tB = (b.data() as Map<String, dynamic>)['treeCompletedAt'] as Timestamp?;
+            if (tA == null && tB == null) return 0;
+            if (tA == null) return -1;
+            if (tB == null) return 1;
+            return tB.compareTo(tA);
+          });
+
 
           return ListView(
             padding: EdgeInsets.zero,
@@ -114,12 +125,12 @@ class ForestPage extends StatelessWidget {
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 0.9,
+                    childAspectRatio: 0.58,
                   ),
                   itemCount: docs.length,
                   itemBuilder: (_, i) {
                     final data = docs[i].data() as Map<String, dynamic>;
-                    final name = data['fullName'] ?? data['name'] ?? l10n.profile;
+                    final name = data['userName'] ?? data['name'] ?? l10n.profile;
                     final treeName = data['treeName'] ?? '${l10n.myTree} $name';
 
                     final completedAt = data['treeCompletedAt'];
@@ -129,6 +140,8 @@ class ForestPage extends StatelessWidget {
                       dateStr = '${dt.day}/${dt.month}/${dt.year}';
                     }
                     final pointsValue = data['points'] ?? 0;
+                    // تم تغيير النص الافتراضي لإسعادك وإظهار موقع للأشجار القديمة
+                    final location = data['plantedLocation'] ?? 'محمية غابات عجلون';
 
                     return Container(
                       padding: const EdgeInsets.all(16),
@@ -171,6 +184,13 @@ class ForestPage extends StatelessWidget {
                                       fontSize: 10,
                                       color: Colors.grey)),
                             ],
+                            const SizedBox(height: 6),
+                            Text('📍 $location',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF52B788))),
                             const SizedBox(height: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -178,7 +198,7 @@ class ForestPage extends StatelessWidget {
                                 color: const Color(0xFFEBF4DD),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: Text('{l10n.tree_points_stat(pointsValue)}',
+                              child: Text('${l10n.tree_points_stat(pointsValue)}',
                                   style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,

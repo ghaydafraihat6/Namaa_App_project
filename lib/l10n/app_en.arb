@@ -55,6 +55,7 @@
   "error_default": "An error occurred, try again.",
   "error_field_required": "This field is required",
   "error_login_first": "Please login first",
+  "error_missing_data": "Please provide all required data",
 
   "login_welcome": "Welcome Back",
   "login_subtitle": "Login with Email or Username",
@@ -73,7 +74,6 @@
   "tree_seed_unit": "Seeds",
   "tree_streak": "Streak Days",
   "tree_level": "Level",
-  "tree_points_stat": "Points",
   "tree_progress_label": "Progress to Next Level",
   "tree_max_level": "Max Level Reached! 🎉",
 
@@ -147,6 +147,20 @@
   "challenge_leading_msg": "🏆 You are in the lead! Keep going! 💪",
   "challenge_keep_going_msg": "🔥 Challenge yourself and overtake your friend! 🚀",
 
+  "plastic": "Plastic",
+  "metal": "Metal",
+  "paper": "Paper",
+  "electronics": "Electronics",
+  "batteries": "Batteries",
+  "recycle_request_success": "Recycle request submitted! 🎉",
+  "reward_points": "Reward Points",
+  "recycle_title": "Recycle Request",
+  "recycle_subtitle": "Select items to recycle",
+  "material_type": "Material Type",
+  "location_determined": "Location Found",
+  "get_location": "Get Location",
+  "submit_recycle_request": "Submit Request",
+
   "welcome_user": "Welcome, {name} 👋",
   "@welcome_user": {
     "placeholders": {
@@ -211,13 +225,12 @@
       "count": { "type": "int" }
     }
   },
+
   "tree_points_stat": "{count} Points",
-    "@tree_points_stat": {
-      "description": "Display points with number",
-      "placeholders": {
-        "count": {
-          "type": "num"
-        }
-      }
+  "@tree_points_stat": {
+    "description": "Display points with number",
+    "placeholders": {
+      "count": { "type": "num" }
     }
+  }
 }

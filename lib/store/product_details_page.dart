@@ -47,7 +47,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     final p = widget.product;
     final price = (p['price'] as int) * (1 - widget.discount);
-    
+
     // مقترحات من نفس الفئة أو عشوائية
     final suggestions = widget.allProducts
         .where((x) => x['id'] != p['id'])
@@ -106,7 +106,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ),
             ),
           ),
-          
+
           Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
@@ -133,7 +133,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // ── العنوان والسعر ──
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,9 +168,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // ── التقييم ──
                 Row(
                   children: [
@@ -190,9 +190,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     const Text('(128 تقييم)', style: TextStyle(color: Color(0xFF616161), fontSize: 12, fontFamily: 'Cairo')),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // ── الوصف ──
                 const Text('وصف المنتج',
                     style: TextStyle(
@@ -208,7 +208,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       color: Color(0xFF4A4A4A),
                       height: 1.6),
                 ),
-                
+
                 if ((p['plastic'] as String) != '0 غ') ...[
                   const SizedBox(height: 16),
                   Container(
@@ -294,12 +294,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       return GestureDetector(
                         onTap: () {
                           Navigator.pushReplacement(context, MaterialPageRoute(
-                            builder: (_) => ProductDetailsPage(
-                              product: item,
-                              discount: widget.discount,
-                              onAddToCart: widget.onAddToCart,
-                              allProducts: widget.allProducts,
-                            )
+                              builder: (_) => ProductDetailsPage(
+                                product: item,
+                                discount: widget.discount,
+                                onAddToCart: widget.onAddToCart,
+                                allProducts: widget.allProducts,
+                              )
                           ));
                         },
                         child: Container(
@@ -372,7 +372,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ),
             ),
             const SizedBox(width: 16),
-            
+
             // ── الاضافة للسلة ──
             Expanded(
               child: ElevatedButton(
@@ -381,13 +381,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     widget.onAddToCart(p['id'] as String);
                   }
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('تم إضافة $quantity ${p['name']} إلى السلة 🛒', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
-                      backgroundColor: const Color(0xFF386641),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      duration: const Duration(seconds: 2),
-                    )
+                      SnackBar(
+                        content: Text('تم إضافة $quantity ${p['name']} إلى السلة 🛒', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
+                        backgroundColor: const Color(0xFF386641),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        duration: const Duration(seconds: 2),
+                      )
                   );
                 },
                 style: ElevatedButton.styleFrom(

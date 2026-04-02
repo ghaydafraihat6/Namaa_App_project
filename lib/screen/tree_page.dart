@@ -76,17 +76,39 @@ class _TreePageState extends State<TreePage>
       String userId, int points, Map<String, dynamic> data) async {
     if (_isProcessingReward) return;
     final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
+    final forestCol = FirebaseFirestore.instance.collection('forest');
     final l10n = AppLocalizations.of(context)!;
 
-    if (points >= 500 && data['hasForestBadge'] != true) {
+    if (points >= 500) {
       _isProcessingReward = true;
+      final userName = data['fullName'] ?? data['name'] ?? 'User';
+      final treesCount = (data['treesCompletedCount'] ?? 0) + 1;
+      
+      final locations = [
+         'محمية غابات عجلون',
+         'غابات دبين الايكولوجية',
+         'غابة برقش الطبيعية',
+         'غابة وصفي التل',
+         'غابات اليوبيل الوطني',
+      ];
+      final plantedLocation = (locations.toList()..shuffle()).first;
+
+      // Update User: Zero points, increment completed count, ensure badge
       await userDoc.update({
-        'hasForestBadge': true,
-        'treeCompleted': true,
-        'treeCompletedAt': FieldValue.serverTimestamp(),
-        'treeName': 'شجرة ${data['fullName'] ?? data['name'] ?? 'User'}',
+        'points': 0, // Reset points for loop
+        'treesCompletedCount': FieldValue.increment(1),
+        'hasForestBadge': true, // Keep the badge if it's the first time
       });
-      if (mounted) _showTreeCompletedDialog(data);
+      // Add a dedicated Tree to the Forest Collection
+      await forestCol.add({
+        'userId': userId,
+        'userName': userName,
+        'treeName': 'شجرة $userName #$treesCount',
+        'plantedLocation': plantedLocation,
+        'points': 500, // For the record
+        'treeCompletedAt': FieldValue.serverTimestamp(),
+      });
+      if (mounted) _showTreeCompletedDialog(data, treesCount);
     } else if (points >= 300 && data['hasDiscount'] != true) {
       _isProcessingReward = true;
       final expiryDate = DateTime.now().add(const Duration(days: 7));
@@ -104,19 +126,19 @@ class _TreePageState extends State<TreePage>
     }
   }
 
-  void _showTreeCompletedDialog(Map<String, dynamic> data) {
+  void _showTreeCompletedDialog(Map<String, dynamic> data, int treeNumber) {
     final name = data['fullName'] ?? data['name'] ?? 'User';
     final l10n = AppLocalizations.of(context)!;
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('🌲', style: TextStyle(fontSize: 70)),
           const SizedBox(height: 12),
-          Text(l10n.arabic == "العربية" ? 'مبروك! 🎉' : 'Congrats! 🎉',
+          Text(l10n.arabic == "العربية" ? 'مبروك! الثمرة #$treeNumber 🎉' : 'Congrats! Tree #$treeNumber 🎉',
               style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -124,29 +146,47 @@ class _TreePageState extends State<TreePage>
           const SizedBox(height: 8),
           Text(
             l10n.arabic == "العربية"
-                ? 'لقد أكملت شجرتك يا $name!\nتم زرع شجرة باسمك في غابة نماء 🌳'
-                : 'You completed your tree, $name!\nA tree has been planted in your name in Namaa Forest 🌳',
+                ? 'لقد أكملت شجرتك بنجاح وعادت جذورها لتزرع من جديد!\nتمت إضافة إنجازك للغابة 🌳'
+                : 'You completed your tree! It reset to a seed to grow again!\nA tree has been added to the Forest 🌳',
             textAlign: TextAlign.center,
             style:
                 const TextStyle(fontSize: 14, color: Colors.grey, height: 1.7),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _isProcessingReward = false;
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => CertificatePage(userName: name)));
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF386641)),
-              child: Text(l10n.certificate,
-                  style: const TextStyle(color: Colors.white)),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogCtx);
+                    _isProcessingReward = false;
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF386641),
+                      side: const BorderSide(color: Color(0xFF386641))
+                      ),
+                  child: Text(l10n.arabic == "العربية" ? "ازرع من جديد" : "Plant Again", style: TextStyle(fontSize: 11)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogCtx);
+                    _isProcessingReward = false;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => CertificatePage(userName: name)));
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF386641)),
+                  child: Text(l10n.certificate,
+                      style: const TextStyle(color: Colors.white, fontSize: 11)),
+                ),
+              ),
+            ]
           ),
         ]),
       ),
@@ -304,9 +344,11 @@ class _TreePageState extends State<TreePage>
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(children: [
                   _statCard('$points', l10n.points),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
+                  _statCard('${data['treesCompletedCount'] ?? 0} 🌲', l10n.arabic == "العربية" ? "مكتملة" : "Completed"),
+                  const SizedBox(width: 8),
                   _statCard('$lvl', l10n.level),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   _statCard('🔥12', l10n.dailyStreak),
                 ]),
               ),

@@ -422,6 +422,12 @@ abstract class AppLocalizations {
   /// **'Please login first'**
   String get error_login_first;
 
+  /// No description provided for @error_missing_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide all required data'**
+  String get error_missing_data;
+
   /// No description provided for @login_welcome.
   ///
   /// In en, this message translates to:
@@ -517,12 +523,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Level'**
   String get tree_level;
-
-  /// Display points with number
-  ///
-  /// In en, this message translates to:
-  /// **'{count} Points'**
-  String tree_points_stat(num count);
 
   /// No description provided for @tree_progress_label.
   ///
@@ -914,6 +914,84 @@ abstract class AppLocalizations {
   /// **'🔥 Challenge yourself and overtake your friend! 🚀'**
   String get challenge_keep_going_msg;
 
+  /// No description provided for @plastic.
+  ///
+  /// In en, this message translates to:
+  /// **'Plastic'**
+  String get plastic;
+
+  /// No description provided for @metal.
+  ///
+  /// In en, this message translates to:
+  /// **'Metal'**
+  String get metal;
+
+  /// No description provided for @paper.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper'**
+  String get paper;
+
+  /// No description provided for @electronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get electronics;
+
+  /// No description provided for @batteries.
+  ///
+  /// In en, this message translates to:
+  /// **'Batteries'**
+  String get batteries;
+
+  /// No description provided for @recycle_request_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycle request submitted! 🎉'**
+  String get recycle_request_success;
+
+  /// No description provided for @reward_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward Points'**
+  String get reward_points;
+
+  /// No description provided for @recycle_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycle Request'**
+  String get recycle_title;
+
+  /// No description provided for @recycle_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select items to recycle'**
+  String get recycle_subtitle;
+
+  /// No description provided for @material_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Material Type'**
+  String get material_type;
+
+  /// No description provided for @location_determined.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Found'**
+  String get location_determined;
+
+  /// No description provided for @get_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Location'**
+  String get get_location;
+
+  /// No description provided for @submit_recycle_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Request'**
+  String get submit_recycle_request;
+
   /// No description provided for @welcome_user.
   ///
   /// In en, this message translates to:
@@ -973,6 +1051,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'🌲 {count} trees planted so far'**
   String planted_trees_count(int count);
+
+  /// Display points with number
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Points'**
+  String tree_points_stat(num count);
 }
 
 class _AppLocalizationsDelegate

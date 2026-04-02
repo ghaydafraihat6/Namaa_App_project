@@ -171,6 +171,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_login_first => 'يرجى تسجيل الدخول أولاً';
 
   @override
+  String get error_missing_data => 'Please provide all required data';
+
+  @override
   String get login_welcome => 'مرحباً بعودتك';
 
   @override
@@ -217,11 +220,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tree_level => 'المستوى';
-
-  @override
-  String tree_points_stat(num count) {
-    return '$count نقطة';
-  }
 
   @override
   String get tree_progress_label => 'التقدم للمستوى التالي';
@@ -421,6 +419,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get challenge_keep_going_msg => '🔥 تحدَّ نفسك وتجاوز صديقك! 🚀';
 
   @override
+  String get plastic => 'Plastic';
+
+  @override
+  String get metal => 'Metal';
+
+  @override
+  String get paper => 'Paper';
+
+  @override
+  String get electronics => 'Electronics';
+
+  @override
+  String get batteries => 'Batteries';
+
+  @override
+  String get recycle_request_success => 'Recycle request submitted! 🎉';
+
+  @override
+  String get reward_points => 'Reward Points';
+
+  @override
+  String get recycle_title => 'Recycle Request';
+
+  @override
+  String get recycle_subtitle => 'Select items to recycle';
+
+  @override
+  String get material_type => 'Material Type';
+
+  @override
+  String get location_determined => 'Location Found';
+
+  @override
+  String get get_location => 'Get Location';
+
+  @override
+  String get submit_recycle_request => 'Submit Request';
+
+  @override
   String welcome_user(String name) {
     return 'مرحباً، $name 👋';
   }
@@ -466,5 +503,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String planted_trees_count(int count) {
     return '🌲 $count شجرة مزروعة حتى الآن';
+  }
+
+  @override
+  String tree_points_stat(num count) {
+    return '$count نقطة';
   }
 }
