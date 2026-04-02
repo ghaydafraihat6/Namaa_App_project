@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // تأكد من المسار
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/user/certificate_page.dart';
 
 class ForestPage extends StatelessWidget {
   const ForestPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // جلب كائن الترجمة
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = l10n.arabic == "العربية";
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: Text(l10n.forestPage, // "غابة نماء" من الملف
-            style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Colors.white)),
+        title: Text(
+          l10n.forestPage,
+          style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white),
+        ),
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('forest')
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('forest').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -31,22 +33,21 @@ class ForestPage extends StatelessWidget {
 
           final rawDocs = snapshot.data?.docs ?? [];
           final docs = rawDocs.toList();
-          
-          // ترتيب الأشجار من الأحدث للأقدم
+
+          // ترتيب من الأقدم للأحدث — الشجرة الأولى تأخذ الرقم 1
           docs.sort((a, b) {
             final tA = (a.data() as Map<String, dynamic>)['treeCompletedAt'] as Timestamp?;
             final tB = (b.data() as Map<String, dynamic>)['treeCompletedAt'] as Timestamp?;
             if (tA == null && tB == null) return 0;
-            if (tA == null) return -1;
-            if (tB == null) return 1;
-            return tB.compareTo(tA);
+            if (tA == null) return 1;
+            if (tB == null) return -1;
+            return tA.compareTo(tB); // الأقدم أولاً → #1، #2، #3...
           });
-
 
           return ListView(
             padding: EdgeInsets.zero,
             children: [
-              // ── Header ──
+              // ── Header الأصلي البسيط ──
               Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -58,33 +59,48 @@ class ForestPage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
                 child: Column(children: [
-                  const Text('🌲🌳🌲', style: TextStyle(fontSize: 48)),
-                  const SizedBox(height: 10),
+                  // ── شعار التطبيق فقط ──
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(30),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/images/logo_namaa.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) =>
+                            const Center(child: Text('🌱', style: TextStyle(fontSize: 26))),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // ── اسم الغابة والوصف ──
                   Text(l10n.forestPage,
                       style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white)),
+                          fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
                   const SizedBox(height: 4),
                   Text(
-                    l10n.forest_subtitle, // مفتاح جديد للوصف
-                    style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xBFFFFFFF)),
+                    l10n.forest_subtitle,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 13, color: Color(0xBFFFFFFF)),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
+                      color: Colors.white.withAlpha(38),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      l10n.planted_trees_count(docs.length), // مفتاح جديد للعدد
+                      l10n.planted_trees_count(docs.length),
                       style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white),
+                          fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
                     ),
                   ),
                 ]),
@@ -100,120 +116,148 @@ class ForestPage extends StatelessWidget {
                     child: Column(children: [
                       const Text('🌱', style: TextStyle(fontSize: 60)),
                       const SizedBox(height: 16),
-                      Text(l10n.no_trees_yet, // مفتاح جديد
+                      Text(l10n.no_trees_yet,
                           style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.grey)),
+                              fontSize: 16, fontWeight: FontWeight.w700, color: Colors.grey)),
                       const SizedBox(height: 8),
-                      Text(l10n.be_the_first_to_plant, // مفتاح جديد
+                      Text(l10n.be_the_first_to_plant,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey)),
+                          style: const TextStyle(fontSize: 13, color: Colors.grey)),
                     ]),
                   ),
                 ),
 
               // ── قائمة الأشجار ──
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 0.58,
-                  ),
-                  itemCount: docs.length,
-                  itemBuilder: (_, i) {
-                    final data = docs[i].data() as Map<String, dynamic>;
-                    final name = data['userName'] ?? data['name'] ?? l10n.profile;
-                    final treeName = data['treeName'] ?? '${l10n.myTree} $name';
+              if (docs.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.58,
+                    ),
+                    itemCount: docs.length,
+                    itemBuilder: (_, i) {
+                      final data = docs[i].data() as Map<String, dynamic>;
+                      final name = data['userName'] ?? data['name'] ?? l10n.profile;
+                      // الترقيم يعتمد على الترتيب من الأقدم للأحدث (i+1)
+                      final treeNumber = i + 1;
+                      final treeName = 'شجرة $name #$treeNumber';
 
-                    final completedAt = data['treeCompletedAt'];
-                    String dateStr = '';
-                    if (completedAt != null && completedAt is Timestamp) {
-                      final dt = completedAt.toDate();
-                      dateStr = '${dt.day}/${dt.month}/${dt.year}';
-                    }
-                    final pointsValue = data['points'] ?? 0;
-                    // تم تغيير النص الافتراضي لإسعادك وإظهار موقع للأشجار القديمة
-                    final location = data['plantedLocation'] ?? 'محمية غابات عجلون';
+                      final completedAt = data['treeCompletedAt'];
+                      String dateStr = '';
+                      if (completedAt != null && completedAt is Timestamp) {
+                        final dt = completedAt.toDate();
+                        dateStr = '${dt.day}/${dt.month}/${dt.year}';
+                      }
+                      final pointsValue = data['points'] ?? 0;
+                      final location = data['plantedLocation'] ?? 'محمية غابات عجلون';
 
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.07),
-                              blurRadius: 12,
-                              offset: const Offset(0, 3)
-                          )
-                        ],
-                        border: Border.all(
-                            color: const Color(0xFF52B788).withValues(alpha: 0.3),
-                            width: 1.5),
-                      ),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text('🌲', style: TextStyle(fontSize: 48)),
-                            const SizedBox(height: 8),
-                            Text(treeName,
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF1B2E1F))),
-                            const SizedBox(height: 4),
-                            Text('${l10n.by_user}: $name', // "بواسطة"
-                                style: const TextStyle(
-                                    fontSize: 11,
-                                    color: Color(0xFF386641))),
-                            if (dateStr.isNotEmpty) ...[
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withAlpha(18),
+                                blurRadius: 12,
+                                offset: const Offset(0, 3))
+                          ],
+                          border: Border.all(
+                              color: const Color(0xFF52B788).withAlpha(75), width: 1.5),
+                        ),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('🌲', style: TextStyle(fontSize: 48)),
+                              const SizedBox(height: 6),
+                              // رقم الشجرة بشكل بارز
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF386641),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text('#$treeNumber',
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w900,
+                                        color: Colors.white)),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(treeName,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF1B2E1F))),
                               const SizedBox(height: 4),
-                              Text('📅 $dateStr',
+                              Text(
+                                '${isArabic ? "بواسطة" : "by"}: $name',
+                                style: const TextStyle(fontSize: 11, color: Color(0xFF386641)),
+                              ),
+                              if (dateStr.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text('📅 $dateStr',
+                                    style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                              ],
+                              const SizedBox(height: 6),
+                              Text('📍 $location',
+                                  textAlign: TextAlign.center,
                                   style: const TextStyle(
                                       fontSize: 10,
-                                      color: Colors.grey)),
-                            ],
-                            const SizedBox(height: 6),
-                            Text('📍 $location',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF52B788))),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEBF4DD),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text('${l10n.tree_points_stat(pointsValue)}',
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF52B788))),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEBF4DD),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  l10n.tree_points_stat(pointsValue),
                                   style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
-                                      color: Color(0xFF386641))),
-                            ),
-                          ]),
-                    );
-                  },
+                                      color: Color(0xFF386641)),
+                                ),
+                              ),
+                            ]),
+                      );
+                    },
+                  ),
                 ),
-              ),
               const SizedBox(height: 24),
             ],
           );
         },
       ),
     );
+  }
+
+  /// فتح صفحة الشهادات مع جلب اسم المستخدم من Firestore
+  void _openCertificate(BuildContext context, String userId, bool isArabic) async {
+    String userName = 'User';
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final data = doc.data();
+      if (data != null) {
+        userName = data['fullName'] ?? data['name'] ?? 'User';
+      }
+    } catch (_) {}
+    if (context.mounted) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => CertificatePage(userName: userName)));
+    }
   }
 }

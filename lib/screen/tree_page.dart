@@ -44,7 +44,6 @@ class _TreePageState extends State<TreePage>
     return 'assets/images/seed.png';
   }
 
-  // دالة لجلب مسمى المستوى مترجماً
   String _getTreeLevelName(int points, AppLocalizations l10n) {
     if (points >= 500)
       return l10n.arabic == "العربية" ? "غابة 🌲🌲🌲" : "Forest 🌲🌲🌲";
@@ -83,29 +82,27 @@ class _TreePageState extends State<TreePage>
       _isProcessingReward = true;
       final userName = data['fullName'] ?? data['name'] ?? 'User';
       final treesCount = (data['treesCompletedCount'] ?? 0) + 1;
-      
+
       final locations = [
-         'محمية غابات عجلون',
-         'غابات دبين الايكولوجية',
-         'غابة برقش الطبيعية',
-         'غابة وصفي التل',
-         'غابات اليوبيل الوطني',
+        'محمية غابات عجلون',
+        'غابات دبين الايكولوجية',
+        'غابة برقش الطبيعية',
+        'غابة وصفي التل',
+        'غابات اليوبيل الوطني',
       ];
       final plantedLocation = (locations.toList()..shuffle()).first;
 
-      // Update User: Zero points, increment completed count, ensure badge
       await userDoc.update({
-        'points': 0, // Reset points for loop
+        'points': 0,
         'treesCompletedCount': FieldValue.increment(1),
-        'hasForestBadge': true, // Keep the badge if it's the first time
+        'hasForestBadge': true,
       });
-      // Add a dedicated Tree to the Forest Collection
       await forestCol.add({
         'userId': userId,
         'userName': userName,
         'treeName': 'شجرة $userName #$treesCount',
         'plantedLocation': plantedLocation,
-        'points': 500, // For the record
+        'points': 500,
         'treeCompletedAt': FieldValue.serverTimestamp(),
       });
       if (mounted) _showTreeCompletedDialog(data, treesCount);
@@ -138,7 +135,10 @@ class _TreePageState extends State<TreePage>
         content: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('🌲', style: TextStyle(fontSize: 70)),
           const SizedBox(height: 12),
-          Text(l10n.arabic == "العربية" ? 'مبروك! الثمرة #$treeNumber 🎉' : 'Congrats! Tree #$treeNumber 🎉',
+          Text(
+              l10n.arabic == "العربية"
+                  ? 'مبروك! الثمرة #$treeNumber 🎉'
+                  : 'Congrats! Tree #$treeNumber 🎉',
               style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -153,41 +153,40 @@ class _TreePageState extends State<TreePage>
                 const TextStyle(fontSize: 14, color: Colors.grey, height: 1.7),
           ),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(dialogCtx);
-                    _isProcessingReward = false;
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF386641),
-                      side: const BorderSide(color: Color(0xFF386641))
-                      ),
-                  child: Text(l10n.arabic == "العربية" ? "ازرع من جديد" : "Plant Again", style: TextStyle(fontSize: 11)),
-                ),
+          Row(children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogCtx);
+                  _isProcessingReward = false;
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF386641),
+                    side: const BorderSide(color: Color(0xFF386641))),
+                child: Text(
+                    l10n.arabic == "العربية" ? "ازرع من جديد" : "Plant Again",
+                    style: const TextStyle(fontSize: 11)),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(dialogCtx);
-                    _isProcessingReward = false;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => CertificatePage(userName: name)));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF386641)),
-                  child: Text(l10n.certificate,
-                      style: const TextStyle(color: Colors.white, fontSize: 11)),
-                ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogCtx);
+                  _isProcessingReward = false;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => CertificatePage(userName: name)));
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF386641)),
+                child: Text(l10n.certificate,
+                    style: const TextStyle(color: Colors.white, fontSize: 11)),
               ),
-            ]
-          ),
+            ),
+          ]),
         ]),
       ),
     );
@@ -229,13 +228,12 @@ class _TreePageState extends State<TreePage>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currentUser = FirebaseAuth.instance.currentUser;
+    final isArabic = l10n.arabic == "العربية";
 
     if (currentUser == null) {
       return Scaffold(
           body: Center(
-              child: Text(l10n.arabic == "العربية"
-                  ? "يرجى تسجيل الدخول"
-                  : "Please Login")));
+              child: Text(isArabic ? "يرجى تسجيل الدخول" : "Please Login")));
     }
 
     return Scaffold(
@@ -257,6 +255,9 @@ class _TreePageState extends State<TreePage>
           final double prog = _getProgress(points);
           final int next =
               lvl < 5 ? [50, 150, 300, 500, 1000][lvl - 1] - points : 0;
+          final String userName =
+              data['fullName'] ?? data['name'] ?? 'User';
+          final int treesCompleted = data['treesCompletedCount'] ?? 0;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
@@ -268,42 +269,90 @@ class _TreePageState extends State<TreePage>
           return ListView(
             padding: EdgeInsets.zero,
             children: [
-              // ── Header ──
+              // ── Header مع شعار نماء ──
               Container(
-                color: const Color(0xFF386641),
-                padding: const EdgeInsets.fromLTRB(20, 52, 20, 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(children: [
-                      const Text('🌳', style: TextStyle(fontSize: 22)),
-                      const SizedBox(width: 10),
-                      Text(l10n.myTree,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)),
-                    ]),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const ForestPage())),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                            color: Colors.white.withAlpha(50),
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Text(l10n.forest,
-                            style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white)),
-                      ),
-                    ),
-                  ],
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF1B4332), Color(0xFF386641)],
+                  ),
+                  borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(28)),
                 ),
+                padding: const EdgeInsets.fromLTRB(20, 52, 20, 24),
+                child: Column(children: [
+                  // الصف العلوي: الشعار + اسم التطبيق
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // شعار ونماء
+                      Row(children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withAlpha(30),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: Colors.white.withAlpha(60), width: 1),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/images/logo_namaa.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const Center(
+                                      child: Text('🌱',
+                                          style: TextStyle(fontSize: 22))),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('نماء',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      fontFamily: 'Cairo')),
+                              Text(
+                                  isArabic ? 'شجرتي الخضراء 🌱' : 'My Green Tree 🌱',
+                                  style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xBFFFFFFF))),
+                            ]),
+                      ]),
+                      // زر الغابة فقط (بدون زر الشهادة من فوق)
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const ForestPage())),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                              color: Colors.white.withAlpha(50),
+                              borderRadius: BorderRadius.circular(12)),
+                          child: Row(children: [
+                            const Text('🌳',
+                                style: TextStyle(fontSize: 13)),
+                            const SizedBox(width: 4),
+                            Text(l10n.forest,
+                                style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                          ]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ]),
               ),
 
               // ── كارد النقاط ──
@@ -324,7 +373,8 @@ class _TreePageState extends State<TreePage>
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF386641))),
                   Text(_getTreeLevelName(points, l10n),
-                      style: const TextStyle(fontSize: 15, color: Colors.grey)),
+                      style:
+                          const TextStyle(fontSize: 15, color: Colors.grey)),
                 ]),
               ),
 
@@ -345,7 +395,9 @@ class _TreePageState extends State<TreePage>
                 child: Row(children: [
                   _statCard('$points', l10n.points),
                   const SizedBox(width: 8),
-                  _statCard('${data['treesCompletedCount'] ?? 0} 🌲', l10n.arabic == "العربية" ? "مكتملة" : "Completed"),
+                  _statCard(
+                      '${data['treesCompletedCount'] ?? 0} 🌲',
+                      isArabic ? "مكتملة" : "Completed"),
                   const SizedBox(width: 8),
                   _statCard('$lvl', l10n.level),
                   const SizedBox(width: 8),
@@ -364,7 +416,8 @@ class _TreePageState extends State<TreePage>
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${l10n.progressToLevel} ${lvl < 5 ? lvl + 1 : 5}',
+                        Text(
+                            '${l10n.progressToLevel} ${lvl < 5 ? lvl + 1 : 5}',
                             style: const TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.bold)),
                         Text('${(prog * 100).toInt()}%',
@@ -381,12 +434,85 @@ class _TreePageState extends State<TreePage>
                       valueColor:
                           const AlwaysStoppedAnimation(Color(0xFF386641))),
                   const SizedBox(height: 8),
-          Text(
-          lvl < 5
-          ? l10n.tree_next_level_needs(next) // استبدل pts بـ tree_next_level_needs حسب ملفك الأخير
-              : l10n.tree_max_level,
-          style: const TextStyle(fontSize: 11, color: Colors.grey),
-          ),
+                  Text(
+                    lvl < 5
+                        ? l10n.tree_next_level_needs(next)
+                        : l10n.tree_max_level,
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ]),
+              ),
+
+              // ── بطاقة الشهادة (تظهر دائماً لتشجيع المستخدم) ──
+              Container(
+                margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1B4332), Color(0xFF386641)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFD700).withAlpha(40),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Center(
+                        child: Icon(Icons.workspace_premium,
+                            color: Color(0xFFFFD700), size: 28)),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              isArabic
+                                  ? 'شهادة إنجاز الشجرة'
+                                  : 'Tree Achievement Certificate',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  fontSize: 14)),
+                          const SizedBox(height: 4),
+                          Text(
+                              treesCompleted > 0
+                                  ? (isArabic
+                                      ? 'لديك $treesCompleted شهادة - اضغط لعرضها'
+                                      : 'You have $treesCompleted certificate(s)')
+                                  : (isArabic
+                                      ? 'أكمل 500 نقطة للحصول على شهادة'
+                                      : 'Reach 500 pts to earn a certificate'),
+                              style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xBFFFFFFF))),
+                        ]),
+                  ),
+                  if (treesCompleted > 0)
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  CertificatePage(userName: userName))),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFD700),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(isArabic ? 'عرض' : 'View',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF1B2E1F),
+                                fontSize: 12)),
+                      ),
+                    ),
                 ]),
               ),
 
@@ -401,8 +527,7 @@ class _TreePageState extends State<TreePage>
               _buildBadge(
                   icon: Icons.eco,
                   color: const Color(0xFF52B788),
-                  label:
-                      l10n.arabic == "العربية" ? 'بداية خضراء' : 'Green Start',
+                  label: isArabic ? 'بداية خضراء' : 'Green Start',
                   earned: true),
               const SizedBox(height: 20),
             ],
@@ -423,7 +548,8 @@ class _TreePageState extends State<TreePage>
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF386641))),
-            Text(lbl, style: const TextStyle(fontSize: 9, color: Colors.grey)),
+            Text(lbl,
+                style: const TextStyle(fontSize: 9, color: Colors.grey)),
           ]),
         ),
       );
