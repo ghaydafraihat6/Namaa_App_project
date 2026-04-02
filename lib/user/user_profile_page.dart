@@ -72,26 +72,61 @@ class ProfilePage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.fromLTRB(20, 60, 20, 36),
                 child: Column(children: [
-                  // صورة المستخدم
-                  Container(
-                    width: 80, height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          width: 2),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: photoUrl != null
-                          ? Image.network(photoUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                          const Center(child: Text('😊',
-                              style: TextStyle(fontSize: 40))))
-                          : const Center(child: Text('😊',
-                          style: TextStyle(fontSize: 40))),
+                  // صورة المستخدم مع الإطار الورقي الموحد
+                  SizedBox(
+                    width: 200, // المقاس الموحد للإطار
+                    height: 200,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // الدائرة الداخلية (صورة أو حرف الاسم)
+                        Container(
+                          width: 142, // الحجم الأدق ليتطابق مع حلقة الإطار
+                          height: 142,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFDDF6D2), // اللون الموحد الجديد
+                            image: photoUrl != null
+                                ? DecorationImage(
+                                    image: NetworkImage(photoUrl),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: photoUrl == null
+                              ? Center(
+                                  child: Text(
+                                    name.isNotEmpty ? name[0].toUpperCase() : '?',
+                                    style: const TextStyle(
+                                      fontSize: 50,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF386641),
+                                      fontFamily: 'Cairo',
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+
+                        // الإطار الورقي فوقها (إزالة الخلفية البيضاء برمجياً)
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: ColorFiltered(
+                              colorFilter: const ColorFilter.matrix(<double>[
+                                1, 0, 0, 0, 0,
+                                0, 1, 0, 0, 0,
+                                0, 0, 1, 0, 0,
+                                -0.33, -0.33, -0.33, 1, 0,
+                              ]),
+                              child: Image.asset(
+                                'assets/images/user_frame.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 14),
