@@ -72,21 +72,22 @@ class ProfilePage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.fromLTRB(20, 60, 20, 36),
                 child: Column(children: [
-                  // صورة المستخدم مع الإطار الورقي (بدون خلفية دائرة منفصلة)
                   SizedBox(
-                    width: 250, // المقاس الموحد للإطار
-                    height: 250,
+                    width: 180,
+                    height: 180,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        // الدائرة الداخلية (صورة أو حرف الاسم) مع قص دائري مخفي
+                        // 1. صورة المستخدم في الخلف
                         SizedBox(
-                          width: 195, // المقاس الأدق لفتحة الغصن
-                          height: 195,
+                          width: 150,
+                          height: 150,
                           child: ClipOval(
                             child: photoUrl != null
                                 ? Image.network(
                                     photoUrl,
+                                    width: 150,
+                                    height: 150,
                                     fit: BoxFit.cover,
                                   )
                                 : Container(
@@ -95,7 +96,7 @@ class ProfilePage extends StatelessWidget {
                                     child: Text(
                                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                                       style: const TextStyle(
-                                        fontSize: 65,
+                                        fontSize: 70,
                                         fontWeight: FontWeight.w900,
                                         color: Color(0xFF386641),
                                         fontFamily: 'Cairo',
@@ -104,20 +105,20 @@ class ProfilePage extends StatelessWidget {
                                   ),
                           ),
                         ),
-
-                        // الإطار الورقي فوقها (إزالة الخلفية البيضاء برمجياً)
+                        // 2. الإطار المفرغ (فوق الصورة)
                         Positioned.fill(
                           child: IgnorePointer(
-                            child: ColorFiltered(
-                              colorFilter: const ColorFilter.matrix(<double>[
-                                1, 0, 0, 0, 0,
-                                0, 1, 0, 0, 0,
-                                0, 0, 1, 0, 0,
-                                -0.33, -0.33, -0.33, 1, 0,
-                              ]),
+                            child: ShaderMask(
+                              shaderCallback: (rect) {
+                                return const RadialGradient(
+                                  colors: [Colors.transparent, Colors.black],
+                                  stops: [0.55, 0.65], // يفرّغ وسط الصورة
+                                ).createShader(rect);
+                              },
+                              blendMode: BlendMode.dstIn,
                               child: Image.asset(
-                                'assets/images/user_frame.png',
-                                fit: BoxFit.contain,
+                                'assets/images/frame.png',
+                                fit: BoxFit.fill,
                               ),
                             ),
                           ),

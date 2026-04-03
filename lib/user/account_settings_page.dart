@@ -345,83 +345,86 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   Widget _avatar(String name, String email, String? photoUrl) {
     final letter = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
-    return SizedBox(
-      width: 250,
-      height: 250,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          SizedBox(
-            width: 195,
-            height: 195,
-            child: ClipOval(
-              child: photoUrl != null
-                  ? Image.network(
-                      photoUrl,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      alignment: Alignment.center,
-                      color: const Color(0xFFDDF6D2),
-                      child: Text(
-                        letter,
-                        style: const TextStyle(
-                          fontSize: 65,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF386641),
-                          fontFamily: 'Cairo',
-                        ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // 1. صورة المستخدم في الخلف
+        SizedBox(
+          width: 250,
+          height: 250,
+          child: ClipOval(
+            child: photoUrl != null
+                ? Image.network(
+                    photoUrl,
+                    width: 250,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    alignment: Alignment.center,
+                    color: const Color(0xFFDDF6D2),
+                    child: Text(
+                      letter,
+                      style: const TextStyle(
+                        fontSize: 100,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF386641),
+                        fontFamily: 'Cairo',
                       ),
+                    ),
+                  ),
+          ),
+        ),
+        // 2. إطار نماء المفرغ (فوق الصورة)
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: IgnorePointer(
+            child: ShaderMask(
+              shaderCallback: (rect) {
+                return const RadialGradient(
+                  colors: [Colors.transparent, Colors.black],
+                  stops: [0.65, 0.75], // يفرّغ وسط الصورة
+                ).createShader(rect);
+              },
+              blendMode: BlendMode.dstIn,
+              child: Image.asset(
+                'assets/images/frame.png',
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+        ),
+        // 3. أيقونة الكاميرا (فوق كل شيء)
+        Positioned(
+          bottom: 25,
+          right: 25,
+          child: InkWell(
+            onTap: _photoLoading ? null : _pickAndUploadImage,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Color(0xFF386641),
+                shape: BoxShape.circle,
+              ),
+              child: _photoLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                      size: 20,
                     ),
             ),
           ),
-          // الإطار الورقي (إزالة الخلفية البيضاء برمجياً)
-          Positioned.fill(
-            child: IgnorePointer(
-              child: ColorFiltered(
-                colorFilter: const ColorFilter.matrix(<double>[
-                  1, 0, 0, 0, 0,
-                  0, 1, 0, 0, 0,
-                  0, 0, 1, 0, 0,
-                  -0.33, -0.33, -0.33, 1, 0,
-                ]),
-                child: Image.asset(
-                  'assets/images/user_frame.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 30,
-            right: 30,
-            child: InkWell(
-              onTap: _photoLoading ? null : _pickAndUploadImage,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF386641),
-                  shape: BoxShape.circle,
-                ),
-                child: _photoLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
