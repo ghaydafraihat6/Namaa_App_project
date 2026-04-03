@@ -7,8 +7,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 
+import 'before_after_history_page.dart';
+
 class BeforeAfterPage extends StatefulWidget {
-  const BeforeAfterPage({super.key});
+  final String? editId;
+  final Map<String, dynamic>? editData;
+  const BeforeAfterPage({super.key, this.editId, this.editData});
 
   @override
   State<BeforeAfterPage> createState() => _BeforeAfterPageState();
@@ -17,15 +21,21 @@ class BeforeAfterPage extends StatefulWidget {
 class _BeforeAfterPageState extends State<BeforeAfterPage> {
   XFile? beforeImage;
   XFile? afterImage;
+  String? existingBefore;
+  String? existingAfter;
   final TextEditingController descriptionController = TextEditingController();
   bool isUploading = false;
   final ImagePicker picker = ImagePicker();
 
-  // ✅ تم تحديث الـ Cloud Name الخاص بك هنا
-  final String cloudName = "hovp9qqg";
-
-  // ⚠️ استبدل هذه القيمة بالـ Preset الذي أنشأته (تأكد أنه Unsigned)
-  final String uploadPreset = "your_unsigned_preset";
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editId != null && widget.editData != null) {
+      existingBefore = widget.editData!['before'];
+      existingAfter = widget.editData!['after'];
+      descriptionController.text = widget.editData!['description'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -50,29 +60,22 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     }
   }
 
-  // دالة الرفع إلى Cloudinary
-  Future<String?> uploadToCloudinary(XFile image) async {
+  // دالة الرفع إلى ImgBB
+  Future<String?> uploadToImgBB(XFile image) async {
     try {
-      var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
-      var request = http.MultipartRequest("POST", uri);
-
-      var file = await http.MultipartFile.fromPath('file', image.path);
-      request.files.add(file);
-      request.fields['upload_preset'] = uploadPreset;
-      request.fields['folder'] = 'namaa_initiatives';
-
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        var responseData = await response.stream.toBytes();
-        var responseString = String.fromCharCodes(responseData);
-        var jsonRes = jsonDecode(responseString);
-        return jsonRes['secure_url'];
-      } else {
-        debugPrint("خطأ في Cloudinary: ${response.statusCode}");
-        return null;
+      final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+      final request = http.MultipartRequest('POST', url)
+        ..files.add(await http.MultipartFile.fromPath('image', image.path));
+      
+      final reqResponse = await request.send();
+      if (reqResponse.statusCode == 200) {
+        final responseData = await reqResponse.stream.bytesToString();
+        final jsonResult = json.decode(responseData);
+        return jsonResult['data']['url'];
       }
+      return null;
     } catch (e) {
-      debugPrint("فشل الرفع: $e");
+      debugPrint("ImgBB Error: $e");
       return null;
     }
   }
@@ -82,9 +85,9 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    if (beforeImage == null || afterImage == null) {
+    if ((beforeImage == null && existingBefore == null) || (afterImage == null && existingAfter == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("يرجى اختيار صورتي قبل وبعد")),
+        const SnackBar(content: Text("يرجى اختيار صورتي قبل وبعد", style: TextStyle(fontFamily: 'Cairo'))),
       );
       return;
     }
@@ -92,47 +95,42 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     setState(() => isUploading = true);
 
     try {
-      // 1. رفع الصور لـ Cloudinary
-      String? beforeUrl = await uploadToCloudinary(beforeImage!);
-      String? afterUrl = await uploadToCloudinary(afterImage!);
+      String? beforeUrl = existingBefore;
+      if (beforeImage != null) beforeUrl = await uploadToImgBB(beforeImage!);
+
+      String? afterUrl = existingAfter;
+      if (afterImage != null) afterUrl = await uploadToImgBB(afterImage!);
 
       if (beforeUrl != null && afterUrl != null) {
-        // 2. تخزين الروابط في Firestore
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .collection('initiatives')
-            .add({
+        final Map<String, dynamic> payload = {
           'before': beforeUrl,
           'after': afterUrl,
           'description': descriptionController.text.trim(),
-          'timestamp': FieldValue.serverTimestamp(),
-        });
+        };
 
-        // 3. تحديث نقاط المستخدم (+10 نقاط)
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-          'points': FieldValue.increment(10),
-        });
+        if (widget.editId != null) {
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').doc(widget.editId).update(payload);
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم تعديل المبادرة بنجاح! ✏️", style: TextStyle(fontFamily: 'Cairo')), backgroundColor: Color(0xFF386641)));
+        } else {
+          payload['timestamp'] = FieldValue.serverTimestamp();
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').add(payload);
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'points': FieldValue.increment(10)});
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم نشر مبادرتك بنجاح! 🎉 +10 نقاط", style: TextStyle(fontFamily: 'Cairo')), backgroundColor: Color(0xFF386641)));
+        }
 
         if (!mounted) return;
-
         setState(() {
           beforeImage = null;
           afterImage = null;
-          descriptionController.clear();
+          existingBefore = null;
+          existingAfter = null;
+          if (widget.editId == null) descriptionController.clear();
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("تم نشر مبادرتك بنجاح! 🎉 +10 نقاط"),
-            backgroundColor: Color(0xFF386641),
-          ),
-        );
+      } else {
+         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("فشل في رفع بعض الصور.", style: TextStyle(fontFamily: 'Cairo'))));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("حدث خطأ أثناء الرفع: $e")),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("حدث خطأ أثناء الرفع: $e", style: const TextStyle(fontFamily: 'Cairo'))));
     } finally {
       if (mounted) setState(() => isUploading = false);
     }
@@ -148,6 +146,12 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BeforeAfterHistoryPage())),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -200,8 +204,8 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
                 onPressed: isUploading ? null : uploadInitiative,
                 child: isUploading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("نشر المبادرة (+10 نقاط)",
-                    style: TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    : Text(widget.editId != null ? "تعديل المبادرة" : "نشر المبادرة (+10 نقاط)",
+                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
           ],
@@ -211,19 +215,27 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
   }
 
   Widget _buildImageSelector(String label, XFile? image, bool isBefore) {
+    String? existUrl = isBefore ? existingBefore : existingAfter;
+    bool hasImage = image != null || existUrl != null;
+
+    DecorationImage? decorImage;
+    if (image != null) {
+      decorImage = DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.cover);
+    } else if (existUrl != null) {
+      decorImage = DecorationImage(image: NetworkImage(existUrl), fit: BoxFit.cover);
+    }
+
     return GestureDetector(
       onTap: () => pickImage(isBefore),
       child: Container(
         height: 180,
         decoration: BoxDecoration(
-          color: image == null ? Colors.white : Colors.grey.shade100,
+          color: hasImage ? Colors.grey.shade100 : Colors.white,
           borderRadius: BorderRadius.circular(15),
           border: Border.all(color: const Color(0xFF386641).withOpacity(0.2)),
-          image: image != null
-              ? DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.cover)
-              : null,
+          image: decorImage,
         ),
-        child: image == null
+        child: !hasImage
             ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

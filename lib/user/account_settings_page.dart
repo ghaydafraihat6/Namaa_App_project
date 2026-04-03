@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:io';
 import 'package:intl/intl.dart';
 
@@ -31,6 +32,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   bool _obscureCurrent  = true;
   bool _obscureNew      = true;
   bool _obscureConfirm  = true;
+  String _displayEmail  = '';
 
   static const Color _green      = Color(0xFF386641);
   static const Color _lightGreen = Color(0xFFEBF4DD);
@@ -57,6 +59,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       _dobCtrl.text   = data['dob'] ?? '';
       _selectedGender = data['gender'] ?? 'Male';
       _photoUrl       = data['photoUrl'];
+      _displayEmail   = data['email'] ?? user.email ?? '';
     });
   }
 
@@ -192,36 +195,44 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
       setState(() => _photoLoading = true);
 
-      // الرفع إلى Firebase Storage
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('user_photos')
-          .child('${user.uid}.jpg');
+      // الرفع إلى ImgBB
+      final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+      final request = http.MultipartRequest('POST', url)
+        ..files.add(await http.MultipartFile.fromPath('image', image.path));
+      
+      final reqResponse = await request.send();
+      if (reqResponse.statusCode != 200) throw Exception('فشل رفع الصورة');
 
-      await ref.putFile(File(image.path));
-      final url = await ref.getDownloadURL();
+      final responseData = await reqResponse.stream.bytesToString();
+      final photoUrl = json.decode(responseData)['data']['url'] as String;
 
       // تحديث Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .update({'photoUrl': url});
+          .update({'photoUrl': photoUrl});
 
       setState(() {
-        _photoUrl = url;
+        _photoUrl = photoUrl;
         _photoLoading = false;
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم تحديث الصورة بنجاح')),
+          const SnackBar(
+            content: Text('✅ تم تحديث الصورة بنجاح', style: TextStyle(fontFamily: 'Cairo')),
+            backgroundColor: _green,
+          ),
         );
       }
     } catch (e) {
       setState(() => _photoLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطأ في الرفع: $e')),
+          SnackBar(
+            content: Text('خطأ في الرفع: $e', style: const TextStyle(fontFamily: 'Cairo')),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -234,6 +245,90 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
     ));
+  }
+
+  Future<void> _changeEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || user.email == null) return;
+
+    final emailCtrl = TextEditingController();
+    final passCtrl = TextEditingController();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('تغيير البريد الإلكتروني', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'البريد الجديد',
+                prefixIcon: const Icon(Icons.email, color: _green),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                hintStyle: const TextStyle(fontFamily: 'Cairo'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passCtrl,
+              obscureText: true,
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'كلمة المرور الحالية (للتأكيد)',
+                prefixIcon: const Icon(Icons.lock, color: _green),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                hintStyle: const TextStyle(fontFamily: 'Cairo'),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo'))),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: _green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: const Text('تغيير', style: TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (result != true) return;
+
+    final newEmail = emailCtrl.text.trim();
+    final password = passCtrl.text.trim();
+
+    if (newEmail.isEmpty || password.isEmpty) {
+      _snack('يرجى ملء جميع الحقول', Colors.orange);
+      return;
+    }
+
+    try {
+      final credential = EmailAuthProvider.credential(email: user.email!, password: password);
+      await user.reauthenticateWithCredential(credential);
+      await user.verifyBeforeUpdateEmail(newEmail);
+
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'email': newEmail});
+
+      // تحديث العرض فوراً
+      if (mounted) {
+        setState(() => _displayEmail = newEmail);
+        _snack('✉️ تم إرسال رابط التأكيد للبريد الجديد. تفقدي بريدك!', _green);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password') {
+        _snack('كلمة المرور غير صحيحة', Colors.red);
+      } else {
+        _snack('خطأ: ${e.message}', Colors.red);
+      }
+    } catch (e) {
+      _snack('حدث خطأ: $e', Colors.red);
+    }
   }
 
   @override
@@ -334,7 +429,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     final name  = _nameCtrl.text;
-    final email = user?.email ?? '';
+    final email = _displayEmail.isNotEmpty ? _displayEmail : (user?.email ?? '');
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
@@ -412,14 +507,38 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             _genderField(),
             const SizedBox(height: 20),
 
-            // ── قسم البريد (للعرض فقط) ──
+            // ── قسم البريد ──
             _sectionLabel('البريد الإلكتروني'),
             const SizedBox(height: 10),
-            _readonlyField(
-              label: 'البريد الإلكتروني',
-              value: email,
-              icon: Icons.email_outlined,
-              iconColor: const Color(0xFF2196F3),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [BoxShadow(color: Colors.black.withAlpha(13), blurRadius: 8)],
+              ),
+              child: Row(children: [
+                Container(
+                  width: 38, height: 38,
+                  decoration: BoxDecoration(color: const Color(0xFF2196F3).withAlpha(25), borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.email_outlined, color: Color(0xFF2196F3), size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Text('البريد الإلكتروني', style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.grey)),
+                    Text(email, style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1B2E1F))),
+                  ]),
+                ),
+                GestureDetector(
+                  onTap: _changeEmail,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(color: _lightGreen, borderRadius: BorderRadius.circular(8)),
+                    child: const Text('تغيير ✏️', style: TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w700, color: _green)),
+                  ),
+                ),
+              ]),
             ),
 
             const SizedBox(height: 28),

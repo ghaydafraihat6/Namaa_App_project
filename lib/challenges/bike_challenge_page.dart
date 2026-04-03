@@ -18,6 +18,12 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
   int currentSeconds = 0;
   Timer? timer;
   bool isRunning = false;
+  bool _todayCompleted = false;
+
+  String get _todayStr {
+    final now = DateTime.now();
+    return '${now.year}-${now.month}-${now.day}';
+  }
 
   // مستشعرات الحركة
   double _lastAccel = 0.0;
@@ -28,11 +34,22 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
   @override
   void initState() {
     super.initState();
+    _checkTodayStatus();
     // مراقبة الحركة لمنع الغش
     accelerometerEvents.listen((AccelerometerEvent event) {
       double accel = event.x.abs() + event.y.abs() + event.z.abs();
       _lastAccel = accel;
     });
+  }
+
+  Future<void> _checkTodayStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final data = doc.data() ?? {};
+    if (mounted) {
+      setState(() => _todayCompleted = data['lastBikeDate'] == _todayStr);
+    }
   }
 
   @override
@@ -105,20 +122,28 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final snapshot = await transaction.get(userDoc);
         final data = snapshot.data() as Map<String, dynamic>? ?? {};
-        if (data['bikeCompleted'] ?? false) return;
+        
+        // التحقق إذا أكمل التحدي اليوم بالفعل
+        if (data['lastBikeDate'] == _todayStr) return;
+
+        // حساب الأيام المتتالية
+        final yesterday = DateTime.now().subtract(const Duration(days: 1));
+        final yesterdayStr = '${yesterday.year}-${yesterday.month}-${yesterday.day}';
+        final lastDate = data['lastBikeDate'] ?? '';
+        final newStreak = (lastDate == yesterdayStr) ? (data['bikeStreak'] ?? 0) + 1 : 1;
 
         transaction.update(userDoc, {
           'points': FieldValue.increment(40),
-          'bikeCompleted': true,
-          'lastBikeDate': Timestamp.now(),
-          'bikeStreak': FieldValue.increment(1),
+          'lastBikeDate': _todayStr,
+          'bikeStreak': newStreak,
           'totalCo2Saved': FieldValue.increment((targetSeconds / 60) * 20),
         });
       });
 
       if (mounted) {
+        setState(() => _todayCompleted = true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.bike_success_snack), backgroundColor: const Color(0xFF386641)),
+          SnackBar(content: Text("🎉 أحسنت! +40 نقطة | ${l10n.bike_success_snack}"), backgroundColor: const Color(0xFF386641)),
         );
       }
     } catch (e) {
@@ -164,7 +189,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
                 const SizedBox(height: 40),
 
                 // أزرار التحكم
-                if (!(userData['bikeCompleted'] ?? false))
+                if (!_todayCompleted)
                   _buildControlButtons(l10n)
                 else
                   _buildCompletionStatus(l10n, userData),

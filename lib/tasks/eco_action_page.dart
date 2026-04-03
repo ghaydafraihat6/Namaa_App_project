@@ -129,6 +129,46 @@ class _EcoActionPageState extends State<EcoActionPage> {
     }
   }
 
+  Future<void> _updateHistoryTaskImage(String docId, AppLocalizations l10n) async {
+    final ImageSource? source = await _showSourcePicker(l10n);
+    if (source == null) return;
+
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 50, maxWidth: 800);
+    if (pickedFile == null) return;
+
+    final bool? confirmed = await _showImagePreview(File(pickedFile.path), l10n);
+    if (confirmed != true) return;
+
+    setState(() => _isProcessing = true);
+
+    try {
+      final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+      final request = http.MultipartRequest('POST', url)
+        ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
+      
+      final reqResponse = await request.send();
+      if (reqResponse.statusCode != 200) throw Exception('فشل رفع الصورة المعدلة.');
+
+      final responseData = await reqResponse.stream.bytesToString();
+      final String photoUrl = json.decode(responseData)['data']['url'];
+
+      final user = FirebaseAuth.instance.currentUser;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('completedTasks')
+          .doc(docId)
+          .update({'imageUrl': photoUrl});
+
+      if (mounted) _showFeedback("تم تعديل الصورة بنجاح! 🖼️", true);
+    } catch (e) {
+      if (mounted) _showFeedback(e.toString(), false);
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -167,11 +207,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
             children: [
               _buildTabs(),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: dailyTasks.length,
-                  itemBuilder: (context, index) => _buildTaskItem(dailyTasks[index], l10n),
-                ),
+                child: _tabIndex == 0 ? _buildDailyTasks(dailyTasks, l10n) : _buildHistoryTasks(dailyTasks, l10n),
               ),
             ],
           ),
@@ -182,6 +218,110 @@ class _EcoActionPageState extends State<EcoActionPage> {
   }
 
   // --- واجهات مساعدة (Helper Widgets) ---
+
+  Widget _buildDailyTasks(List<Map<String, dynamic>> dailyTasks, AppLocalizations l10n) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: dailyTasks.length,
+      itemBuilder: (context, index) => _buildTaskItem(dailyTasks[index], l10n),
+    );
+  }
+
+  Widget _buildHistoryTasks(List<Map<String, dynamic>> dailyTasks, AppLocalizations l10n) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const Center(child: Text("يرجى تسجيل الدخول"));
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('completedTasks')
+          .orderBy('completedAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF386641)));
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.history, size: 80, color: Colors.grey.shade300),
+                const SizedBox(height: 15),
+                const Text("لم تنجز أي مهام بيئية بعد.", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
+              ],
+            )
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: snapshot.data!.docs.length,
+          itemBuilder: (context, index) {
+            final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+            final taskId = data['taskId'] ?? '';
+            final imageUrl = data['imageUrl'] ?? '';
+            final pts = data['pts'] ?? 0;
+            final dateStr = data['date'] ?? '';
+
+            // Find matching task for UI details
+            final fallbackTask = {'title': 'مهمة بيئية', 'icon': '🌱', 'color': Colors.grey.shade200};
+            final taskInfo = dailyTasks.firstWhere((t) => t['id'] == taskId, orElse: () => fallbackTask);
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 15),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 50, height: 50,
+                    decoration: BoxDecoration(color: taskInfo['color'] as Color, borderRadius: BorderRadius.circular(15)),
+                    child: Center(child: Text(taskInfo['icon'] as String, style: const TextStyle(fontSize: 24))),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(taskInfo['title'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Cairo')),
+                        Text("$dateStr | +$pts ⭐", style: const TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Cairo')),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.edit_square, color: Colors.orange, size: 20),
+                        tooltip: "تغيير الصورة",
+                        onPressed: () => _updateHistoryTaskImage(snapshot.data!.docs[index].id, l10n),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _showUploadedImage(taskInfo['title'] as String, imageUrl),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: const BorderSide(color: Color(0xFF386641))),
+                          elevation: 0,
+                        ),
+                        child: const Text("الإثبات 🖼️", style: TextStyle(color: Color(0xFF386641), fontFamily: 'Cairo', fontSize: 12)),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget _buildPointsBadge() {
     final user = FirebaseAuth.instance.currentUser;
@@ -209,7 +349,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       child: Row(
         children: [
           _buildTabBtn("يومية", 0),
-          _buildTabBtn("أسبوعية", 1),
+          _buildTabBtn("سجل إنجازاتي", 1),
         ],
       ),
     );

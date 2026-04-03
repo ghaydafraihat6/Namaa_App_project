@@ -129,6 +129,18 @@ class _EcoStorePageState extends State<EcoStorePage> {
         return sum + (p['price'] as num) * (1 - calcDiscount(pts)) * e.value;
       });
 
+  int _validCartCount(List<Map<String, dynamic>> products) =>
+      _cart.entries.where((e) => products.any((p) => p['id'] == e.key))
+          .fold(0, (a, b) => a + b.value);
+
+  void _cleanStaleCarts(List<Map<String, dynamic>> products) {
+    final staleKeys = _cart.keys.where((k) => !products.any((p) => p['id'] == k)).toList();
+    if (staleKeys.isNotEmpty) {
+      for (final k in staleKeys) { _cart.remove(k); }
+      _saveCart();
+    }
+  }
+
   // ── [FIX #2] Place Order مع خصم المخزون ──
   Future<void> _placeOrder({
     required List<Map<String, dynamic>> products,
@@ -420,20 +432,17 @@ class _EcoStorePageState extends State<EcoStorePage> {
             const SizedBox(height: 16),
             _greenBtn('تأكيد الطلب ✅', () async {
               if (!formKey.currentState!.validate()) return;
+              final savedName = nameCtrl.text.trim();
               try {
                 await _placeOrder(
                   products: products, points: pts,
-                  name: nameCtrl.text.trim(),
+                  name: savedName,
                   phone: phoneCtrl.text.trim(),
                   address: addressCtrl.text.trim(),
                 );
-                // [FIX #8] dispose بعد الانتهاء
-                nameCtrl.dispose();
-                phoneCtrl.dispose();
-                addressCtrl.dispose();
                 if (mounted) {
                   Navigator.pop(context);
-                  _showSuccess(nameCtrl.text.trim());
+                  _showSuccess(savedName);
                 }
               } catch (e) {
                 _snack('حدث خطأ: $e', color: Colors.red);
@@ -443,12 +452,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           ]),
         )),
       ),
-    ).whenComplete(() {
-      // [FIX #8] dispose في حال أغلق المستخدم الـ sheet بدون تأكيد
-      nameCtrl.dispose();
-      phoneCtrl.dispose();
-      addressCtrl.dispose();
-    });
+    );
   }
 
   void _showSuccess(String name) => showDialog(
@@ -492,11 +496,18 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
             final filtered = _filter(pSnap.data!);
 
+            // تنظيف السلة من المنتجات المحذوفة
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _cleanStaleCarts(pSnap.data!);
+            });
+
+            final validCount = _validCartCount(pSnap.data!);
+
             return Scaffold(
               backgroundColor: const Color(0xFFF0F5F0),
               body: CustomScrollView(
                 slivers: [
-                  SliverToBoxAdapter(child: _buildHeader(pSnap.data!, pts)),
+                  SliverToBoxAdapter(child: _buildHeader(pSnap.data!, pts, validCount)),
                   SliverToBoxAdapter(child: _buildSearch()),
                   SliverToBoxAdapter(child: _buildCategoryFilter()),
                   if (d > 0)
@@ -541,7 +552,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     );
   }
 
-  Widget _buildHeader(List<Map<String, dynamic>> products, int pts) =>
+  Widget _buildHeader(List<Map<String, dynamic>> products, int pts, int validCount) =>
       Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -579,13 +590,13 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 child: const Icon(Icons.shopping_cart_outlined,
                     color: Colors.white, size: 24),
               ),
-              if (_cartCount > 0) Positioned(
+              if (validCount > 0) Positioned(
                 top: 0, left: 0,
                 child: Container(
                   width: 18, height: 18,
                   decoration: const BoxDecoration(
                       color: Colors.red, shape: BoxShape.circle),
-                  child: Center(child: Text('$_cartCount',
+                  child: Center(child: Text('$validCount',
                       style: const TextStyle(color: Colors.white,
                           fontSize: 10, fontWeight: FontWeight.w900))),
                 ),

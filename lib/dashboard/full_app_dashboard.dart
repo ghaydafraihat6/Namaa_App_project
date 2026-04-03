@@ -78,6 +78,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
         final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
         final int pts = data['points'] ?? 0;
         final String name = data['fullName'] ?? data['name'] ?? l10n.profile;
+        final bool isAdmin = data['role'] == 'admin' || data['isAdmin'] == true;
         final int lvl = _getLevel(pts);
         final String emoji = _getTreeEmoji(pts);
         final double prog = _getProgress(pts);
@@ -376,7 +377,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     _gridItem('🚴', 'تحدي الدراجة', () => Navigator.pushNamed(context, '/bike-challenge')),
                     _gridItem('🖼️', 'معرض أثري', () => Navigator.pushNamed(context, '/impact-gallery')),
                     _gridItem('🔄', 'قبل وبعد', () => Navigator.pushNamed(context, '/before-after')),
-                    _gridItem('🛠️', 'إدارة الطلبات', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersPage()))),
+                    if (isAdmin) _gridItem('🛠️', 'إدارة الطلبات', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersPage()))),
                   ],
                 ),
               ),
