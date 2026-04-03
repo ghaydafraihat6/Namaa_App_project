@@ -509,4 +509,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String tree_points_stat(num count) {
     return '$count نقطة';
   }
+
+  @override
+  String get weekly_challenges_title => 'التحديات الأسبوعية';
+
+  @override
+  String get challenges_intro_text =>
+      'تحديات تتطلب صبراً وإصراراً، ولكنها تعطي دفعة كبيرة لشجرتك!';
+
+  @override
+  String challenge_success_msg(int points) {
+    return 'أحسنت! تم إضافة $points نقطة لرصيدك';
+  }
+
+  @override
+  String get challenge_plastic_title => '🚫 أسبوع بلا بلاستيك';
+
+  @override
+  String get challenge_plastic_desc =>
+      'استخدم الحقائب القماشية بدلاً من البلاستيك لمدة أسبوع كامل.';
+
+  @override
+  String get challenge_elec_title => '💡 توفير الكهرباء';
+
+  @override
+  String get challenge_elec_desc =>
+      'قم بإطفاء المصابيح غير الضرورية والأجهزة في وضع الاستعداد لمدة أسبوع.';
+
+  @override
+  String get challenge_walk_title => '🚶 تحدي المشي';
+
+  @override
+  String get challenge_walk_desc =>
+      'الالتزام بالمشي لمدة 20 دقيقة يومياً لتقليل البصمة الكربونية.';
+
+  @override
+  String get completed_status => 'تم الإنجاز ✅';
+
+  @override
+  String get finish_challenge_btn => 'إنهاء التحدي';
 }

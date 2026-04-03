@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0 <4.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -32,12 +32,11 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_rating_bar: ^4.0.1
-  firebase_core: ^3.1.1
-  cloud_firestore: ^5.1.0
-  firebase_auth: ^5.1.4
+  firebase_core: ^4.6.0
+  firebase_auth: ^6.3.0
   lottie: ^3.1.2
-  google_sign_in: ^6.2.1
   provider: ^6.1.1
+  geocoding: ^3.0.0         # ← أضف هذا
 
   flutter_localizations:
       sdk: flutter
@@ -47,13 +46,18 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.4
-  firebase_storage: ^12.4.10
-  image_picker: ^1.2.1
-  share_plus: ^7.2.1
-  geolocator: ^12.0.0
+  firebase_storage: ^13.2.0
+  share_plus: ^12.0.2
+  geolocator: ^14.0.2
   image_picker_for_web: ^3.0.0
-
-
+  cloudinary_public: ^0.23.1 # للتعامل مع Cloudinary
+  cloud_firestore: ^6.2.0  # لتخزين الرابط في Firebase
+  image_picker: ^1.2.1     # لاختيار الصورة من الهاتف
+  http: ^1.1.0
+  sensors_plus: ^6.1.1
+  audioplayers: ^6.1.0
+  google_sign_in: ^5.4.0
+  cached_network_image: ^3.4.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -64,6 +68,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/logo_namaa.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

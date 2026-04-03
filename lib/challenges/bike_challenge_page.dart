@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
+import 'package:sensors_plus/sensors_plus.dart'; // مستشعر الحركة
+import 'package:audioplayers/audioplayers.dart'; // الأصوات
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class BikeChallengePage extends StatefulWidget {
   const BikeChallengePage({super.key});
@@ -17,18 +19,57 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
   Timer? timer;
   bool isRunning = false;
 
+  // مستشعرات الحركة
+  double _lastAccel = 0.0;
+  int _noMovementSeconds = 0;
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    // مراقبة الحركة لمنع الغش
+    accelerometerEvents.listen((AccelerometerEvent event) {
+      double accel = event.x.abs() + event.y.abs() + event.z.abs();
+      _lastAccel = accel;
+    });
+  }
+
   @override
   void dispose() {
     timer?.cancel();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
+  void _playSound(String type) async {
+    // تأكد من وجود الملفات في assets/audio/
+    String path = (type == 'start') ? 'audio/start_bike.mp3' : 'audio/success.mp3';
+    await _audioPlayer.play(AssetSource(path));
+  }
+
   void startTimer() {
+    _playSound('start');
     timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (!mounted) {
         t.cancel();
         return;
       }
+
+      // فحص الحركة: إذا كان التسارع ضعيف جداً (الجهاز ثابت)
+      if (_lastAccel < 10.5) { // 9.8 هو الجاذبية الأرضية، ما فوق ذلك حركة
+        _noMovementSeconds++;
+      } else {
+        _noMovementSeconds = 0;
+      }
+
+      // إذا توقف عن الحركة لأكثر من 30 ثانية
+      if (_noMovementSeconds > 30) {
+        stopTimer();
+        _showMovementAlert();
+        return;
+      }
+
       setState(() => currentSeconds++);
       if (currentSeconds >= targetSeconds) {
         stopTimer();
@@ -43,10 +84,19 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     setState(() => isRunning = false);
   }
 
-  Future<void> _onChallengeComplete() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final l10n = AppLocalizations.of(context)!; // ✅ المترجم
+  void _showMovementAlert() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("⚠️ يبدو أنك توقفت! تحرك لمواصلة التحدي"),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
 
+  Future<void> _onChallengeComplete() async {
+    _playSound('success');
+    final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
     if (user == null) return;
 
     final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -55,77 +105,24 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final snapshot = await transaction.get(userDoc);
         final data = snapshot.data() as Map<String, dynamic>? ?? {};
-
-        bool completedToday = data['bikeCompleted'] ?? false;
-        if (completedToday) return;
-
-        int currentPoints = data['points'] ?? 0;
-        int streak = data['bikeStreak'] ?? 0;
-        Timestamp? lastDate = data['lastBikeDate'];
-        DateTime today = DateTime.now();
-
-        // منطق الـ Streak
-        if (lastDate != null) {
-          DateTime last = lastDate.toDate();
-          if (today.difference(last).inDays == 1) {
-            streak++;
-          } else if (today.difference(last).inDays > 1) {
-            streak = 1;
-          }
-        } else {
-          streak = 1;
-        }
+        if (data['bikeCompleted'] ?? false) return;
 
         transaction.update(userDoc, {
-          'points': currentPoints + 40,
+          'points': FieldValue.increment(40),
           'bikeCompleted': true,
           'lastBikeDate': Timestamp.now(),
-          'bikeStreak': streak,
+          'bikeStreak': FieldValue.increment(1),
+          'totalCo2Saved': FieldValue.increment((targetSeconds / 60) * 20),
         });
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("${l10n.completed} (+40 ${l10n.points})"), // ✅ ترجمة النجاح
-            backgroundColor: const Color(0xFF386641),
-            behavior: SnackBarBehavior.floating,
-          ),
+          SnackBar(content: Text(l10n.bike_success_snack), backgroundColor: const Color(0xFF386641)),
         );
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("${l10n.error_default}: $e"),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _resetDailyChallenge(DocumentReference userDoc) async {
-    final l10n = AppLocalizations.of(context)!;
-    try {
-      await userDoc.update({'bikeCompleted': false});
-      setState(() => currentSeconds = 0);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.resetPassword), // استخدمت Reset كمثال أو أضف مفتاح جديد
-            backgroundColor: const Color(0xFF386641),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("${l10n.error_default}: $e")),
-        );
-      }
+      debugPrint("Error: $e");
     }
   }
 
@@ -133,125 +130,126 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return Scaffold(body: Center(child: Text(l10n.login)));
 
-    if (user == null) {
-      return Scaffold(
-        body: Center(child: Text(l10n.login)), // ✅ ترجمة تسجيل الدخول
-      );
-    }
-
-    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    // حساب توفير الكربون لحظياً
+    double co2Saved = (currentSeconds / 60) * 20;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: Text(
-          "🚴 ${l10n.bikeChallenge}", // ✅ "تحدي الدراجة"
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
+        title: Text(l10n.bike_challenge_title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF386641),
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<DocumentSnapshot>(
-        stream: userDoc.snapshots(),
+        stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
-          bool completedToday = userData['bikeCompleted'] ?? false;
-          int streak = userData['bikeStreak'] ?? 0;
-          int points = userData['points'] ?? 0;
-
-          double progress = (currentSeconds / targetSeconds).clamp(0.0, 1.0);
-          int minutes = (currentSeconds / 60).floor();
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          var userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(25),
             child: Column(
               children: [
-                const Icon(Icons.directions_bike, size: 100, color: Color(0xFF386641)),
-                const SizedBox(height: 20),
-                Text(
-                  "$minutes / 20 ${l10n.arabic == 'العربية' ? 'دقيقة' : 'min'}",
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF386641)),
-                ),
-                const SizedBox(height: 15),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    minHeight: 12,
-                    backgroundColor: Colors.grey.shade300,
-                    color: const Color(0xFF386641),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                if (!completedToday)
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isRunning ? Colors.red.shade400 : const Color(0xFF386641),
-                      minimumSize: const Size(150, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    ),
-                    onPressed: isRunning ? stopTimer : startTimer,
-                    child: Text(
-                      isRunning ? "⏸" : "🚴",
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
-
-                if (completedToday)
-                  Column(
-                    children: [
-                      Text(
-                        "✅ ${l10n.completed}",
-                        style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange.shade600,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        ),
-                        onPressed: () => _resetDailyChallenge(userDoc),
-                        child: const Icon(Icons.refresh, color: Colors.white),
-                      ),
-                    ],
-                  ),
+                // كارت الـ CO2 والأثر البيئي
+                _buildImpactCard(l10n, co2Saved),
 
                 const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.local_fire_department, color: Colors.orange),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.dayStreak(streak), // ✅ استخدام الـ Placeholder للأيام
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 15),
-                if (streak >= 7)
-                  Chip(
-                    label: Text(l10n.badges),
-                    backgroundColor: Colors.orange,
-                  ),
+                // دائرة التقدم والوقت
+                _buildTimerCircle(progress: (currentSeconds / targetSeconds)),
 
-                const SizedBox(height: 20),
-                Text(
-                  "${l10n.tree_current_points}: $points", // ✅ "نقاطك الحالية"
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                const SizedBox(height: 40),
+
+                // أزرار التحكم
+                if (!(userData['bikeCompleted'] ?? false))
+                  _buildControlButtons(l10n)
+                else
+                  _buildCompletionStatus(l10n, userData),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildImpactCard(AppLocalizations l10n, double currentCo2) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [Color(0xFF386641), Color(0xFF6A994E)]),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _impactItem(Icons.cloud_done, "${currentCo2.toStringAsFixed(1)}g", l10n.co2Saved),
+          const VerticalDivider(color: Colors.white54),
+          _impactItem(Icons.eco, "0.2", l10n.treesEquivalent),
+        ],
+      ),
+    );
+  }
+
+  Widget _impactItem(IconData icon, String value, String label) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white, size: 30),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+      ],
+    );
+  }
+
+  Widget _buildTimerCircle({required double progress}) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 220, height: 220,
+          child: CircularProgressIndicator(
+            value: progress,
+            strokeWidth: 12,
+            backgroundColor: Colors.grey.shade200,
+            color: const Color(0xFF386641),
+          ),
+        ),
+        Column(
+          children: [
+            Text(
+              "${(currentSeconds ~/ 60).toString().padLeft(2, '0')}:${(currentSeconds % 60).toString().padLeft(2, '0')}",
+              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+            ),
+            const Icon(Icons.directions_bike, size: 40, color: Color(0xFF386641)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildControlButtons(AppLocalizations l10n) {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isRunning ? Colors.red.shade400 : const Color(0xFF386641),
+        minimumSize: const Size(200, 60),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      ),
+      onPressed: isRunning ? stopTimer : startTimer,
+      icon: Icon(isRunning ? Icons.pause : Icons.play_arrow, color: Colors.white),
+      label: Text(isRunning ? l10n.bike_stop : l10n.bike_start, style: const TextStyle(color: Colors.white, fontSize: 18)),
+    );
+  }
+
+  Widget _buildCompletionStatus(AppLocalizations l10n, Map<String, dynamic> data) {
+    return Column(
+      children: [
+        Text("🎉 ${l10n.bike_completed_msg}", style: const TextStyle(color: Color(0xFF386641), fontWeight: FontWeight.bold, fontSize: 20)),
+        const SizedBox(height: 10),
+        Text("${l10n.dayStreak(data['bikeStreak'] ?? 0)}", style: const TextStyle(color: Colors.orange, fontSize: 18)),
+      ],
     );
   }
 }

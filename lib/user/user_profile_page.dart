@@ -72,41 +72,37 @@ class ProfilePage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.fromLTRB(20, 60, 20, 36),
                 child: Column(children: [
-                  // صورة المستخدم مع الإطار الورقي الموحد
+                  // صورة المستخدم مع الإطار الورقي (بدون خلفية دائرة منفصلة)
                   SizedBox(
-                    width: 200, // المقاس الموحد للإطار
-                    height: 200,
+                    width: 250, // المقاس الموحد للإطار
+                    height: 250,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        // الدائرة الداخلية (صورة أو حرف الاسم)
-                        Container(
-                          width: 142, // الحجم الأدق ليتطابق مع حلقة الإطار
-                          height: 142,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color(0xFFDDF6D2), // اللون الموحد الجديد
-                            image: photoUrl != null
-                                ? DecorationImage(
-                                    image: NetworkImage(photoUrl),
+                        // الدائرة الداخلية (صورة أو حرف الاسم) مع قص دائري مخفي
+                        SizedBox(
+                          width: 195, // المقاس الأدق لفتحة الغصن
+                          height: 195,
+                          child: ClipOval(
+                            child: photoUrl != null
+                                ? Image.network(
+                                    photoUrl,
                                     fit: BoxFit.cover,
                                   )
-                                : null,
-                          ),
-                          child: photoUrl == null
-                              ? Center(
-                                  child: Text(
-                                    name.isNotEmpty ? name[0].toUpperCase() : '?',
-                                    style: const TextStyle(
-                                      fontSize: 50,
-                                      fontWeight: FontWeight.w900,
-                                      color: Color(0xFF386641),
-                                      fontFamily: 'Cairo',
+                                : Container(
+                                    alignment: Alignment.center,
+                                    color: const Color(0xFFDDF6D2),
+                                    child: Text(
+                                      name.isNotEmpty ? name[0].toUpperCase() : '?',
+                                      style: const TextStyle(
+                                        fontSize: 65,
+                                        fontWeight: FontWeight.w900,
+                                        color: Color(0xFF386641),
+                                        fontFamily: 'Cairo',
+                                      ),
                                     ),
                                   ),
-                                )
-                              : null,
+                          ),
                         ),
 
                         // الإطار الورقي فوقها (إزالة الخلفية البيضاء برمجياً)

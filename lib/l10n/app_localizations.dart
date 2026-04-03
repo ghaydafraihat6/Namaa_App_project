@@ -1057,6 +1057,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} Points'**
   String tree_points_stat(num count);
+
+  /// No description provided for @weekly_challenges_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Challenges'**
+  String get weekly_challenges_title;
+
+  /// No description provided for @challenges_intro_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenges that require patience, but give your tree a huge boost!'**
+  String get challenges_intro_text;
+
+  /// No description provided for @challenge_success_msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! {points} points added to your balance'**
+  String challenge_success_msg(int points);
+
+  /// No description provided for @challenge_plastic_title.
+  ///
+  /// In en, this message translates to:
+  /// **'🚫 Plastic-Free Week'**
+  String get challenge_plastic_title;
+
+  /// No description provided for @challenge_plastic_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Use cloth bags instead of plastic for a full week.'**
+  String get challenge_plastic_desc;
+
+  /// No description provided for @challenge_elec_title.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Save Electricity'**
+  String get challenge_elec_title;
+
+  /// No description provided for @challenge_elec_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off unnecessary lights and standby devices for a week.'**
+  String get challenge_elec_desc;
+
+  /// No description provided for @challenge_walk_title.
+  ///
+  /// In en, this message translates to:
+  /// **'🚶 Walking Challenge'**
+  String get challenge_walk_title;
+
+  /// No description provided for @challenge_walk_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Commit to walking 20 minutes daily to reduce your carbon footprint.'**
+  String get challenge_walk_desc;
+
+  /// No description provided for @completed_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed ✅'**
+  String get completed_status;
+
+  /// No description provided for @finish_challenge_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Challenge'**
+  String get finish_challenge_btn;
 }
 
 class _AppLocalizationsDelegate

@@ -5,6 +5,7 @@ import 'package:namaa_project_app/dashboard/main_wrappe.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/widgets/daily_reminder.dart';
 import 'package:namaa_project_app/widgets/co2_stats.dart';
+import 'package:namaa_project_app/store/admin_orders_page.dart'; // مسار صفحة الأدمين
 
 class FullAppDashboard extends StatefulWidget {
   const FullAppDashboard({super.key});
@@ -365,14 +366,17 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.3,
                   children: [
+                    _gridItem('🌿', 'المهام البيئية', () => Navigator.pushNamed(context, '/eco-action')),
+                    _gridItem('💧', 'توفير الاستهلاك', () => Navigator.pushNamed(context, '/save-resources')),
                     _gridItem('🌳', l10n.myTree, () => _goTo(2)),
                     _gridItem('🏆', l10n.leaderboard, () => Navigator.pushNamed(context, '/leaderboard')),
                     _gridItem('🛍️', l10n.store, () => _goTo(3)),
-                    _gridItem('📅', l10n.tasks, () => _goTo(1)),
                     _gridItem('🧪', 'تجارب بيئية', () => Navigator.pushNamed(context, '/eco-experiments')),
                     _gridItem('🏅', l10n.badges, () => Navigator.pushNamed(context, '/achievements')),
                     _gridItem('🚴', 'تحدي الدراجة', () => Navigator.pushNamed(context, '/bike-challenge')),
-                    _gridItem('📸', 'قبل وبعد', () => Navigator.pushNamed(context, '/before-after')),
+                    _gridItem('🖼️', 'معرض أثري', () => Navigator.pushNamed(context, '/impact-gallery')),
+                    _gridItem('🔄', 'قبل وبعد', () => Navigator.pushNamed(context, '/before-after')),
+                    _gridItem('🛠️', 'إدارة الطلبات', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersPage()))),
                   ],
                 ),
               ),

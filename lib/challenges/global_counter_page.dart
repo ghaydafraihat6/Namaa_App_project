@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
 
 class GlobalCounterPage extends StatefulWidget {
   const GlobalCounterPage({super.key});
@@ -9,7 +10,6 @@ class GlobalCounterPage extends StatefulWidget {
 }
 
 class _GlobalCounterPageState extends State<GlobalCounterPage> {
-  // ✅ تعديل 2: Future يُعاد بناؤه عند الضغط على refresh
   late Future<int> _totalTreesFuture;
 
   @override
@@ -18,20 +18,28 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
     _totalTreesFuture = _calculateTotalTrees();
   }
 
+  // دالة حساب مجموع الأشجار بناءً على إجمالي نقاط كل المستخدمين
   Future<int> _calculateTotalTrees() async {
-    final QuerySnapshot snapshot =
-    await FirebaseFirestore.instance.collection('users').get();
+    try {
+      final QuerySnapshot snapshot =
+      await FirebaseFirestore.instance.collection('users').get();
 
-    int totalPoints = 0;
-    for (var doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      totalPoints += (data['points'] ?? 0) as int;
+      double totalPoints = 0;
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        // تحويل النقاط إلى double أولاً لضمان عدم حدوث خطأ في النوع
+        totalPoints += (data['points'] ?? 0).toDouble();
+      }
+
+      // كل 100 نقطة تعادل شجرة واحدة
+      return (totalPoints / 100).floor();
+    } catch (e) {
+      debugPrint("Error calculating total trees: $e");
+      return 0;
     }
-
-    return totalPoints ~/ 100;
   }
 
-  // ✅ تعديل 2: refresh بدون pushReplacement
+  // تحديث العداد يدوياً
   void _refresh() {
     setState(() {
       _totalTreesFuture = _calculateTotalTrees();
@@ -40,17 +48,18 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!; // ✅ تعريف كائن الترجمة
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "🌍 الأثر الجماعي",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.forestPage, // ✅ نص مترجم (غابة نماء / الأثر الجماعي)
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         elevation: 0,
-        // ✅ تعديل 4: لون سهم الرجوع
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder<int>(
@@ -64,28 +73,30 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
 
           if (snapshot.hasError) {
             return Center(
-              child: Text("حدث خطأ: ${snapshot.error}"),
+              child: Text("${l10n.error_default}: ${snapshot.error}"),
             );
           }
 
           int totalTrees = snapshot.data ?? 0;
 
           return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.all(30.0),
+              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 50),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
+                  // أيقونة الكرة الأرضية بتصميم "نماء"
                   Stack(
                     alignment: Alignment.center,
                     children: [
                       Container(
-                        width: 150,
-                        height: 150,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFEBF4DD),
+                        width: 160,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEBF4DD),
                           shape: BoxShape.circle,
+                          border: Border.all(color: const Color(0xFF386641).withValues(alpha: 0.1), width: 10),
                         ),
                       ),
                       const Icon(
@@ -96,59 +107,79 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
                     ],
                   ),
                   const SizedBox(height: 40),
-                  const Text(
-                    "بفضل جهودكم جميعاً، زرعنا:",
+
+                  Text(
+                    l10n.forest_subtitle, // ✅ نص مترجم يصف مجهود الجميع
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: const TextStyle(fontSize: 18, color: Colors.grey, fontFamily: 'Cairo'),
                   ),
-                  const SizedBox(height: 15),
+
+                  const SizedBox(height: 25),
+
+                  // عرض عدد الأشجار داخل بطاقة مميزة
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 20,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 25),
                     decoration: BoxDecoration(
                       color: const Color(0xFF386641),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(25),
                       boxShadow: [
-                        // ✅ تعديل 1: withValues بدل withOpacity
                         BoxShadow(
-                          color: Colors.green.withValues(alpha: 0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
+                          color: const Color(0xFF386641).withValues(alpha: 0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
-                    child: Text(
-                      "$totalTrees شجرة",
-                      style: const TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "$totalTrees",
+                          style: TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          l10n.treesEquivalent, // ✅ نص مترجم (شجرة معادلة)
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white70,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: 40),
-                  const Text(
-                    "كل 100 نقطة يجمعها أي فرد في تطبيق نماء تساهم في نمو الغابة الرقمية العالمية. استمروا في العمل الرائع! 🌱",
+
+                  // رسالة توضيحية لنظام النقاط الجماعي
+                  Text(
+                    l10n.challenges_intro_text, // ✅ نص مترجم يشرح فكرة التحدي الجماعي
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      height: 1.5,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      height: 1.6,
                       color: Color(0xFF2D5A3F),
+                      fontFamily: 'Cairo',
                     ),
                   ),
+
                   const SizedBox(height: 50),
-                  // ✅ تعديل 2: refresh بدون pushReplacement
+
+                  // زر التحديث
                   OutlinedButton.icon(
                     onPressed: _refresh,
                     icon: const Icon(Icons.refresh),
-                    label: const Text("تحديث العداد"),
+                    label: Text(l10n.settings, // أو أضف نص "تحديث" في ملف ARB
+                        style: const TextStyle(fontFamily: 'Cairo')),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF386641),
-                      side: const BorderSide(color: Color(0xFF386641)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      side: const BorderSide(color: Color(0xFF386641), width: 1.5),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                   ),

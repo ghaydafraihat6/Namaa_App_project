@@ -514,4 +514,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String tree_points_stat(num count) {
     return '$count Points';
   }
+
+  @override
+  String get weekly_challenges_title => 'Weekly Challenges';
+
+  @override
+  String get challenges_intro_text =>
+      'Challenges that require patience, but give your tree a huge boost!';
+
+  @override
+  String challenge_success_msg(int points) {
+    return 'Great job! $points points added to your balance';
+  }
+
+  @override
+  String get challenge_plastic_title => '🚫 Plastic-Free Week';
+
+  @override
+  String get challenge_plastic_desc =>
+      'Use cloth bags instead of plastic for a full week.';
+
+  @override
+  String get challenge_elec_title => '💡 Save Electricity';
+
+  @override
+  String get challenge_elec_desc =>
+      'Turn off unnecessary lights and standby devices for a week.';
+
+  @override
+  String get challenge_walk_title => '🚶 Walking Challenge';
+
+  @override
+  String get challenge_walk_desc =>
+      'Commit to walking 20 minutes daily to reduce your carbon footprint.';
+
+  @override
+  String get completed_status => 'Completed ✅';
+
+  @override
+  String get finish_challenge_btn => 'Finish Challenge';
 }

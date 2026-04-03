@@ -47,7 +47,6 @@
   "co2Saved": "CO2 Saved",
   "treesEquivalent": "Equivalent Trees",
   "greenDistance": "Green Distance",
-
   "error_user_not_found": "There is no account with this email address.",
   "error_wrong_password": "Incorrect password.",
   "error_invalid_email": "The email address is not valid.",
@@ -56,7 +55,6 @@
   "error_field_required": "This field is required",
   "error_login_first": "Please login first",
   "error_missing_data": "Please provide all required data",
-
   "login_welcome": "Welcome Back",
   "login_subtitle": "Login with Email or Username",
   "login_hint_id": "Email or Username",
@@ -68,7 +66,6 @@
   "login_google": "Continue with Google",
   "login_no_account": "Don't have an account? ",
   "login_signup": "Sign up",
-
   "tree_title": "My Tree",
   "tree_current_points": "Current Points",
   "tree_seed_unit": "Seeds",
@@ -76,13 +73,11 @@
   "tree_level": "Level",
   "tree_progress_label": "Progress to Next Level",
   "tree_max_level": "Max Level Reached! 🎉",
-
   "nav_home": "Home",
   "nav_tasks": "Tasks",
   "nav_tree": "My Tree",
   "nav_store": "Store",
   "nav_profile": "Profile",
-
   "gender": "Gender",
   "male": "Male",
   "female": "Female",
@@ -101,7 +96,6 @@
   "resetPasswordInstructions": "Enter your email address and we will send you a link to reset your password.",
   "sendResetLink": "Send Reset Link",
   "resetPasswordEmailSent": "A password reset link has been sent to your email.",
-
   "forest": "Forest",
   "currentPoints": "Current Points",
   "progressToLevel": "Progress to Level",
@@ -109,7 +103,6 @@
   "certificate_view": "🏅 View Certificate",
   "ecoPoints": "Eco Points",
   "pointsEarned": "Points Earned",
-
   "tree_stage_1": "Seed",
   "tree_stage_2": "Growing Seed",
   "tree_stage_3": "Small Tree",
@@ -122,7 +115,6 @@
   "after": "After",
   "upload_initiative": "Publish Initiative",
   "uploading": "Uploading...",
-
   "bike_challenge_title": "Bike Challenge",
   "bike_start": "Start 🚴",
   "bike_stop": "⏸ Stop",
@@ -130,7 +122,6 @@
   "bike_reset_btn": "🔄 Reset Daily Challenge",
   "bike_master_badge": "🏅 Bike Master Badge",
   "bike_reset_snack": "Challenge reset, start again! 🚴",
-
   "experiments_title": "🧪 Daily Experiments",
   "experiments_progress_header": "Today's Experiments Progress",
   "experiments_available_for_level": "Available for your level:",
@@ -139,14 +130,12 @@
   "exp_water": "💧 Reduce water usage",
   "exp_recycle": "♻ Recycle 5 plastic items",
   "exp_walk": "🚶 Walk instead of driving today",
-
   "forest_subtitle": "Every tree here was planted by someone who loves the environment 💚",
   "no_trees_yet": "No trees yet!",
   "be_the_first_to_plant": "Be the first to plant a tree in Namaa Forest",
   "by_user": "By",
   "challenge_leading_msg": "🏆 You are in the lead! Keep going! 💪",
   "challenge_keep_going_msg": "🔥 Challenge yourself and overtake your friend! 🚀",
-
   "plastic": "Plastic",
   "metal": "Metal",
   "paper": "Paper",
@@ -160,77 +149,104 @@
   "location_determined": "Location Found",
   "get_location": "Get Location",
   "submit_recycle_request": "Submit Request",
-
   "welcome_user": "Welcome, {name} 👋",
   "@welcome_user": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "dayStreak": "{days} Day Streak",
   "@dayStreak": {
     "placeholders": {
-      "days": { "type": "Object" }
+      "days": {
+        "type": "Object"
+      }
     }
   },
-
   "tree_next_level_needs": "You need {pts} points for the next level",
   "@tree_next_level_needs": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "needsPointsForNext": "You need {pts} points for next level",
   "@needsPointsForNext": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "bike_minutes_limit": "{min} / 20 min",
   "@bike_minutes_limit": {
     "placeholders": {
-      "min": { "type": "Object" }
+      "min": {
+        "type": "Object"
+      }
     }
   },
-
   "bike_success_snack": "🔥 Congrats! Challenge finished +40 Points",
-
   "experiments_locked_msg": "Unlocks at {pts} points 🔒",
   "@experiments_locked_msg": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "experiments_reward_msg": "{pts} Reward Points 🌟",
   "@experiments_reward_msg": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "experiments_success_snack": "🎉 Congrats! You earned {pts} points",
   "@experiments_success_snack": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "planted_trees_count": "🌲 {count} trees planted so far",
   "@planted_trees_count": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "tree_points_stat": "{count} Points",
   "@tree_points_stat": {
     "description": "Display points with number",
     "placeholders": {
-      "count": { "type": "num" }
+      "count": {
+        "type": "num"
+      }
     }
-  }
+  },
+  "weekly_challenges_title": "Weekly Challenges",
+  "challenges_intro_text": "Challenges that require patience, but give your tree a huge boost!",
+  "challenge_success_msg": "Great job! {points} points added to your balance",
+  "@challenge_success_msg": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "challenge_plastic_title": "🚫 Plastic-Free Week",
+  "challenge_plastic_desc": "Use cloth bags instead of plastic for a full week.",
+  "challenge_elec_title": "💡 Save Electricity",
+  "challenge_elec_desc": "Turn off unnecessary lights and standby devices for a week.",
+  "challenge_walk_title": "🚶 Walking Challenge",
+  "challenge_walk_desc": "Commit to walking 20 minutes daily to reduce your carbon footprint.",
+  "completed_status": "Completed ✅",
+  "finish_challenge_btn": "Finish Challenge"
 }

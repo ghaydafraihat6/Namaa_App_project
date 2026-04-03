@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:io';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class BeforeAfterPage extends StatefulWidget {
   const BeforeAfterPage({super.key});
@@ -20,15 +21,25 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
   bool isUploading = false;
   final ImagePicker picker = ImagePicker();
 
+  // ✅ تم تحديث الـ Cloud Name الخاص بك هنا
+  final String cloudName = "hovp9qqg";
+
+  // ⚠️ استبدل هذه القيمة بالـ Preset الذي أنشأته (تأكد أنه Unsigned)
+  final String uploadPreset = "your_unsigned_preset";
+
   @override
   void dispose() {
     descriptionController.dispose();
     super.dispose();
   }
 
+  // اختيار الصورة
   Future<void> pickImage(bool isBefore) async {
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null && mounted) {
+    final XFile? image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50, // ضغط الصورة لسرعة الرفع
+    );
+    if (image != null) {
       setState(() {
         if (isBefore) {
           beforeImage = image;
@@ -39,15 +50,41 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     }
   }
 
+  // دالة الرفع إلى Cloudinary
+  Future<String?> uploadToCloudinary(XFile image) async {
+    try {
+      var uri = Uri.parse("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
+      var request = http.MultipartRequest("POST", uri);
+
+      var file = await http.MultipartFile.fromPath('file', image.path);
+      request.files.add(file);
+      request.fields['upload_preset'] = uploadPreset;
+      request.fields['folder'] = 'namaa_initiatives';
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.toBytes();
+        var responseString = String.fromCharCodes(responseData);
+        var jsonRes = jsonDecode(responseString);
+        return jsonRes['secure_url'];
+      } else {
+        debugPrint("خطأ في Cloudinary: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      debugPrint("فشل الرفع: $e");
+      return null;
+    }
+  }
+
+  // حفظ البيانات في Firestore وزيادة النقاط
   Future<void> uploadInitiative() async {
     final user = FirebaseAuth.instance.currentUser;
-    final l10n = AppLocalizations.of(context)!; // ✅ تعريف المترجم هنا
-
     if (user == null) return;
 
     if (beforeImage == null || afterImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.takePhoto)), // استخدمنا "التقط صورة كدليل" أو أضف مفتاحاً جديداً
+        const SnackBar(content: Text("يرجى اختيار صورتي قبل وبعد")),
       );
       return;
     }
@@ -55,116 +92,59 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     setState(() => isUploading = true);
 
     try {
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('initiatives/${user.uid}/${DateTime.now().millisecondsSinceEpoch}');
+      // 1. رفع الصور لـ Cloudinary
+      String? beforeUrl = await uploadToCloudinary(beforeImage!);
+      String? afterUrl = await uploadToCloudinary(afterImage!);
 
-      final beforeRef = storageRef.child('before.jpg');
-      final afterRef = storageRef.child('after.jpg');
+      if (beforeUrl != null && afterUrl != null) {
+        // 2. تخزين الروابط في Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .collection('initiatives')
+            .add({
+          'before': beforeUrl,
+          'after': afterUrl,
+          'description': descriptionController.text.trim(),
+          'timestamp': FieldValue.serverTimestamp(),
+        });
 
-      await beforeRef.putFile(File(beforeImage!.path));
-      await afterRef.putFile(File(afterImage!.path));
+        // 3. تحديث نقاط المستخدم (+10 نقاط)
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          'points': FieldValue.increment(10),
+        });
 
-      final beforeUrl = await beforeRef.getDownloadURL();
-      final afterUrl = await afterRef.getDownloadURL();
+        if (!mounted) return;
 
-      final docRef = FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('initiatives')
-          .doc();
+        setState(() {
+          beforeImage = null;
+          afterImage = null;
+          descriptionController.clear();
+        });
 
-      await docRef.set({
-        'before': beforeUrl,
-        'after': afterUrl,
-        'description': descriptionController.text.trim(),
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
-
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final snapshot = await transaction.get(userDoc);
-        int currentPoints = snapshot.data()?['points'] ?? 0;
-        transaction.update(userDoc, {'points': currentPoints + 10});
-      });
-
-      if (!mounted) return;
-
-      setState(() {
-        beforeImage = null;
-        afterImage = null;
-        descriptionController.clear();
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("${l10n.orderSuccess} (+10 ${l10n.points})"), // مثال لاستخدام النقاط
-          backgroundColor: const Color(0xFF386641),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    } catch (e) {
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("${l10n.error_default}: $e"),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
+          const SnackBar(
+            content: Text("تم نشر مبادرتك بنجاح! 🎉 +10 نقاط"),
+            backgroundColor: Color(0xFF386641),
           ),
         );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("حدث خطأ أثناء الرفع: $e")),
+      );
     } finally {
       if (mounted) setState(() => isUploading = false);
     }
   }
 
-  Widget _buildImagePlaceholder(String label, XFile? image, bool isBefore) {
-    return GestureDetector(
-      onTap: isUploading ? null : () => pickImage(isBefore),
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          color: image == null
-              ? (isBefore ? Colors.grey.shade300 : Colors.green.shade100)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.grey.shade400),
-          image: image != null
-              ? DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.cover)
-              : null,
-        ),
-        child: image == null
-            ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(isBefore ? Icons.history : Icons.auto_awesome, size: 50, color: Colors.grey.shade600),
-              const SizedBox(height: 10),
-              Text(
-                label, // النص سيمرر مترجماً من الـ build
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        )
-            : null,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: Text(
-          l10n.beforeAfter, // ✅ "قبل وبعد" من ملف الترجمة
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
+        title: const Text("قبل وبعد ✨",
+            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -172,51 +152,87 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.explore, // أو أي عنوان ترحيبي مترجم
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF386641)),
+            const Text(
+              "وثّق تغييرك البيئي",
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1B2E1F)),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
+
+            // مربعات اختيار الصور
             Row(
               children: [
-                Expanded(child: _buildImagePlaceholder("Before", beforeImage, true)),
+                Expanded(child: _buildImageSelector("قبل 🕰️", beforeImage, true)),
                 const SizedBox(width: 15),
-                Expanded(child: _buildImagePlaceholder("After", afterImage, false)),
+                Expanded(child: _buildImageSelector("بعد ✨", afterImage, false)),
               ],
             ),
+
             const SizedBox(height: 30),
+
+            // حقل الوصف
             TextField(
               controller: descriptionController,
-              enabled: !isUploading,
-              decoration: InputDecoration(
-                labelText: l10n.explore, // يمكنك إضافة "وصف المبادرة" للملفات
-                border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(15))),
-              ),
               maxLines: 3,
+              decoration: InputDecoration(
+                hintText: "أخبرنا ماذا فعلت؟ (مثلاً: تنظيف حديقة...)",
+                hintStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 13),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide(color: Colors.grey.shade200),
+                ),
+              ),
             ),
-            const SizedBox(height: 30),
+
+            const SizedBox(height: 40),
+
+            // زر النشر
             SizedBox(
               width: double.infinity,
               height: 55,
-              child: ElevatedButton.icon(
+              child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF386641),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: isUploading ? null : uploadInitiative,
-                icon: isUploading
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : const Icon(Icons.cloud_upload, color: Colors.white),
-                label: Text(
-                  isUploading ? "..." : l10n.saveChanges, // أو زر النشر المترجم
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
+                child: isUploading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("نشر المبادرة (+10 نقاط)",
+                    style: TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageSelector(String label, XFile? image, bool isBefore) {
+    return GestureDetector(
+      onTap: () => pickImage(isBefore),
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: image == null ? Colors.white : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: const Color(0xFF386641).withOpacity(0.2)),
+          image: image != null
+              ? DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.cover)
+              : null,
+        ),
+        child: image == null
+            ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.add_a_photo, color: Color(0xFF386641), size: 35),
+            const SizedBox(height: 8),
+            Text(label, style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 12)),
+          ],
+        )
+            : null,
       ),
     );
   }

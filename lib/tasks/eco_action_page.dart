@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:namaa_project_app/l10n/app_localizations.dart';
@@ -17,21 +18,22 @@ class EcoActionPage extends StatefulWidget {
 class _EcoActionPageState extends State<EcoActionPage> {
   final Set<String> _completedTasks = {};
   int _tabIndex = 0;
-  bool _uploading = false;
+  bool _isProcessing = false;
+
 
   @override
   void initState() {
     super.initState();
-    _loadCompletedTasks();
+    _loadTodayProgress();
   }
 
-  Future<void> _loadCompletedTasks() async {
+  // تحميل المهام التي تم إنجازها اليوم من Firestore
+  Future<void> _loadTodayProgress() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
-    
-    final today    = DateTime.now();
-    final todayStr = '${today.year}-${today.month}-${today.day}';
-    
+
+    final todayStr = _getTodayDateString();
+
     try {
       final query = await FirebaseFirestore.instance
           .collection('users')
@@ -40,7 +42,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
           .where('date', isEqualTo: todayStr)
           .get();
 
-      if (query.docs.isNotEmpty && mounted) {
+      if (mounted) {
         setState(() {
           for (var doc in query.docs) {
             _completedTasks.add(doc.data()['taskId'] as String);
@@ -48,583 +50,275 @@ class _EcoActionPageState extends State<EcoActionPage> {
         });
       }
     } catch (e) {
-      debugPrint("Error loading tasks: $e");
+      debugPrint("Error loading progress: $e");
     }
   }
 
-  final _dailyTasks = const [
-    {
-      'id':    'cloth_bags',
-      'title': 'إعادة تدوير النفايات',
-      'desc':  'اجمع المواد وضعها في الحاوية — التقط صورة للحاوية',
-      'pts':   30,
-      'emoji': '♻️',
-      'bg':    Color(0xFFEBF4DD),
-    },
-    {
-      'id':    'close_tap',
-      'title': 'توفير المياه',
-      'desc':  'أغلق الصنبور — التقط صورة للصنبور مغلقاً',
-      'pts':   25,
-      'emoji': '💧',
-      'bg':    Color(0xFFE8F4F8),
-    },
-    {
-      'id':    'walk_instead',
-      'title': 'استخدم الدراجة',
-      'desc':  'تنقل بالدراجة — التقط صورة لك مع الدراجة',
-      'pts':   40,
-      'emoji': '🚴',
-      'bg':    Color(0xFFFFF3E8),
-    },
-    {
-      'id':    'lights_off',
-      'title': 'توفير الكهرباء',
-      'desc':  'أطفى الأنوار — التقط صورة للغرفة مطفأة',
-      'pts':   20,
-      'emoji': '⚡',
-      'bg':    Color(0xFFFFF8E1),
-    },
-    {
-      'id':    'eco_exp',
-      'title': 'تجربة بيئية',
-      'desc':  'نفّذ تجربة بيئية — التقط صورة للتجربة',
-      'pts':   50,
-      'emoji': '🧪',
-      'bg':    Color(0xFFF3E8FF),
-    },
-  ];
+  String _getTodayDateString() {
+    final now = DateTime.now();
+    return '${now.year}-${now.month}-${now.day}';
+  }
 
-  final _weeklyTasks = const [
-    {
-      'id':    'no_plastic_week',
-      'title': 'أسبوع بدون سيارة',
-      'desc':  'استخدم الدراجة — التقط صورة لك في الطريق',
-      'pts':   200,
-      'emoji': '🚗',
-      'bg':    Color(0xFFFFF3E8),
-      'prog':  0.4,
-    },
-    {
-      'id':    'save_electricity_week',
-      'title': 'توفير الكهرباء أسبوع',
-      'desc':  'قلل الاستهلاك — التقط صورة لفاتورة الكهرباء',
-      'pts':   150,
-      'emoji': '💡',
-      'bg':    Color(0xFFE8F0FF),
-      'prog':  0.7,
-    },
-    {
-      'id':    'walking_challenge',
-      'title': 'أسبوع بلا بلاستيك',
-      'desc':  'استخدم الحقائب — التقط صورة لحقيبتك القماشية',
-      'pts':   100,
-      'emoji': '🛍️',
-      'bg':    Color(0xFFFFF0F0),
-      'prog':  0.2,
-    },
-  ];
-
-  // ── تحقق هل أنجز المهمة اليوم ──
-  Future<bool> _isCompletedToday(String taskId) async {
+  // ✅ المهمة الرئيسية: التقاط الصورة والرفع لـ Cloudinary ثم الحفظ في Firebase
+  Future<void> _handleTaskCompletion(String taskId, int pts, AppLocalizations l10n) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return false;
-    final today    = DateTime.now();
-    final todayStr = '${today.year}-${today.month}-${today.day}';
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .collection('completedTasks')
-        .doc('${taskId}_$todayStr')
-        .get();
-    return doc.exists;
-  }
+    if (user == null) return;
 
-  // ── التقاط صورة كدليل ──
-  Future<void> _completeWithPhoto(String taskId, int pts) async {
-    // تحقق هل أنجزها اليوم
-    final alreadyDone = await _isCompletedToday(taskId);
-    if (alreadyDone) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('⚠️ أنجزت هذه المهمة اليوم بالفعل!'),
-          backgroundColor: Colors.orange,
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
-      return;
-    }
-
-    // اختيار مصدر الصورة
-    if (!mounted) return;
-    final source = await showDialog<ImageSource>(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: const Text('التقط صورة كدليل 📸',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800)),
-        content: const Text(
-          'يرجى التقاط صورة كدليل على إنجاز المهمة',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              fontFamily: 'Cairo',
-              color: Colors.grey,
-              height: 1.6),
-        ),
-        actions: [
-          Row(children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () =>
-                    Navigator.pop(context, ImageSource.gallery),
-                icon: const Icon(Icons.photo_library_outlined),
-                label: const Text('المعرض',
-                    style: TextStyle(fontFamily: 'Cairo')),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () =>
-                    Navigator.pop(context, ImageSource.camera),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF386641),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10))),
-                icon: const Icon(Icons.camera_alt,
-                    color: Colors.white),
-                label: const Text('الكاميرا',
-                    style: TextStyle(
-                        fontFamily: 'Cairo',
-                        color: Colors.white)),
-              ),
-            ),
-          ]),
-        ],
-      ),
-    );
-
+    // 1. اختيار مصدر الصورة
+    final ImageSource? source = await _showSourcePicker(l10n);
     if (source == null) return;
 
     final picker = ImagePicker();
-    final picked = await picker.pickImage(
+    final pickedFile = await picker.pickImage(
       source: source,
-      imageQuality: 60,
+      imageQuality: 50, // ضغط الصورة لتقليل استهلاك البيانات
       maxWidth: 800,
     );
-    if (picked == null) return;
+    if (pickedFile == null) return;
 
-    // عرض الصورة للتأكيد
-    if (!mounted) return;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20)),
-        title: const Text('تأكيد الصورة',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800)),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Image.file(
-              File(picked.path),
-              height: 220,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 12),
-          const Text('هل هذه الصورة دليل على إنجازك؟',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontFamily: 'Cairo',
-                  color: Colors.grey)),
-        ]),
-        actions: [
-          Row(children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('إعادة الالتقاط',
-                    style: TextStyle(
-                        fontFamily: 'Cairo',
-                        color: Colors.grey)),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF386641),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10))),
-                child: const Text('تأكيد ✅',
-                    style: TextStyle(
-                        fontFamily: 'Cairo',
-                        color: Colors.white)),
-              ),
-            ),
-          ]),
-        ],
-      ),
-    );
-
+    // 2. تأكيد الصورة من المستخدم
+    final bool? confirmed = await _showImagePreview(File(pickedFile.path), l10n);
     if (confirmed != true) return;
 
-    // رفع الصورة وحفظ المهمة
-    setState(() => _uploading = true);
+    setState(() => _isProcessing = true);
 
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
+      // 3. الرفع إلى سيرفر ImgBB المجاني
+      // ستحتاج للحصول على مفتاح مجاني من api.imgbb.com ووضعه هنا لتفعيل الرفع
+      final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+      final request = http.MultipartRequest('POST', url)
+        ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
+      
+      final reqResponse = await request.send();
+      if (reqResponse.statusCode != 200) throw Exception('لم يتم رفع الصورة. الرجاء تفعيل مفتاح ImgBB المجاني في الكود.');
 
-      // رفع الصورة لـ Firebase Storage
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child('task_proofs')
-          .child(user.uid)
-          .child('${taskId}_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final responseData = await reqResponse.stream.bytesToString();
+      final jsonResult = json.decode(responseData);
+      final String photoUrl = jsonResult['data']['url'];
 
-      await ref.putFile(File(picked.path));
-      final photoUrl = await ref.getDownloadURL();
+      // 4. تحديث النقاط وحفظ الإنجاز في Firestore (Transaction)
+      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final todayStr = _getTodayDateString();
 
-      // أضف النقاط
-      final userDoc = FirebaseFirestore.instance
-          .collection('users').doc(user.uid);
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(userDoc);
+        final currentPoints = (snapshot.data()?['points'] ?? 0) as int;
 
-      await FirebaseFirestore.instance.runTransaction((tx) async {
-        final snap = await tx.get(userDoc);
-        final cur  = snap.data()?['points'] ?? 0;
-        tx.update(userDoc, {'points': cur + pts});
-      });
+        // زيادة النقاط
+        transaction.update(userDoc, {'points': currentPoints + pts});
 
-      // سجّل الإنجاز مع الصورة والتاريخ
-      final today    = DateTime.now();
-      final todayStr = '${today.year}-${today.month}-${today.day}';
-
-      await userDoc
-          .collection('completedTasks')
-          .doc('${taskId}_$todayStr')
-          .set({
-        'taskId':    taskId,
-        'date':      todayStr,
-        'pts':       pts,
-        'photoUrl':  photoUrl,
-        'verified':  true,
-        'createdAt': FieldValue.serverTimestamp(),
+        // تسجيل المهمة في الـ Sub-collection
+        final taskRef = userDoc.collection('completedTasks').doc('${taskId}_$todayStr');
+        transaction.set(taskRef, {
+          'taskId': taskId,
+          'date': todayStr,
+          'pts': pts,
+          'imageUrl': photoUrl, // ✅ الرابط القادم من Cloudinary
+          'completedAt': FieldValue.serverTimestamp(),
+        });
       });
 
       if (mounted) {
         setState(() => _completedTasks.add(taskId));
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('🌿 رائع! تم إضافة $pts نقطة!'),
-          backgroundColor: const Color(0xFF386641),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
-        ));
+        _showFeedback(l10n.tree_points_stat(pts), true);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('حدث خطأ: $e'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ));
-      }
+      _showFeedback(e.toString(), false);
     } finally {
-      if (mounted) setState(() => _uploading = false);
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
 
+    // بيانات المهام (يمكنك لاحقاً جلبها من Firestore)
+    final dailyTasks = [
+      {'id': 'recycle_1', 'title': 'إعادة تدوير النفايات', 'pts': 30, 'icon': '♻️', 'color': const Color(0xFFEBF4DD)},
+      {'id': 'water_1', 'title': 'توفير المياه اليوم', 'pts': 20, 'icon': '💧', 'color': const Color(0xFFE8F4F8)},
+      {'id': 'bike_1', 'title': 'استخدام الدراجة', 'pts': 50, 'icon': '🚴', 'color': const Color(0xFFFFF3E8)},
+    ];
 
-    final list = _tabIndex == 0 ? _dailyTasks : _weeklyTasks;
-
-    return Stack(children: [
-      Scaffold(
-        backgroundColor: const Color(0xFFF0F5F0),
-        body: Column(children: [
-
-          // ── Header ──
-          Container(
-            color: const Color(0xFF386641),
-            padding: const EdgeInsets.fromLTRB(20, 52, 20, 16),
-            child: Row(children: [
-              GestureDetector(
-                onTap: () => Navigator.maybePop(context),
-                child: const Icon(Icons.arrow_back_ios,
-                    color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 10),
-              const Text('🌿 المهام والتحديات',
-                  style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white)),
-            ]),
-          ),
-
-          // ── Tabs ──
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(12),
-            child: Row(children: [
-              _tabBtn('التحديات الأسبوعية', 1),
-              const SizedBox(width: 8),
-              _tabBtn('المهام اليومية', 0),
-            ]),
-          ),
-
-          // ── List ──
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(14),
-              itemCount: list.length,
-              itemBuilder: (_, i) {
-                final t    = list[i];
-                final id   = t['id'] as String;
-                final done = _completedTasks.contains(id);
-                final prog = t['prog'] as double?;
-
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: done
-                        ? const Color(0xFFEBF4DD)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                        color: done
-                            ? const Color(0xFF52B788)
-                            : Colors.transparent,
-                        width: 1.5),
-                    boxShadow: [BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.07),
-                        blurRadius: 12,
-                        offset: const Offset(0, 3))],
-                  ),
-                  child: Column(children: [
-
-                    Row(crossAxisAlignment:
-                    CrossAxisAlignment.start, children: [
-                      Container(
-                        width: 46, height: 46,
-                        decoration: BoxDecoration(
-                            color: t['bg'] as Color,
-                            borderRadius:
-                            BorderRadius.circular(14)),
-                        child: Center(child: Text(
-                            t['emoji'] as String,
-                            style: const TextStyle(
-                                fontSize: 22))),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            Row(children: [
-                              Expanded(
-                                child: Text(t['title'] as String,
-                                    style: TextStyle(
-                                        fontFamily: 'Cairo',
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w800,
-                                        color: done
-                                            ? Colors.grey
-                                            : const Color(0xFF1B2E1F),
-                                        decoration: done
-                                            ? TextDecoration.lineThrough
-                                            : TextDecoration.none)),
-                              ),
-                              // badge الدليل
-                              if (!done)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: Colors.purple
-                                        .withValues(alpha: 0.1),
-                                    borderRadius:
-                                    BorderRadius.circular(8),
-                                    border: Border.all(
-                                        color: Colors.purple
-                                            .withValues(alpha: 0.3)),
-                                  ),
-                                  child: const Text('📸 دليل مطلوب',
-                                      style: TextStyle(
-                                          fontFamily: 'Cairo',
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.purple)),
-                                ),
-                            ]),
-                            const SizedBox(height: 3),
-                            Text(t['desc'] as String,
-                                style: const TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                    height: 1.4)),
-                            const SizedBox(height: 5),
-                            Text('+${t['pts']} نقطة 🌟',
-                                style: const TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 12,
-                                    color: Color(0xFFF4A261),
-                                    fontWeight: FontWeight.w800)),
-                          ])),
-                    ]),
-
-                    if (prog != null && !done) ...[
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: prog, minHeight: 7,
-                          backgroundColor:
-                          const Color(0xFFEEEEEE),
-                          valueColor:
-                          const AlwaysStoppedAnimation(
-                              Color(0xFF386641)),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                            '${(prog * 100).toInt()}% مكتمل',
-                            style: const TextStyle(
-                                fontFamily: 'Cairo',
-                                fontSize: 10,
-                                color: Colors.grey)),
-                      ),
-                    ],
-
-                    const SizedBox(height: 12),
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 46,
-                      child: ElevatedButton(
-                        onPressed: done || _uploading
-                            ? null
-                            : () => _completeWithPhoto(
-                            id, t['pts'] as int),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: done
-                              ? const Color(0xFFD0EAD0)
-                              : const Color(0xFF386641),
-                          disabledBackgroundColor:
-                          const Color(0xFFD0EAD0),
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(12)),
-                          elevation: done ? 0 : 3,
-                        ),
-                        child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                done
-                                    ? Icons.check_circle
-                                    : Icons.camera_alt,
-                                color: done
-                                    ? const Color(0xFF386641)
-                                    : Colors.white,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                done
-                                    ? 'تم الإنجاز ✅'
-                                    : 'التقط صورة كدليل 📸',
-                                style: TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: done
-                                        ? const Color(0xFF386641)
-                                        : Colors.white),
-                              ),
-                            ]),
-                      ),
-                    ),
-                  ]),
-                );
-              },
-            ),
-          ),
-        ]),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAF8),
+      appBar: AppBar(
+        title: Text(l10n.challenges_intro_text.split('.')[0],
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+        backgroundColor: const Color(0xFF386641),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
-
-      // ── Loading overlay أثناء رفع الصورة ──
-      if (_uploading)
-        Container(
-          color: Colors.black.withValues(alpha: 0.5),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(color: Colors.white),
-                SizedBox(height: 16),
-                Text('جاري رفع الصورة...',
-                    style: TextStyle(
-                        fontFamily: 'Cairo',
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700)),
-              ],
-            ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              _buildTabs(),
+              Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: dailyTasks.length,
+                  itemBuilder: (context, index) => _buildTaskItem(dailyTasks[index], l10n),
+                ),
+              ),
+            ],
           ),
-        ),
-    ]);
+          if (_isProcessing) _buildLoadingScreen(),
+        ],
+      ),
+    );
   }
 
-  Widget _tabBtn(String label, int index) {
-    final active = _tabIndex == index;
+  // --- واجهات مساعدة (Helper Widgets) ---
+
+  Widget _buildTabs() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      height: 50,
+      decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
+      child: Row(
+        children: [
+          _buildTabBtn("يومية", 0),
+          _buildTabBtn("أسبوعية", 1),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBtn(String label, int index) {
+    bool isSelected = _tabIndex == index;
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _tabIndex = index),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Container(
           decoration: BoxDecoration(
-            color: active
-                ? const Color(0xFF386641)
-                : const Color(0xFFEEEEEE),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: active
-                ? [const BoxShadow(
-                color: Color(0x40386641),
-                blurRadius: 10,
-                offset: Offset(0, 3))]
-                : null,
+            color: isSelected ? const Color(0xFF386641) : Colors.transparent,
+            borderRadius: BorderRadius.circular(15),
           ),
-          child: Text(label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: active ? Colors.white : Colors.grey)),
+          child: Center(
+            child: Text(label, style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Cairo'
+            )),
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildTaskItem(Map<String, dynamic> task, AppLocalizations l10n) {
+    bool isDone = _completedTasks.contains(task['id']);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDone ? Colors.green[50] : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        border: Border.all(color: isDone ? const Color(0xFF386641) : Colors.transparent, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50, height: 50,
+            decoration: BoxDecoration(color: task['color'], borderRadius: BorderRadius.circular(15)),
+            child: Center(child: Text(task['icon'], style: const TextStyle(fontSize: 24))),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(task['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Cairo')),
+                Text("+${task['pts']} ${l10n.points}", style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: isDone || _isProcessing ? null : () => _handleTaskCompletion(task['id'], task['pts'], l10n),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isDone ? Colors.grey : const Color(0xFF386641),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: Text(isDone ? "تم ✅" : "إثبات 📸", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingScreen() {
+    return Container(
+      color: Colors.black54,
+      child: const Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(color: Colors.white),
+            SizedBox(height: 20),
+            Text("جاري رفع الدليل وحفظ النقاط...", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // --- الحوارات (Dialogs) ---
+
+  Future<ImageSource?> _showSourcePicker(AppLocalizations l10n) {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("اختر مصدر الصورة كدليل بيئي", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Color(0xFF386641)),
+              title: const Text("الكاميرا"),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Color(0xFF386641)),
+              title: const Text("معرض الصور"),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<bool?> _showImagePreview(File file, AppLocalizations l10n) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("هل هذه الصورة دليل صحيح؟", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontFamily: 'Cairo')),
+        content: ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.file(file, height: 250, fit: BoxFit.cover)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("إعادة الالتقاط")),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
+            child: const Text("تأكيد ورفع", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFeedback(String msg, bool isSuccess) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(isSuccess ? "🌿 تم إنجاز المهمة بنجاح! حصلت على $msg" : "❌ خطأ: $msg"),
+      backgroundColor: isSuccess ? const Color(0xFF386641) : Colors.red,
+      behavior: SnackBarBehavior.floating,
+    ));
   }
 }

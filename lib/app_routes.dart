@@ -7,14 +7,18 @@ import 'package:namaa_project_app/screen/create_account_screen.dart';
 import 'package:namaa_project_app/screen/forget_pasword_screen.dart';
 import 'package:namaa_project_app/screen/tree_page.dart';
 
-// ── Dashboard ──
+// ── Dashboard & Main ──
 import 'package:namaa_project_app/dashboard/full_app_dashboard.dart';
 import 'package:namaa_project_app/dashboard/advanced_tree_page.dart';
 import 'package:namaa_project_app/dashboard/main_wrappe.dart';
 
-// ── Tasks ──
-import 'package:namaa_project_app/tasks/recycle_page.dart';
-import 'package:namaa_project_app/tasks/recycle_materials_page.dart';
+// ── Recycle (المجلد الجديد المنظم) ──
+import 'package:namaa_project_app/recycle/recycle_dashboard.dart';
+import 'package:namaa_project_app/recycle/recycle_submission_page.dart';
+import 'package:namaa_project_app/recycle/recycle_tasks_page.dart';
+import 'package:namaa_project_app/tasks/my_impact_gallery.dart';
+
+// ── Tasks (المهام القديمة) ──
 import 'package:namaa_project_app/tasks/save_resources_page.dart';
 import 'package:namaa_project_app/tasks/eco_action_page.dart';
 
@@ -39,23 +43,41 @@ import 'package:namaa_project_app/user/invite_friend_page.dart';
 import 'package:namaa_project_app/user/about_page.dart';
 import 'package:namaa_project_app/user/certificate_page.dart';
 
+// خارطة المسارات (Routes Map)
 final Map<String, WidgetBuilder> appRoutes = {
+  // الأساسيات
   SplashScreen.routeName: (context) => const SplashScreen(),
   LoginPage.routeName: (context) => const LoginPage(),
   CreateAccountPage.routeName: (context) => const CreateAccountPage(),
   ForgotPasswordPage.routeName: (context) => const ForgotPasswordPage(),
   '/home': (context) => MainWrapper(),
   '/dashboard': (context) => const FullAppDashboard(),
+
+  // شجر ونقاط
   '/tree': (context) => const TreePage(),
+  '/advanced-tree': (context) => const AdvancedTreePage(),
+  '/forest': (context) => const ForestPage(),
+
+  // الملف الشخصي والإعدادات
   '/profile': (context) => const ProfilePage(),
   '/settings': (context) => const SettingsPage(),
   '/about': (context) => const AboutPage(),
   '/invite': (context) => const InviteFriendPage(),
+  '/certificate': (context) => CertificatePage(userName: ''),
+
+  // المتجر
   '/store': (context) => EcoStorePage(),
-  '/recycle': (context) => const RecyclePage(),
-  '/recycle-materials': (context) => const RecycleMaterialsPage(),
+
+  // ♻️ قسم إعادة التدوير (الجديد)
+  '/recycle': (context) => const RecycleDashboard(), // لوحة التحكم الرئيسية للتدوير
+  '/recycle-request': (context) => const RecycleSubmissionPage(), // طلب تجميع (Cloudinary)
+  '/recycle-tasks': (context) => const RecycleTasksPage(), // مهام بيئية سريعة
+
+  // المهام (Tasks)
   '/save-resources': (context) => const SaveResourcesPage(),
   '/eco-action': (context) => const EcoActionPage(),
+  '/impact-gallery': (context) => const MyImpactGalleryPage(),
+  // التحديات والإنجازات
   '/weekly-challenges': (context) => const WeeklyChallengesPage(),
   '/bike-challenge': (context) => const BikeChallengePage(),
   '/eco-experiments': (context) => const EcoExperimentsPage(),
@@ -63,8 +85,5 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/global-counter': (context) => const GlobalCounterPage(),
   '/before-after': (context) => const BeforeAfterPage(),
   '/leaderboard': (context) => const LeaderboardPage(),
-  '/advanced-tree': (context) => const AdvancedTreePage(),
-  '/certificate': (context) => CertificatePage(userName: ''),
-  '/forest': (context) => const ForestPage(),
   '/friend-challenge': (context) => const FriendChallengePage(),
 };

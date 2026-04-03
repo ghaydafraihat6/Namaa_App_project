@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:namaa_project_app/dashboard/full_app_dashboard.dart';
-import 'package:namaa_project_app/tasks/eco_action_page.dart';
+// ✅ أضف استيراد الداشبورد الجديد هنا
+import 'package:namaa_project_app/recycle/recycle_dashboard.dart';
 import 'package:namaa_project_app/screen/tree_page.dart';
 import 'package:namaa_project_app/store/eco_store_with_discount.dart';
 import 'package:namaa_project_app/user/user_profile_page.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد ملف الترجمة
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/app_routes.dart';
 
-// تعريف الـ GlobalKey للتحكم في التنقل من خارج هذا الـ Widget
 final GlobalKey<MainWrapperState> mainWrapperKey = GlobalKey<MainWrapperState>();
 
 class MainWrapper extends StatefulWidget {
-  MainWrapper({Key? key}) : super(key: mainWrapperKey); // ✅ تمرير الـ Key للسوبر
+  MainWrapper({Key? key}) : super(key: mainWrapperKey);
   static const routeName = '/home';
 
   @override
@@ -29,7 +29,6 @@ class MainWrapperState extends State<MainWrapper> {
     GlobalKey<NavigatorState>(),
   ];
 
-  // دالة لتغيير الشاشة (تُستدعى من الـ Dashboard مثلاً)
   void setIndex(int index) {
     if (_currentIndex == index) {
       _navigatorKeys[index].currentState?.popUntil((route) => route.isFirst);
@@ -38,13 +37,13 @@ class MainWrapperState extends State<MainWrapper> {
     }
   }
 
-  // مصفوفة الشاشات
+  // ✅ التعديل هنا: وضعنا RecycleDashboard في التبويب الثاني
   final List<Widget> _screens = [
-    const FullAppDashboard(),       // 0 - 🏠
-    const EcoActionPage(),          // 1 - 🌿
-    const TreePage(),               // 2 - 🌳
-    EcoStorePage(),     // 3 - 🛒
-    const ProfilePage(),            // 4 - 👤
+    const FullAppDashboard(),       // 0 - الرئيسية
+    const RecycleDashboard(),        // 1 - التدوير (بدلاً من المهام القديمة)
+    const TreePage(),               // 2 - شجرتي
+    EcoStorePage(),                 // 3 - المتجر
+    const ProfilePage(),            // 4 - حسابي
   ];
 
   Widget _buildOffstageNavigator(int index) {
@@ -71,64 +70,59 @@ class MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ استدعاء المترجم
     final l10n = AppLocalizations.of(context)!;
 
     return WillPopScope(
-      onWillPop: () async {
-        final isFirstRouteInCurrentTab =
-            !await _navigatorKeys[_currentIndex].currentState!.maybePop();
-        if (isFirstRouteInCurrentTab) {
-          if (_currentIndex != 0) {
-            setIndex(0);
-            return false;
+        onWillPop: () async {
+          final isFirstRouteInCurrentTab =
+          !await _navigatorKeys[_currentIndex].currentState!.maybePop();
+          if (isFirstRouteInCurrentTab) {
+            if (_currentIndex != 0) {
+              setIndex(0);
+              return false;
+            }
           }
-        }
-        return isFirstRouteInCurrentTab;
-      },
-      child: Scaffold(
-        body: Stack(
-          children: List.generate(
-            _screens.length,
-            (index) => _buildOffstageNavigator(index),
-          ),
-        ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0x12000000))),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x0A000000),
-              blurRadius: 10,
-              offset: Offset(0, -4),
-            )
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: [
-                // ✅ استخدام النصوص المترجمة بدلاً من الثابتة
-                _navItem(0, '🏠', l10n.home),
-                _navItem(1, '🌿', l10n.tasks),
-                _navItem(2, '🌳', l10n.myTree),
-                _navItem(3, '🛒', l10n.store),
-                _navItem(4, '👤', l10n.profile),
-              ],
+          return isFirstRouteInCurrentTab;
+        },
+        child: Scaffold(
+          body: Stack(
+            children: List.generate(
+              _screens.length,
+                  (index) => _buildOffstageNavigator(index),
             ),
           ),
-        ),
-      ),
-    ));
+          bottomNavigationBar: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(top: BorderSide(color: Color(0x12000000))),
+              boxShadow: [
+                BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, -4))
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    _navItem(0, '🏠', l10n.home),
+                    // ✅ التعديل هنا: الأيقونة والنص الجديد للتدوير
+                    _navItem(1, '♻️', 'التدوير'),
+                    _navItem(2, '🌳', l10n.myTree),
+                    _navItem(3, '🛒', l10n.store),
+                    _navItem(4, '👤', l10n.profile),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget _navItem(int index, String icon, String label) {
     final active = _currentIndex == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _currentIndex = index),
+        onTap: () => setIndex(index),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),

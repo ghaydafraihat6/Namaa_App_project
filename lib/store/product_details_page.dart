@@ -46,7 +46,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final p = widget.product;
-    final price = (p['price'] as int) * (1 - widget.discount);
+
+    // [FIX #1] تغيير cast من int إلى num لتجنب crash من Firestore
+    final price = (p['price'] as num).toDouble() * (1 - widget.discount);
+
+    // [FIX #6] جلب المخزون لمنع إضافة أكثر من المتاح
+    final stock = (p['stock'] as num?)?.toInt() ?? 99;
 
     // مقترحات من نفس الفئة أو عشوائية
     final suggestions = widget.allProducts
@@ -59,7 +64,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF79AE6F),
+        backgroundColor: const Color(0xFF9FCB98),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
@@ -76,17 +81,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Image.asset('assets/images/logo_namaa.png', width: 45, height: 45),
+              child: Image.asset('assets/images/logo_namaa.png',
+                  width:50,  height: 45),
             ),
             const SizedBox(width: 10),
             const Text('نماء',
                 style: TextStyle(
-                    fontFamily: 'Cairo', fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white)),
+                    fontFamily: 'Cairo',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white)),
           ],
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: 100), // مساحة للزر السفلي
+        padding: const EdgeInsets.only(bottom: 100),
         children: [
           // ── الصورة ──
           Container(
@@ -118,7 +127,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               children: [
                 // ── الفئة ──
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEBF4DD),
                     borderRadius: BorderRadius.circular(8),
@@ -156,7 +166,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               style: const TextStyle(
                                   fontFamily: 'Cairo',
                                   fontSize: 14,
-                                  color: Color(0xFF9E9E9E), // Keep strike-through slightly lighter but distinct
+                                  color: Color(0xFF9E9E9E),
                                   decoration: TextDecoration.lineThrough)),
                         Text('${price.toStringAsFixed(2)} د.أ',
                             style: const TextStyle(
@@ -176,18 +186,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     RatingBarIndicator(
                       rating: 4.5,
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                      ),
+                      itemBuilder: (context, index) =>
+                      const Icon(Icons.star, color: Colors.amber),
                       itemCount: 5,
                       itemSize: 18.0,
                       direction: Axis.horizontal,
                     ),
                     const SizedBox(width: 8),
-                    const Text('4.5', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    const Text('4.5',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 13)),
                     const SizedBox(width: 4),
-                    const Text('(128 تقييم)', style: TextStyle(color: Color(0xFF616161), fontSize: 12, fontFamily: 'Cairo')),
+                    const Text('(128 تقييم)',
+                        style: TextStyle(
+                            color: Color(0xFF616161),
+                            fontSize: 12,
+                            fontFamily: 'Cairo')),
                   ],
                 ),
 
@@ -214,7 +228,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEBF4DD).withValues(alpha: 0.5),
+                      color:
+                      const Color(0xFFEBF4DD).withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -256,19 +271,30 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(r['name'] as String,
-                              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
+                              style: const TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontWeight: FontWeight.w700)),
                           Text(r['date'] as String,
-                              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Color(0xFF616161))),
+                              style: const TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontSize: 11,
+                                  color: Color(0xFF616161))),
                         ],
                       ),
                       RatingBarIndicator(
                         rating: r['rating'] as double,
-                        itemBuilder: (context, index) => const Icon(Icons.star, color: Colors.amber),
-                        itemCount: 5, itemSize: 14.0, direction: Axis.horizontal,
+                        itemBuilder: (context, index) =>
+                        const Icon(Icons.star, color: Colors.amber),
+                        itemCount: 5,
+                        itemSize: 14.0,
+                        direction: Axis.horizontal,
                       ),
                       const SizedBox(height: 4),
                       Text(r['comment'] as String,
-                          style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Color(0xFF4A4A4A))),
+                          style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 13,
+                              color: Color(0xFF4A4A4A))),
                     ],
                   ),
                 )),
@@ -293,14 +319,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       final item = topSuggestions[index];
                       return GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(
-                              builder: (_) => ProductDetailsPage(
-                                product: item,
-                                discount: widget.discount,
-                                onAddToCart: widget.onAddToCart,
-                                allProducts: widget.allProducts,
-                              )
-                          ));
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => ProductDetailsPage(
+                                    product: item,
+                                    discount: widget.discount,
+                                    onAddToCart: widget.onAddToCart,
+                                    allProducts: widget.allProducts,
+                                  )));
                         },
                         child: Container(
                           width: 140,
@@ -309,7 +336,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.grey.shade200),
+                            border:
+                            Border.all(color: Colors.grey.shade200),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -317,15 +345,25 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               Expanded(
                                 child: Image.asset(
                                   item['image'] as String,
-                                  errorBuilder: (_,__,___) => Text(item['emoji'] as String, style: const TextStyle(fontSize: 40)),
+                                  errorBuilder: (_, __, ___) => Text(
+                                      item['emoji'] as String,
+                                      style: const TextStyle(fontSize: 40)),
                                 ),
                               ),
                               const SizedBox(height: 8),
                               Text(item['name'] as String,
-                                  maxLines: 1, overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700)),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700)),
                               Text('${item['price']} د.أ',
-                                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Color(0xFF386641), fontWeight: FontWeight.w900)),
+                                  style: const TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontSize: 13,
+                                      color: Color(0xFF386641),
+                                      fontWeight: FontWeight.w900)),
                             ],
                           ),
                         ),
@@ -338,12 +376,20 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           ),
         ],
       ),
+
+      // ── الزر السفلي ──
       bottomSheet: Container(
         height: 90,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding:
+        const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5))
+          ],
         ),
         child: Row(
           children: [
@@ -362,9 +408,27 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     icon: const Icon(Icons.remove, size: 20),
                     color: Colors.black87,
                   ),
-                  Text('$quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                  Text('$quantity',
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo')),
                   IconButton(
-                    onPressed: () => setState(() => quantity++),
+                    // [FIX #6] منع الإضافة فوق المخزون
+                    onPressed: () {
+                      if (quantity < stock) {
+                        setState(() => quantity++);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('وصلت للحد الأقصى المتاح من المخزون',
+                                style: TextStyle(fontFamily: 'Cairo')),
+                            backgroundColor: Colors.orange,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    },
                     icon: const Icon(Icons.add, size: 20),
                     color: Colors.black87,
                   ),
@@ -373,31 +437,53 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
             const SizedBox(width: 16),
 
-            // ── الاضافة للسلة ──
+            // ── الإضافة للسلة ──
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  for(int i=0; i<quantity; i++) {
+                  // [FIX #6] تحقق نهائي قبل الإضافة
+                  if (quantity > stock) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('الكمية المطلوبة تتجاوز المخزون المتاح',
+                            style: TextStyle(fontFamily: 'Cairo')),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
+                  for (int i = 0; i < quantity; i++) {
                     widget.onAddToCart(p['id'] as String);
                   }
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('تم إضافة $quantity ${p['name']} إلى السلة 🛒', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
-                        backgroundColor: const Color(0xFF386641),
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        duration: const Duration(seconds: 2),
-                      )
+                    SnackBar(
+                      content: Text(
+                          'تم إضافة $quantity ${p['name']} إلى السلة 🛒',
+                          style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.w700)),
+                      backgroundColor: const Color(0xFF386641),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      duration: const Duration(seconds: 2),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF386641),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                   elevation: 0,
                 ),
                 child: const Text(
                   'إضافة للسلة',
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white),
+                  style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white),
                 ),
               ),
             ),

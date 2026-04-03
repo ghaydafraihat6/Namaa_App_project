@@ -47,7 +47,6 @@
   "co2Saved": "CO2 وُفِّر",
   "treesEquivalent": "شجرة معادلة",
   "greenDistance": "مسافة خضراء",
-
   "error_user_not_found": "لا يوجد حساب مسجل بهذا البريد الإلكتروني",
   "error_wrong_password": "كلمة المرور خاطئة.",
   "error_invalid_email": "صيغة البريد الإلكتروني غير صحيحة",
@@ -55,7 +54,6 @@
   "error_default": "حدث خطأ، حاول مرة أخرى.",
   "error_field_required": "هذا الحقل مطلوب",
   "error_login_first": "يرجى تسجيل الدخول أولاً",
-
   "login_welcome": "مرحباً بعودتك",
   "login_subtitle": "سجل دخولك بالإيميل أو اسم المستخدم",
   "login_hint_id": "الإيميل أو اسم المستخدم",
@@ -67,22 +65,18 @@
   "login_google": "المتابعة باستخدام جوجل",
   "login_no_account": "ليس لديك حساب؟ ",
   "login_signup": "سجل الآن",
-
   "tree_title": "شجرتي",
   "tree_current_points": "نقاطك الحالية",
   "tree_seed_unit": "بذرة",
   "tree_streak": "يوم متواصل",
   "tree_level": "المستوى",
-  "tree_points_stat": "نقطة",
   "tree_progress_label": "التقدم للمستوى التالي",
   "tree_max_level": "وصلت للمستوى الأعلى! 🎉",
-
   "nav_home": "الرئيسية",
   "nav_tasks": "المهام",
   "nav_tree": "شجرتي",
   "nav_store": "المتجر",
   "nav_profile": "حسابي",
-
   "gender": "الجنس",
   "male": "ذكر",
   "female": "أنثى",
@@ -101,7 +95,6 @@
   "resetPasswordInstructions": "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
   "sendResetLink": "إرسال الرابط",
   "resetPasswordEmailSent": "تم إرسال رابط استعادة كلمة المرور إلى بريدك",
-
   "forest": "الغابة",
   "currentPoints": "نقاطك الحالية",
   "progressToLevel": "التقدم للمستوى",
@@ -109,7 +102,6 @@
   "certificate_view": "🏅 عرض الشهادة",
   "ecoPoints": "نقاطك البيئية",
   "pointsEarned": "نقطة مكتسبة",
-
   "tree_stage_1": "بذرة",
   "tree_stage_2": "بذرة نامية",
   "tree_stage_3": "شجرة صغيرة",
@@ -122,7 +114,6 @@
   "after": "بعد",
   "upload_initiative": "نشر المبادرة",
   "uploading": "جارٍ الرفع...",
-
   "bike_challenge_title": "تحدي الدراجة",
   "bike_start": "ابدأ 🚴",
   "bike_stop": "⏸ إيقاف",
@@ -130,7 +121,6 @@
   "bike_reset_btn": "🔄 إعادة التحدي اليومي",
   "bike_master_badge": "🏅 وسام بطل الدراجة",
   "bike_reset_snack": "تم إعادة ضبط التحدي، ابدأ من جديد! 🚴",
-
   "experiments_title": "🧪 التجارب اليومية",
   "experiments_progress_header": "إنجاز تجارب اليوم",
   "experiments_available_for_level": "التجارب المتاحة لمستواك:",
@@ -139,72 +129,78 @@
   "exp_water": "💧 تقليل استهلاك الماء",
   "exp_recycle": "♻ تدوير 5 قطع بلاستيك",
   "exp_walk": "🚶 استخدام المشي اليوم",
-
   "forest_subtitle": "كل شجرة هنا زرعها إنسان أحب البيئة 💚",
   "no_trees_yet": "لا يوجد أشجار بعد!",
   "be_the_first_to_plant": "كن أول من يزرع شجرة في غابة نماء",
   "by_user": "بواسطة",
   "challenge_leading_msg": "🏆 أنت في المقدمة! واصل! 💪",
   "challenge_keep_going_msg": "🔥 تحدَّ نفسك وتجاوز صديقك! 🚀",
-
   "welcome_user": "مرحباً، {name} 👋",
   "@welcome_user": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
-
   "dayStreak": "{days} يوم متواصل",
   "@dayStreak": {
     "placeholders": {
-      "days": { "type": "Object" }
+      "days": {
+        "type": "Object"
+      }
     }
   },
-
   "tree_next_level_needs": "تحتاج {pts} نقطة للمستوى التالي",
   "@tree_next_level_needs": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "needsPointsForNext": "تحتاج {pts} نقطة للمستوى التالي",
   "@needsPointsForNext": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "bike_minutes_limit": "{min} / 20 دقيقة",
   "@bike_minutes_limit": {
     "placeholders": {
-      "min": { "type": "Object" }
+      "min": {
+        "type": "Object"
+      }
     }
   },
-
   "bike_success_snack": "🔥 تهانينا! أنهيت التحدي اليوم +40 نقطة",
-
   "experiments_locked_msg": "يفتح عند {pts} نقطة 🔒",
   "@experiments_locked_msg": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "experiments_reward_msg": "{pts} نقطة مكافأة 🌟",
   "@experiments_reward_msg": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-
   "experiments_success_snack": "🎉 مبروك! حصلت على {pts} نقطة",
   "@experiments_success_snack": {
     "placeholders": {
-      "pts": { "type": "Object" }
+      "pts": {
+        "type": "Object"
+      }
     }
   },
-"tree_points_stat": "{count} نقطة",
+  "tree_points_stat": "{count} نقطة",
   "@tree_points_stat": {
     "description": "عرض النقاط مع الرقم",
     "placeholders": {
@@ -216,7 +212,27 @@
   "planted_trees_count": "🌲 {count} شجرة مزروعة حتى الآن",
   "@planted_trees_count": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
-  }
+  },
+  "weekly_challenges_title": "التحديات الأسبوعية",
+  "challenges_intro_text": "تحديات تتطلب صبراً وإصراراً، ولكنها تعطي دفعة كبيرة لشجرتك!",
+  "challenge_success_msg": "أحسنت! تم إضافة {points} نقطة لرصيدك",
+  "@challenge_success_msg": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "challenge_plastic_title": "🚫 أسبوع بلا بلاستيك",
+  "challenge_plastic_desc": "استخدم الحقائب القماشية بدلاً من البلاستيك لمدة أسبوع كامل.",
+  "challenge_elec_title": "💡 توفير الكهرباء",
+  "challenge_elec_desc": "قم بإطفاء المصابيح غير الضرورية والأجهزة في وضع الاستعداد لمدة أسبوع.",
+  "challenge_walk_title": "🚶 تحدي المشي",
+  "challenge_walk_desc": "الالتزام بالمشي لمدة 20 دقيقة يومياً لتقليل البصمة الكربونية.",
+  "completed_status": "تم الإنجاز ✅",
+  "finish_challenge_btn": "إنهاء التحدي"
 }

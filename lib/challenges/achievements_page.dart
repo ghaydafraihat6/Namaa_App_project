@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class AchievementsPage extends StatelessWidget {
   const AchievementsPage({super.key});
@@ -16,7 +16,7 @@ class AchievementsPage extends StatelessWidget {
   }
 
   Widget buildBadge({
-    required BuildContext context, // ✅ أضفنا الـ Context لاستدعاء الترجمة داخل الدالة
+    required BuildContext context,
     required String title,
     required int requiredPoints,
     required int userPoints,
@@ -26,67 +26,102 @@ class AchievementsPage extends StatelessWidget {
     bool unlocked = userPoints >= requiredPoints;
     double progress = (userPoints / requiredPoints).clamp(0.0, 1.0);
 
-    return Card(
-      elevation: unlocked ? 4 : 1,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Column(
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: unlocked
-                  ? const Color(0xFFEBF4DD)
-                  : Colors.grey.shade200,
-              child: Text(
-                unlocked ? emoji : "🔒",
-                style: const TextStyle(fontSize: 20),
-              ),
-            ),
-            title: Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: unlocked
-                    ? const Color(0xFF386641)
-                    : Colors.grey.shade600,
-              ),
-            ),
-            subtitle: Text(
-              unlocked
-                  ? l10n.completed // ✅ "تم الإنجاز" من ملف الترجمة
-                  : l10n.tree_next_level_needs(requiredPoints), // ✅ "تحتاج X نقطة"
-              style: TextStyle(
-                fontSize: 13,
-                color: unlocked ? Colors.green : Colors.grey,
-              ),
-            ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        // ✅ إضافة ظل خفيف للشارات المفتوحة لتبدو "مكافأة" حقيقية
+        boxShadow: unlocked ? [
+          BoxShadow(
+            color: const Color(0xFF386641).withOpacity(0.15),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ] : [],
+      ),
+      child: Card(
+        elevation: unlocked ? 0 : 1, // الظل نتحكم به في الـ Container الخارجي
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: unlocked ? const Color(0xFF386641).withOpacity(0.3) : Colors.transparent,
+            width: 1.5,
           ),
-          if (!unlocked)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.grey.shade200,
-                color: Colors.green.shade300,
-                minHeight: 6,
-                borderRadius: BorderRadius.circular(10),
+        ),
+        color: unlocked ? Colors.white : Colors.grey.shade50,
+        child: Column(
+          children: [
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              leading: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: unlocked ? const Color(0xFFEBF4DD) : Colors.grey.shade200,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    unlocked ? emoji : "🔒",
+                    style: TextStyle(fontSize: unlocked ? 24 : 18),
+                  ),
+                ),
               ),
+              title: Text(
+                title,
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: unlocked ? const Color(0xFF1B2E1F) : Colors.grey.shade500,
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  unlocked ? l10n.completed : l10n.tree_next_level_needs(requiredPoints),
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 12,
+                    color: unlocked ? const Color(0xFF52B788) : Colors.grey,
+                  ),
+                ),
+              ),
+              // ✅ إضافة علامة الصح للشارات المكتملة
+              trailing: unlocked
+                  ? const Icon(Icons.check_circle, color: Color(0xFF386641))
+                  : Text("$userPoints/$requiredPoints", style: const TextStyle(fontSize: 10, color: Colors.grey)),
             ),
-        ],
+            if (!unlocked)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey.shade200,
+                    color: const Color(0xFF52B788),
+                    minHeight: 6,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8FAF8), // لون خلفية هادئ
       appBar: AppBar(
         title: Text(
-          l10n.badges, // ✅ "🏅 شاراتي" من ملف الترجمة
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          l10n.badges,
+          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
@@ -97,69 +132,77 @@ class AchievementsPage extends StatelessWidget {
         stream: getUserData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF386641)),
-            );
+            return const Center(child: CircularProgressIndicator(color: Color(0xFF386641)));
           }
 
-          if (!snapshot.hasData || snapshot.data?.data() == null) {
-            return Center(child: Text(l10n.error_default)); // ✅ رسالة خطأ مترجمة
+          int points = 0;
+          if (snapshot.hasData && snapshot.data?.data() != null) {
+            points = (snapshot.data!.data() as Map<String, dynamic>)['points'] ?? 0;
           }
-
-          int points = snapshot.data!['points'] ?? 0;
 
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
+              // كارد ملخص النقاط
               Container(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEBF4DD),
-                  borderRadius: BorderRadius.circular(15),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF386641), Color(0xFF52B788)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
-                    const Icon(Icons.stars, color: Colors.orange),
-                    const SizedBox(width: 10),
+                    const Icon(Icons.workspace_premium, color: Colors.amber, size: 40),
+                    const SizedBox(height: 8),
                     Text(
-                      "${l10n.tree_current_points}: $points", // ✅ "نقاطك الحالية"
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF386641),
-                      ),
+                      l10n.tree_current_points,
+                      style: const TextStyle(fontFamily: 'Cairo', color: Colors.white70, fontSize: 14),
+                    ),
+                    Text(
+                      "$points",
+                      style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 30),
 
-              // الشارات باستخدام المفاتيح الموحدة
+              // قائمة الشارات
               buildBadge(
                 context: context,
-                title: l10n.tree_stage_2, // ✅ بذرة نامية (مستوى 50)
+                title: "صديق البيئة المبتدئ",
+                requiredPoints: 10,
+                userPoints: points,
+                emoji: "🎖️",
+              ),
+              buildBadge(
+                context: context,
+                title: l10n.tree_stage_2,
                 requiredPoints: 50,
                 userPoints: points,
                 emoji: "🌿",
               ),
               buildBadge(
                 context: context,
-                title: l10n.tree_stage_3, // ✅ شجرة صغيرة (مستوى 150)
+                title: l10n.tree_stage_3,
                 requiredPoints: 150,
                 userPoints: points,
                 emoji: "🌳",
               ),
               buildBadge(
                 context: context,
-                title: l10n.tree_stage_4, // ✅ شجرة كبيرة (مستوى 300)
+                title: l10n.tree_stage_4,
                 requiredPoints: 300,
                 userPoints: points,
                 emoji: "🍎",
               ),
               buildBadge(
                 context: context,
-                title: l10n.tree_stage_5, // ✅ غابة نماء (مستوى 500)
+                title: l10n.tree_stage_5,
                 requiredPoints: 500,
                 userPoints: points,
                 emoji: "🌲",

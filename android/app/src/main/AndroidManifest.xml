@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="namaa_project_app"
+        android:label="NAMAA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

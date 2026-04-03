@@ -251,39 +251,36 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     final letter = name.isNotEmpty ? name[0].toUpperCase() : '?';
 
     return SizedBox(
-      width: 200,
-      height: 200,
+      width: 250,
+      height: 250,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Container(
-            width: 142,
-            height: 142,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFDDF6D2),
-              image: photoUrl != null
-                  ? DecorationImage(
-                      image: NetworkImage(photoUrl),
+          SizedBox(
+            width: 195,
+            height: 195,
+            child: ClipOval(
+              child: photoUrl != null
+                  ? Image.network(
+                      photoUrl,
                       fit: BoxFit.cover,
                     )
-                  : null,
-            ),
-            child: photoUrl == null
-                ? Center(
-                    child: Text(
-                      letter,
-                      style: const TextStyle(
-                        fontSize: 50,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF386641),
-                        fontFamily: 'Cairo',
+                  : Container(
+                      alignment: Alignment.center,
+                      color: const Color(0xFFDDF6D2),
+                      child: Text(
+                        letter,
+                        style: const TextStyle(
+                          fontSize: 65,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF386641),
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ),
-                  )
-                : null,
+            ),
           ),
+          // الإطار الورقي (إزالة الخلفية البيضاء برمجياً)
           Positioned.fill(
             child: IgnorePointer(
               child: ColorFiltered(
@@ -342,7 +339,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('إعدادات الحساب',
+        title: const Text('NAMAA',
             style: TextStyle(
                 fontFamily: 'Cairo',
                 fontWeight: FontWeight.w800,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class WeeklyChallengesPage extends StatefulWidget {
   const WeeklyChallengesPage({super.key});
@@ -10,103 +11,148 @@ class WeeklyChallengesPage extends StatefulWidget {
 }
 
 class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
-  // ✅ تعديل 1: تتبع التحديات المنجزة
-  final Set<String> _completedChallenges = {};
 
-  Future<void> _completeChallenge(String challengeId, int rewardPoints) async {
+  // ✅ دالة جلب التحديات المترجمة
+  List<Map<String, dynamic>> _getChallenges(AppLocalizations l10n) {
+    return [
+      {
+        "id": "no_plastic_week",
+        "title": l10n.challenge_plastic_title, // تأكد من إضافة هذه المفاتيح في ARB
+        "desc": l10n.challenge_plastic_desc,
+        "points": 50,
+        "icon": Icons.shopping_bag_outlined,
+      },
+      {
+        "id": "save_electricity",
+        "title": l10n.challenge_elec_title,
+        "desc": l10n.challenge_elec_desc,
+        "points": 40,
+        "icon": Icons.lightbulb_outline,
+      },
+      {
+        "id": "walking_challenge",
+        "title": l10n.challenge_walk_title,
+        "desc": l10n.challenge_walk_desc,
+        "points": 60,
+        "icon": Icons.directions_walk,
+      },
+    ];
+  }
+
+  Future<void> _completeChallenge(String challengeId, int rewardPoints, List completed) async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    if (user == null || completed.contains(challengeId)) return;
 
-    final userDoc =
-    FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final l10n = AppLocalizations.of(context)!;
 
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      final snapshot = await transaction.get(userDoc);
+    try {
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(userDoc);
+        int currentPoints = (snapshot.data() as Map<String, dynamic>)['points'] ?? 0;
 
-      if (!snapshot.exists) {
-        transaction.set(
-          userDoc,
-          {'points': rewardPoints},
-          SetOptions(merge: true),
+        transaction.update(userDoc, {
+          'points': currentPoints + rewardPoints,
+          'completedWeekly': FieldValue.arrayUnion([challengeId]), // تخزين دائم
+        });
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("🔥 ${l10n.challenge_success_msg(rewardPoints)}"),
+            backgroundColor: Colors.orange.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
-      } else {
-        int currentPoints =
-            (snapshot.data() as Map<String, dynamic>)['points'] ?? 0;
-        transaction.update(userDoc, {'points': currentPoints + rewardPoints});
       }
-    });
-
-    if (mounted) {
-      setState(() => _completedChallenges.add(challengeId));
+    } catch (e) {
+      debugPrint("Error completing challenge: $e");
     }
   }
 
-  Widget _buildChallengeCard({
-    required String challengeId,
-    required String title,
-    required String description,
-    required int rewardPoints,
-    required IconData icon,
-  }) {
-    final bool isCompleted = _completedChallenges.contains(challengeId);
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final challenges = _getChallenges(l10n);
+    final user = FirebaseAuth.instance.currentUser;
 
-    return Card(
-      elevation: isCompleted ? 1 : 4,
+    if (user == null) return Scaffold(body: Center(child: Text(l10n.login)));
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFFBFBFB),
+      appBar: AppBar(
+        title: Text(l10n.weekly_challenges_title,
+            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Colors.orange.shade700,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
+          final userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
+          final List completedList = userData['completedWeekly'] ?? [];
+
+          return ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              Text(
+                l10n.challenges_intro_text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              const SizedBox(height: 25),
+              ...challenges.map((ch) {
+                bool isDone = completedList.contains(ch['id']);
+                return _buildChallengeCard(ch, isDone, completedList, l10n, user.uid);
+              }).toList(),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildChallengeCard(Map ch, bool isDone, List completed, AppLocalizations l10n, String uid) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      // ✅ تعديل 1: تغيير لون الكارد بعد الإنجاز
-      color: isCompleted ? Colors.orange.shade50 : Colors.white,
+      decoration: BoxDecoration(
+        color: isDone ? Colors.orange.shade50 : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: isDone ? Colors.orange.shade200 : Colors.transparent),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isCompleted
-                        ? Colors.grey.shade200
-                        : Colors.orange.shade50,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    icon,
-                    color: isCompleted
-                        ? Colors.grey
-                        : Colors.orange.shade800,
-                    size: 28,
-                  ),
+                CircleAvatar(
+                  backgroundColor: isDone ? Colors.orange.shade100 : const Color(0xFFF5F5F5),
+                  child: Icon(ch['icon'], color: isDone ? Colors.orange.shade800 : Colors.grey),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(ch['title'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              decoration: isDone ? TextDecoration.lineThrough : null
+                          )),
                       Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isCompleted
-                              ? Colors.grey
-                              : const Color(0xFF2D5A3F),
-                          decoration: isCompleted
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                        ),
-                      ),
-                      Text(
-                        isCompleted
-                            ? "تم الإنجاز ✅"
-                            : "تحصل على $rewardPoints نقطة",
-                        style: TextStyle(
-                          color: isCompleted
-                              ? Colors.grey
-                              : Colors.orange.shade800,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        isDone ? l10n.completed_status : "+${ch['points']} ${l10n.points}",
+                        style: TextStyle(color: Colors.orange.shade800, fontWeight: FontWeight.bold, fontSize: 13),
                       ),
                     ],
                   ),
@@ -114,114 +160,23 @@ class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              description,
-              style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
-            ),
+            Text(ch['desc'], style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
             const SizedBox(height: 15),
             SizedBox(
               width: double.infinity,
-              height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isCompleted
-                      ? Colors.grey.shade300
-                      : Colors.orange.shade700,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  backgroundColor: isDone ? Colors.grey.shade300 : Colors.orange.shade700,
+                  foregroundColor: Colors.white,
                   elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                // ✅ تعديل 1: تعطيل الزر بعد الإنجاز
-                onPressed: isCompleted
-                    ? null
-                    : () async {
-                  await _completeChallenge(challengeId, rewardPoints);
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        // ✅ تعديل 3: نص محايد
-                        content: Text(
-                          "🔥 أحسنت! تم إضافة $rewardPoints نقطة لرصيدك",
-                        ),
-                        backgroundColor: Colors.orange.shade800,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  isCompleted ? "تم الإنجاز ✅" : "إنهاء التحدي",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+                onPressed: isDone ? null : () => _completeChallenge(ch['id'], ch['points'], completed),
+                child: Text(isDone ? l10n.completed_status : l10n.finish_challenge_btn),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          "🔥 التحديات الأسبوعية",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.orange.shade700,
-        elevation: 0,
-        // ✅ تعديل 2: لون سهم الرجوع
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const Text(
-            "تحديات تتطلب صبراً وإصراراً، ولكنها تعطي دفعة كبيرة لشجرتك!",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, fontSize: 15),
-          ),
-          const SizedBox(height: 25),
-
-          _buildChallengeCard(
-            challengeId: "no_plastic_week",
-            title: "🚫 أسبوع بلا بلاستيك",
-            // ✅ تعديل 3: نصوص محايدة
-            description:
-            "استخدم الحقائب القماشية بدلاً من البلاستيك لمدة أسبوع كامل.",
-            rewardPoints: 50,
-            icon: Icons.shopping_bag_outlined,
-          ),
-
-          _buildChallengeCard(
-            challengeId: "save_electricity_week",
-            title: "💡 توفير الكهرباء",
-            description:
-            "قم بإطفاء المصابيح غير الضرورية والأجهزة في وضع الاستعداد لمدة أسبوع.",
-            rewardPoints: 40,
-            icon: Icons.lightbulb_outline,
-          ),
-
-          _buildChallengeCard(
-            challengeId: "walking_challenge",
-            title: "🚶 تحدي المشي",
-            description:
-            "الالتزام بالمشي لمدة 20 دقيقة يومياً لتقليل البصمة الكربونية.",
-            rewardPoints: 60,
-            icon: Icons.directions_walk,
-          ),
-        ],
       ),
     );
   }
