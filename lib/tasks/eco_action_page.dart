@@ -16,7 +16,7 @@ class EcoActionPage extends StatefulWidget {
 }
 
 class _EcoActionPageState extends State<EcoActionPage> {
-  final Set<String> _completedTasks = {};
+  final Map<String, String> _completedTasks = {};
   int _tabIndex = 0;
   bool _isProcessing = false;
 
@@ -45,7 +45,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       if (mounted) {
         setState(() {
           for (var doc in query.docs) {
-            _completedTasks.add(doc.data()['taskId'] as String);
+            _completedTasks[doc.data()['taskId'] as String] = doc.data()['imageUrl'] as String? ?? '';
           }
         });
       }
@@ -119,7 +119,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       });
 
       if (mounted) {
-        setState(() => _completedTasks.add(taskId));
+        setState(() => _completedTasks[taskId] = photoUrl);
         _showFeedback(l10n.tree_points_stat(pts), true);
       }
     } catch (e) {
@@ -143,12 +143,23 @@ class _EcoActionPageState extends State<EcoActionPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: Text(l10n.challenges_intro_text.split('.')[0],
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+        title: Text(
+          l10n.challenges_intro_text.split('.')[0],
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo', fontSize: 16),
+          overflow: TextOverflow.ellipsis,
+        ),
         backgroundColor: const Color(0xFF386641),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
+        actions: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(end: 15),
+              child: _buildPointsBadge(),
+            ),
+          )
+        ],
       ),
       body: Stack(
         children: [
@@ -171,6 +182,24 @@ class _EcoActionPageState extends State<EcoActionPage> {
   }
 
   // --- واجهات مساعدة (Helper Widgets) ---
+
+  Widget _buildPointsBadge() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return const SizedBox();
+    return StreamBuilder<DocumentSnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data?.data() == null) return const SizedBox();
+        final data = snapshot.data!.data() as Map<String, dynamic>;
+        final points = data['points'] ?? 0;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(12)),
+          child: Text("⭐ $points", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        );
+      },
+    );
+  }
 
   Widget _buildTabs() {
     return Container(
@@ -209,7 +238,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
   }
 
   Widget _buildTaskItem(Map<String, dynamic> task, AppLocalizations l10n) {
-    bool isDone = _completedTasks.contains(task['id']);
+    bool isDone = _completedTasks.containsKey(task['id']);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
@@ -238,13 +267,17 @@ class _EcoActionPageState extends State<EcoActionPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: isDone || _isProcessing ? null : () => _handleTaskCompletion(task['id'], task['pts'], l10n),
+            onPressed: _isProcessing 
+                ? null 
+                : isDone 
+                    ? () => _showUploadedImage(task['title'], _completedTasks[task['id']]!)
+                    : () => _handleTaskCompletion(task['id'], task['pts'], l10n),
             style: ElevatedButton.styleFrom(
               backgroundColor: isDone ? Colors.grey : const Color(0xFF386641),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               elevation: 0,
             ),
-            child: Text(isDone ? "تم ✅" : "إثبات 📸", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+            child: Text(isDone ? "عرض الدليل 🖼️" : "إثبات 📸", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
           ),
         ],
       ),
@@ -268,6 +301,27 @@ class _EcoActionPageState extends State<EcoActionPage> {
   }
 
   // --- الحوارات (Dialogs) ---
+
+  void _showUploadedImage(String title, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text("إثبات: $title", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
+        content: imageUrl.isEmpty 
+            ? const Text("لا توجد صورة متاحة (ربما رُفعت سابقاً)", textAlign: TextAlign.center)
+            : ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.network(imageUrl, height: 350, fit: BoxFit.cover)),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(ctx), 
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
+              child: const Text("إغلاق", style: TextStyle(color: Colors.white))
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   Future<ImageSource?> _showSourcePicker(AppLocalizations l10n) {
     return showModalBottomSheet<ImageSource>(

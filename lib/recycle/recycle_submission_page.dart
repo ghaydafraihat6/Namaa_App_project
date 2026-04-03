@@ -8,7 +8,9 @@ import 'dart:convert';
 import 'dart:io';
 
 class RecycleSubmissionPage extends StatefulWidget {
-  const RecycleSubmissionPage({super.key});
+  final String? editId;
+  final Map<String, dynamic>? editData;
+  const RecycleSubmissionPage({super.key, this.editId, this.editData});
   static const routeName = '/recycle-submission';
 
   @override
@@ -33,6 +35,29 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   double? _lat, _lng;
   String? _locationStatus;
   final TextEditingController _notesCtrl = TextEditingController();
+
+  String? _existingImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editId != null && widget.editData != null) {
+      _existingImageUrl = widget.editData!['imageUrl'];
+      _notesCtrl.text = widget.editData!['notes'] ?? '';
+      
+      final existingMats = List<dynamic>.from(widget.editData!['materials'] ?? []);
+      for (var mat in _materials) {
+        if (existingMats.contains(mat['name'])) mat['selected'] = true;
+      }
+
+      if (widget.editData!['location'] != null) {
+        GeoPoint gp = widget.editData!['location'];
+        _lat = gp.latitude;
+        _lng = gp.longitude;
+        _locationStatus = "موقع محفوظ مسبقاً ✅";
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -110,15 +135,17 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   }
 
   Future<void> _submitRequest() async {
-    if (_totalPoints == 0 || _imageFile == null || _lat == null) {
+    if (_totalPoints == 0 || (_imageFile == null && _existingImageUrl == null) || _lat == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("أكمل البيانات أولاً")));
       return;
     }
     setState(() => _isProcessing = true);
     try {
-      String? imageUrl = await _uploadToImgBB(_imageFile!);
+      String? imageUrl = _existingImageUrl;
+      if (_imageFile != null) imageUrl = await _uploadToImgBB(_imageFile!);
+      
       if (imageUrl != null) {
-        await FirebaseFirestore.instance.collection('recycle_requests').add({
+        final payload = {
           'userId': FirebaseAuth.instance.currentUser?.uid,
           'materials': _materials.where((m) => m['selected']).map((m) => m['name']).toList(),
           'points': _totalPoints,
@@ -126,9 +153,16 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
           'notes': _notesCtrl.text.trim(),
           'location': GeoPoint(_lat!, _lng!),
           'status': 'pending',
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-        _showSuccess();
+        };
+
+        if (widget.editId != null) {
+          await FirebaseFirestore.instance.collection('recycle_requests').doc(widget.editId).update(payload);
+          _showSuccess("تم التعديل بنجاح!");
+        } else {
+          payload['createdAt'] = FieldValue.serverTimestamp();
+          await FirebaseFirestore.instance.collection('recycle_requests').add(payload);
+          _showSuccess("تم الإرسال!\nسيتم مراجعة الطلب وإضافة النقاط قريباً.");
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("حدث خطأ أثناء رفع الصورة.")));
       }
@@ -136,10 +170,10 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
     finally { setState(() => _isProcessing = false); }
   }
 
-  void _showSuccess() {
+  void _showSuccess(String message) {
     showDialog(context: context, builder: (ctx) => AlertDialog(
-      title: const Text("تم الإرسال!", textAlign: TextAlign.center),
-      content: const Text("سيتم مراجعة الطلب وإضافة النقاط قريباً."),
+      title: const Text("نجاح!", textAlign: TextAlign.center),
+      content: Text(message),
       actions: [TextButton(onPressed: () { Navigator.pop(ctx); Navigator.pop(context); }, child: const Text("حسناً"))],
     ));
   }
@@ -182,20 +216,20 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
           const Text("صورة المواد:", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           GestureDetector(
-            onTap: _imageFile == null ? _showImageSourceDialog : null,
+            onTap: _imageFile == null && _existingImageUrl == null ? _showImageSourceDialog : null,
             child: Container(
               height: 150, width: double.infinity,
               decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.grey.shade300)),
-              child: _imageFile == null 
+              child: _imageFile == null && _existingImageUrl == null
                   ? const Icon(Icons.add_a_photo, size: 40, color: Colors.grey) 
                   : Stack(
                       fit: StackFit.expand,
                       children: [
-                        ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.file(_imageFile!, fit: BoxFit.cover)),
+                        ClipRRect(borderRadius: BorderRadius.circular(15), child: _imageFile != null ? Image.file(_imageFile!, fit: BoxFit.cover) : Image.network(_existingImageUrl!, fit: BoxFit.cover)),
                         Positioned(
                           top: 8, left: 8,
                           child: GestureDetector(
-                            onTap: () => setState(() => _imageFile = null),
+                            onTap: () => setState(() { _imageFile = null; _existingImageUrl = null; }),
                             child: CircleAvatar(
                               backgroundColor: Colors.red.withValues(alpha: 0.8),
                               radius: 16,
@@ -242,7 +276,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
           SizedBox(width: double.infinity, height: 55, child: ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: primaryGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
             onPressed: _isProcessing ? null : _submitRequest,
-            child: _isProcessing ? const CircularProgressIndicator(color: Colors.white) : const Text("إرسال الطلب الآن", style: TextStyle(color: Colors.white, fontSize: 18)),
+            child: _isProcessing ? const CircularProgressIndicator(color: Colors.white) : Text(widget.editId != null ? "تعديل الطلب" : "إرسال الطلب الآن", style: const TextStyle(color: Colors.white, fontSize: 18)),
           )),
         ]),
       ),

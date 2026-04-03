@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'recycle_submission_page.dart';
 import 'recycle_tasks_page.dart';
+import 'recycle_history_page.dart';
 
 class RecycleDashboard extends StatelessWidget {
   const RecycleDashboard({super.key});
@@ -50,6 +51,18 @@ class RecycleDashboard extends StatelessWidget {
               icon: Icons.task_alt_rounded,
               color: const Color(0xFFF4A261), // لون برتقالي للتميز
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleTasksPage())),
+            ),
+
+            const SizedBox(height: 20),
+
+            // كرت سجل الطلبات (History)
+            _buildOptionCard(
+              context,
+              title: "سجل طلباتي 🗂️",
+              desc: "تابع طلبات إعادة التدوير السابقة وحالتها وصورها.",
+              icon: Icons.history_rounded,
+              color: Colors.blueAccent,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleHistoryPage())),
             ),
           ],
         ),
