@@ -6,6 +6,8 @@ import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/widgets/daily_reminder.dart';
 import 'package:namaa_project_app/widgets/co2_stats.dart';
 import 'package:namaa_project_app/store/admin_orders_page.dart'; // مسار صفحة الأدمين
+import 'package:namaa_project_app/user/notifications_list_page.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 class FullAppDashboard extends StatefulWidget {
   const FullAppDashboard({super.key});
@@ -129,7 +131,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         ],
                       ),
                       const Spacer(),
-                      _iconBtn('🔔', () {}),
+                      _notifBell(context),
                       const SizedBox(width: 10),
                       _iconBtn('👤', () => _goTo(4)),
                     ]),
@@ -426,5 +428,49 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
           borderRadius: BorderRadius.circular(12)),
       child: Center(child: Text(icon, style: const TextStyle(fontSize: 18))),
     ),
+  );
+  Widget _notifBell(BuildContext context) => StreamBuilder<int>(
+    stream: NotificationService.unreadCount(),
+    builder: (context, snap) {
+      final count = snap.data ?? 0;
+      return GestureDetector(
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (_) => const NotificationsListPage())),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(38),
+                  borderRadius: BorderRadius.circular(12)),
+              child: const Center(
+                  child: Text('🔔', style: TextStyle(fontSize: 18))),
+            ),
+            if (count > 0)
+              Positioned(
+                top: -4,
+                right: -4,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: const BoxDecoration(
+                      color: Colors.red, shape: BoxShape.circle),
+                  child: Center(
+                    child: Text(
+                      count > 9 ? '9+' : '$count',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      );
+    },
   );
 }

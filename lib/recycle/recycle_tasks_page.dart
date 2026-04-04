@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 class RecycleTasksPage extends StatefulWidget {
   const RecycleTasksPage({super.key});
@@ -40,6 +41,11 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
       'taskId': taskId, 'type': 'recycle_basic', 'createdAt': FieldValue.serverTimestamp(),
     });
     setState(() => _completedTasks.add(taskId));
+    await NotificationService.send(
+      title: '♻️ مهمة تدوير مكتملة!',
+      body: 'أحسنت! حصلت على $pts نقطة من مهمة التدوير',
+      type: 'recycle',
+    );
   }
 
   Widget _buildCard(String id, String title, String desc, int pts, IconData icon) {

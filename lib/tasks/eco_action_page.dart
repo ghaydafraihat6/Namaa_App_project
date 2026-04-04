@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 class EcoActionPage extends StatefulWidget {
   const EcoActionPage({super.key});
@@ -121,6 +122,11 @@ class _EcoActionPageState extends State<EcoActionPage> {
       if (mounted) {
         setState(() => _completedTasks[taskId] = photoUrl);
         _showFeedback(l10n.tree_points_stat(pts), true);
+        await NotificationService.send(
+          title: '🌿 مهمة بيئية مكتملة!',
+          body: 'حصلت على $pts نقطة من إثبات مهمتك البيئية بالصورة 📸',
+          type: 'eco_action',
+        );
       }
     } catch (e) {
       _showFeedback(e.toString(), false);

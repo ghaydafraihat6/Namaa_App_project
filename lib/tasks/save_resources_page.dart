@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 class SaveResourcesPage extends StatefulWidget {
   const SaveResourcesPage({super.key});
@@ -168,6 +169,11 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     ? null
                     : () async {
                   await _addPoints(points, taskId);
+                  await NotificationService.send(
+                    title: '💧 $title',
+                    body: 'أحسنت! حصلت على $points نقطة من مهمة "$title"',
+                    type: 'points',
+                  );
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(

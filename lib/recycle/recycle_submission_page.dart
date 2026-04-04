@@ -6,6 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
+import 'package:namaa_project_app/services/notification_service.dart';
+import 'package:namaa_project_app/services/material_classifier.dart';
+import 'package:namaa_project_app/services/storage_service.dart';
 
 class RecycleSubmissionPage extends StatefulWidget {
   final String? editId;
@@ -32,6 +35,8 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
 
   File? _imageFile;
   bool _isProcessing = false;
+  bool _isAnalyzing = false; // حالة تحليل الذكاء الاصطناعي
+  String? _detectedLabel; // المادة المكتشفة
   double? _lat, _lng;
   String? _locationStatus;
   final TextEditingController _notesCtrl = TextEditingController();
@@ -71,7 +76,52 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
 
   Future<void> _pickImage(ImageSource source) async {
     final picked = await ImagePicker().pickImage(source: source, imageQuality: 50);
-    if (picked != null) setState(() => _imageFile = File(picked.path));
+    if (picked != null) {
+      final file = File(picked.path);
+      setState(() {
+        _imageFile = file;
+        _detectedLabel = null;
+      });
+      _runAIAnalysis(file);
+    }
+  }
+
+  Future<void> _runAIAnalysis(File file) async {
+    setState(() => _isAnalyzing = true);
+    try {
+      final result = await MaterialClassifier.detect(file);
+      if (result.confidence > 0.6) {
+        // خريطة لربط الـ labels بالأسماء العربية في القائمة
+        final labelMap = {
+          'plastic': 'بلاستيك',
+          'metal': 'معادن',
+          'paper': 'ورق',
+          'glass': 'زجاج',
+          'electronics': 'إلكترونيات',
+          'batteries': 'بطاريات',
+        };
+
+        final arabicName = labelMap[result.detected.toLowerCase()];
+        if (arabicName != null) {
+          setState(() {
+            for (var m in _materials) {
+              m['selected'] = (m['name'] == arabicName);
+            }
+            _detectedLabel = arabicName;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✨ تم التعرف على المادة: $arabicName (${(result.confidence * 100).toInt()}%)'),
+              backgroundColor: primaryGreen,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('AI Analysis Error: $e');
+    } finally {
+      setState(() => _isAnalyzing = false);
+    }
   }
 
   void _showImageSourceDialog() {
@@ -115,24 +165,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
     } catch (e) { setState(() => _locationStatus = "فشل التحديد ❌"); }
   }
 
-  Future<String?> _uploadToImgBB(File file) async {
-    try {
-      final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
-      final request = http.MultipartRequest('POST', url)
-        ..files.add(await http.MultipartFile.fromPath('image', file.path));
-      
-      final reqResponse = await request.send();
-      if (reqResponse.statusCode == 200) {
-        final responseData = await reqResponse.stream.bytesToString();
-        final jsonResult = json.decode(responseData);
-        return jsonResult['data']['url'];
-      }
-      return null;
-    } catch (e) {
-      debugPrint("ImgBB Upload Error: $e");
-      return null;
-    }
-  }
+  // تم نقل منطق الرفع لـ StorageService
 
   Future<void> _submitRequest() async {
     if (_totalPoints == 0 || (_imageFile == null && _existingImageUrl == null) || _lat == null) {
@@ -142,7 +175,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
     setState(() => _isProcessing = true);
     try {
       String? imageUrl = _existingImageUrl;
-      if (_imageFile != null) imageUrl = await _uploadToImgBB(_imageFile!);
+      if (_imageFile != null) imageUrl = await StorageService.uploadImage(_imageFile!);
       
       if (imageUrl != null) {
         final payload = {
@@ -161,7 +194,28 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
         } else {
           payload['createdAt'] = FieldValue.serverTimestamp();
           await FirebaseFirestore.instance.collection('recycle_requests').add(payload);
-          _showSuccess("تم الإرسال!\nسيتم مراجعة الطلب وإضافة النقاط قريباً.");
+
+          // ✅ إضافة النقاط لرصيد المستخدم
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({'points': FieldValue.increment(_totalPoints)});
+
+            // إرسال إشعار
+            final matNames = _materials
+                .where((m) => m['selected'] == true)
+                .map((m) => m['name'])
+                .join(' و ');
+            await NotificationService.send(
+              title: '♻️ طلب تدوير جديد!',
+              body: 'تم إرسال طلب تدوير $matNames وحصلت على $_totalPoints نقطة ⭐',
+              type: 'recycle',
+            );
+          }
+
+          _showSuccess("تم الإرسال! وتم إضافة $_totalPoints نقطة لرصيدك 🌟");
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("حدث خطأ أثناء رفع الصورة.")));
@@ -225,7 +279,29 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
                   : Stack(
                       fit: StackFit.expand,
                       children: [
-                        ClipRRect(borderRadius: BorderRadius.circular(15), child: _imageFile != null ? Image.file(_imageFile!, fit: BoxFit.cover) : Image.network(_existingImageUrl!, fit: BoxFit.cover)),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: _imageFile != null
+                              ? Image.file(_imageFile!, fit: BoxFit.cover)
+                              : Image.network(_existingImageUrl!, fit: BoxFit.cover),
+                        ),
+                        if (_isAnalyzing)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: const Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  CircularProgressIndicator(color: Colors.white),
+                                  SizedBox(height: 10),
+                                  Text('جاري التعرف على المادة... ✨', style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                                ],
+                              ),
+                            ),
+                          ),
                         Positioned(
                           top: 8, left: 8,
                           child: GestureDetector(

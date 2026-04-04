@@ -42,6 +42,7 @@ import 'package:namaa_project_app/user/settings_page.dart';
 import 'package:namaa_project_app/user/invite_friend_page.dart';
 import 'package:namaa_project_app/user/about_page.dart';
 import 'package:namaa_project_app/user/certificate_page.dart';
+import 'package:namaa_project_app/user/notifications_list_page.dart';
 
 // خارطة المسارات (Routes Map)
 final Map<String, WidgetBuilder> appRoutes = {
@@ -64,6 +65,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/about': (context) => const AboutPage(),
   '/invite': (context) => const InviteFriendPage(),
   '/certificate': (context) => CertificatePage(userName: ''),
+  NotificationsListPage.routeName: (context) => const NotificationsListPage(),
 
   // المتجر
   '/store': (context) => EcoStorePage(),

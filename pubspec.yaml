@@ -58,6 +58,8 @@ dependencies:
   audioplayers: ^6.1.0
   google_sign_in: ^5.4.0
   cached_network_image: ^3.4.1
+  tflite_flutter: ^0.12.1
+  image: ^4.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -90,6 +92,7 @@ flutter:
     - assets/images/products/
 #    - assets/images/namaa30.png
     - assets/loading.json
+    - assets/ml/
 
 
 

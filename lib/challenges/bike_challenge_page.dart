@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sensors_plus/sensors_plus.dart'; // مستشعر الحركة
 import 'package:audioplayers/audioplayers.dart'; // الأصوات
 import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 class BikeChallengePage extends StatefulWidget {
   const BikeChallengePage({super.key});
@@ -144,6 +145,11 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
         setState(() => _todayCompleted = true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("🎉 أحسنت! +40 نقطة | ${l10n.bike_success_snack}"), backgroundColor: const Color(0xFF386641)),
+        );
+        await NotificationService.send(
+          title: '🚴 أكملت تحدي الدراجة!',
+          body: 'رائع! حصلت على 40 نقطة ووفرت ${((targetSeconds / 60) * 20).toStringAsFixed(0)}g من CO₂',
+          type: 'challenge',
         );
       }
     } catch (e) {

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 import 'before_after_history_page.dart';
 
@@ -116,6 +117,11 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
           await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').add(payload);
           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'points': FieldValue.increment(10)});
           if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم نشر مبادرتك بنجاح! 🎉 +10 نقاط", style: TextStyle(fontFamily: 'Cairo')), backgroundColor: Color(0xFF386641)));
+          await NotificationService.send(
+            title: '📸 مبادرة جديدة!',
+            body: 'تم نشر مبادرتك البيئية بنجاح وحصلت على 10 نقاط ⭐',
+            type: 'initiative',
+          );
         }
 
         if (!mounted) return;

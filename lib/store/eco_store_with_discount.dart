@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'my_orders_page.dart';
 import 'product_details_page.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 // ── الفئات ──
 const _categories = [
@@ -193,6 +194,13 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
     await batch.commit();
     setState(() => _cart.clear());
+
+    // إرسال إشعار بالطلب
+    await NotificationService.send(
+      title: '🛍️ تم تأكيد طلبك!',
+      body: 'شكراً $name! طلبك قيد المعالجة وسيتم التواصل معك قريباً 🌿',
+      type: 'store',
+    );
   }
 
   // ── Snack ──

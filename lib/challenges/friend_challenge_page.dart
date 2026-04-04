@@ -48,9 +48,13 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
     setState(() { _loading = true; _friendData = null; });
 
     try {
+      // ✅ التحقق إذا كان المدخل بريداً إلكترونياً أم كود دعوة
+      final bool isEmail = input.contains('@');
+      final String fieldName = isEmail ? 'email' : 'referralCode';
+
       final query = await FirebaseFirestore.instance
           .collection('users')
-          .where('referralCode', isEqualTo: input)
+          .where(fieldName, isEqualTo: input)
           .limit(1)
           .get();
 
@@ -122,7 +126,12 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
           final myData = snapshot.data?.data() as Map<String, dynamic>? ?? {};
           final myPoints = myData['points'] ?? 0;
           final myName   = myData['fullName'] ?? myData['name'] ?? l10n.profile;
-          final myCode   = myData['referralCode'] ?? '------';
+          
+          // ✅ تعديل: استخدام fallback في حال كان الكود مفقوداً في Firestore
+          final String uidStr = user?.uid ?? "";
+          final myCode = myData['referralCode'] ?? (uidStr.length >= 8 
+              ? uidStr.substring(0, 8).toUpperCase() 
+              : "NAMAA2026");
 
           return ListView(
             padding: const EdgeInsets.all(20),
