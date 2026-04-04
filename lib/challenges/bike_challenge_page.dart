@@ -229,8 +229,8 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     return Column(
       children: [
         Icon(icon, color: Colors.white, size: 30),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        Text(value, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
       ],
     );
   }
@@ -252,7 +252,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
           children: [
             Text(
               "${(currentSeconds ~/ 60).toString().padLeft(2, '0')}:${(currentSeconds % 60).toString().padLeft(2, '0')}",
-              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
             const Icon(Icons.directions_bike, size: 40, color: Color(0xFF386641)),
           ],
@@ -270,7 +270,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       ),
       onPressed: isRunning ? stopTimer : startTimer,
       icon: Icon(isRunning ? Icons.pause : Icons.play_arrow, color: Colors.white),
-      label: Text(isRunning ? l10n.bike_stop : l10n.bike_start, style: const TextStyle(color: Colors.white, fontSize: 18)),
+      label: Text(isRunning ? l10n.bike_stop : l10n.bike_start, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
     );
   }
 

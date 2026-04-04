@@ -36,17 +36,19 @@ class _EcoActionPageState extends State<EcoActionPage> {
     final todayStr = _getTodayDateString();
 
     try {
+      // البحث في مجموعة المهام الجديدة
       final query = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('completedTasks')
+          .collection('tasks')
+          .where('userId', isEqualTo: user.uid)
           .where('date', isEqualTo: todayStr)
           .get();
 
       if (mounted) {
         setState(() {
           for (var doc in query.docs) {
-            _completedTasks[doc.data()['taskId'] as String] = doc.data()['imageUrl'] as String? ?? '';
+            final taskId = doc.data()['taskId'] as String;
+            final status = doc.data()['status'] as String? ?? 'pending';
+            _completedTasks[taskId] = status;
           }
         });
       }
@@ -61,58 +63,66 @@ class _EcoActionPageState extends State<EcoActionPage> {
   }
 
   // ✅ المهمة الرئيسية: التقاط الصورة (أو التأكيد) وحفظ النقاط
-  Future<void> _handleTaskCompletion(String taskId, int pts, AppLocalizations l10n, {bool needsPhoto = true}) async {
+  Future<void> _handleTaskCompletion(
+    String taskId,
+    int pts,
+    AppLocalizations l10n, {
+    bool needsPhoto = true,
+  }) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
     String? photoUrl;
 
     if (needsPhoto) {
-      // 1. اختيار مصدر الصورة
       final ImageSource? source = await _showSourcePicker(l10n);
       if (source == null) return;
 
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
         source: source,
-        imageQuality: 50, 
+        imageQuality: 50,
         maxWidth: 800,
       );
       if (pickedFile == null) return;
 
-      // 2. تأكيد الصورة من المستخدم
-      final bool? confirmed = await _showImagePreview(File(pickedFile.path), l10n);
+      final bool? confirmed =
+          await _showImagePreview(File(pickedFile.path), l10n);
       if (confirmed != true) return;
 
       setState(() => _isProcessing = true);
 
       try {
-        // 3. الرفع إلى سيرفر ImgBB 
-        final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+        final url = Uri.parse(
+            'https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+
         final request = http.MultipartRequest('POST', url)
-          ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
-        
-        final reqResponse = await request.send();
-        if (reqResponse.statusCode == 200) {
-          final responseData = await reqResponse.stream.bytesToString();
-          final jsonResult = json.decode(responseData);
+          ..files.add(
+              await http.MultipartFile.fromPath('image', pickedFile.path));
+
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          final data = await response.stream.bytesToString();
+          final jsonResult = json.decode(data);
           photoUrl = jsonResult['data']['url'];
         } else {
-          throw Exception('فشل رفع الصورة لمزود الخدمة.');
+          throw Exception('فشل رفع الصورة');
         }
       } catch (e) {
         _showFeedback(e.toString(), false);
         return;
       }
     } else {
-      // مهمة لا تتطلب صورة (تأكيد بسيط)
       final bool? confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text("تأكيد المهمة ✅", style: TextStyle(fontFamily: 'Cairo')),
-          content: const Text("هل تؤكد قيامك بهذه المهمة البيئية اليوم؟", textAlign: TextAlign.center),
+          content: const Text("هل تؤكد قيامك بهذه المهمة؟", textAlign: TextAlign.center),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("إلغاء")),
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: const Text("إلغاء")),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
@@ -122,38 +132,28 @@ class _EcoActionPageState extends State<EcoActionPage> {
         ),
       );
       if (confirmed != true) return;
+
       setState(() => _isProcessing = true);
     }
 
     try {
-      // 4. تحديث النقاط وحفظ الإنجاز 
-      final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
       final todayStr = _getTodayDateString();
 
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final snapshot = await transaction.get(userDoc);
-        final currentPoints = (snapshot.data()?['points'] ?? 0) as int;
-
-        transaction.update(userDoc, {'points': currentPoints + pts});
-
-        final taskRef = userDoc.collection('completedTasks').doc('${taskId}_$todayStr');
-        transaction.set(taskRef, {
-          'taskId': taskId,
-          'date': todayStr,
-          'pts': pts,
-          'imageUrl': photoUrl ?? (needsPhoto ? '' : 'Instant Confirmation'),
-          'completedAt': FieldValue.serverTimestamp(),
-        });
+      // 🔥🔥 التعديل الأساسي هنا
+      await FirebaseFirestore.instance.collection('tasks').add({
+        'userId': user.uid,
+        'taskId': taskId,
+        'date': todayStr,
+        'pts': pts,
+        'imageUrl': photoUrl ?? '',
+        'status': 'pending', // 🔥 يمنع الغش
+        'createdAt': FieldValue.serverTimestamp(),
       });
 
       if (mounted) {
-        setState(() => _completedTasks[taskId] = photoUrl ?? 'Confirmed');
-        _showFeedback(l10n.tree_points_stat(pts), true);
-        await NotificationService.send(
-          title: '🌿 مهمة بيئية مكتملة!',
-          body: 'حصلت على $pts نقطة من إتمام هذه المهمة! 👏',
-          type: 'eco_action',
-        );
+        setState(() => _completedTasks[taskId] = 'pending');
+
+        _showFeedback("تم إرسال المهمة للمراجعة ✅", true);
       }
     } catch (e) {
       _showFeedback(e.toString(), false);
@@ -445,21 +445,21 @@ class _EcoActionPageState extends State<EcoActionPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: _isProcessing 
-                ? null 
-                : isDone 
-                    ? () => _showUploadedImage(task['title'], _completedTasks[task['id']]!)
-                    : () => _handleTaskCompletion(task['id'], task['pts'], l10n, needsPhoto: task['needsPhoto'] ?? true),
+            onPressed: (isDone || _isProcessing)
+                ? (isDone ? () => _showUploadedImage(task['title'], _completedTasks[task['id']]!) : null)
+                : () => _handleTaskCompletion(task['id'], task['pts'], l10n, needsPhoto: task['needsPhoto'] ?? true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDone ? Colors.grey : const Color(0xFF386641),
+              backgroundColor: isDone 
+                  ? (_completedTasks[task['id']] == 'pending' ? Colors.orange : Colors.grey) 
+                  : const Color(0xFF386641),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               elevation: 0,
             ),
             child: Text(
               isDone 
-                ? (task['needsPhoto'] == false ? "مكتمل ✅" : "عرض الدليل 🖼️") 
-                : (task['needsPhoto'] == false ? "تنفيذ ✅" : "إثبات 📸"), 
-              style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontSize: 12)
+                  ? (_completedTasks[task['id']] == 'pending' ? "بانتظار المراجعة... ⏳" : "تمت المهمة بنجاح ✅") 
+                  : (task['needsPhoto'] == false ? "تأكيد التنفيذ ✅" : "إرسال إثبات 📤"), 
+              style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontSize: 11)
             ),
           ),
         ],

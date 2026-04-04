@@ -184,9 +184,10 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
             TextField(
               controller: descriptionController,
               maxLines: 3,
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 16),
               decoration: InputDecoration(
                 hintText: "أخبرنا ماذا فعلت؟ (مثلاً: تنظيف حديقة...)",
-                hintStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 13),
+                hintStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -245,9 +246,9 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
             ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_a_photo, color: Color(0xFF386641), size: 35),
+            const Icon(Icons.add_a_photo, color: Color(0xFF386641), size: 50),
             const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 12)),
+            Text(label, style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold)),
           ],
         )
             : null,

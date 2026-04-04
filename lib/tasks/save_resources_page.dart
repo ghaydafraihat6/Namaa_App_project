@@ -1,10 +1,13 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:namaa_project_app/services/notification_service.dart';
-import 'package:namaa_project_app/services/storage_service.dart';
+ import 'dart:io';
+ import 'dart:convert';
+ import 'dart:async';
+ import 'package:flutter/material.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+ import 'package:firebase_auth/firebase_auth.dart';
+ import 'package:image_picker/image_picker.dart';
+ import 'package:http/http.dart' as http;
+ import 'package:namaa_project_app/l10n/app_localizations.dart';
+ import 'package:namaa_project_app/services/notification_service.dart';
 
 class SaveResourcesPage extends StatefulWidget {
   const SaveResourcesPage({super.key});
@@ -14,7 +17,7 @@ class SaveResourcesPage extends StatefulWidget {
 }
 
 class _SaveResourcesPageState extends State<SaveResourcesPage> {
-  final Set<String> _completedTasks = {};
+  final Map<String, String> _completedTasks = {};
   bool _isProcessing = false;
 
   @override
@@ -24,7 +27,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
   }
 
   // ✅ دالة لجلب تاريخ اليوم بصيغة نصية (سنة-شهر-يوم)
-  String _getTodayId() {
+  String _getTodayDateString() {
     final now = DateTime.now();
     return "${now.year}-${now.month}-${now.day}";
   }
@@ -33,31 +36,23 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final today = _getTodayId();
+    final todayStr = _getTodayDateString();
 
     try {
-      // 1. البحث عن المهام المكتملة لليوم
-      final doneQuery = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('completedTasks')
-          .where('type', isEqualTo: 'save_resources_basic')
-          .where('date', isEqualTo: today)
-          .get();
-
-      // 2. البحث عن المهام المعلقة (تم الإرسال لليوم)
-      final pendingQuery = await FirebaseFirestore.instance
-          .collection('task_reviews')
+      // البحث في مجموعة المهام الجديدة للكشف عن الحالات (pending, approved)
+      final query = await FirebaseFirestore.instance
+          .collection('tasks')
           .where('userId', isEqualTo: user.uid)
-          .where('createdAt', isGreaterThanOrEqualTo: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day))
-          .where('status', isEqualTo: 'pending')
+          .where('date', isEqualTo: todayStr)
           .get();
 
       if (mounted) {
         setState(() {
           _completedTasks.clear();
-          for (var doc in doneQuery.docs) {
-            _completedTasks.add(doc.data()['taskId'] as String);
+          for (var doc in query.docs) {
+            final taskId = doc.data()['taskId'] as String;
+            final status = doc.data()['status'] as String? ?? 'pending';
+            _completedTasks[taskId] = status;
           }
         });
       }
@@ -66,38 +61,220 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     }
   }
 
-  Future<void> _handleTaskAction(String taskId, String title, int points, {bool needsPhoto = true}) async {
+  Future<void> _handleTaskCompletion(
+    String taskId,
+    int pts,
+    AppLocalizations l10n, {
+    bool needsPhoto = true,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    String? photoUrl;
+
     if (needsPhoto) {
-      _pickAndSubmit(taskId, title, points);
+      final ImageSource? source = await _showSourcePicker(l10n);
+      if (source == null) return;
+
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: source,
+        imageQuality: 50,
+        maxWidth: 800,
+      );
+      if (pickedFile == null) return;
+
+      final bool? confirmed = await _showImagePreview(File(pickedFile.path), l10n);
+      if (confirmed != true) return;
+
+      setState(() => _isProcessing = true);
+
+      try {
+        final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+
+        final request = http.MultipartRequest('POST', url)
+          ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
+
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          final data = await response.stream.bytesToString();
+          final jsonResult = json.decode(data);
+          photoUrl = jsonResult['data']['url'];
+        } else {
+          throw Exception('فشل رفع الصورة');
+        }
+      } catch (e) {
+        _showFeedback(e.toString(), false);
+        return;
+      }
     } else {
-      // حالات خاصة مثل الاستحمام (بدون صورة للخصوصية)
-      _showShowerConfirmationDialog(taskId, title, points);
+      // إذا كانت مهمة الاستحمام، نفتح المؤقت، وإلا حوار تأكيد بسيط
+      if (taskId == "short_shower_timing") {
+        await _showShowerTimerDialog(taskId, pts, l10n);
+        return;
+      } else {
+        final bool? confirmed = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text("تأكيد المهمة ✅", style: TextStyle(fontFamily: 'Cairo')),
+            content: const Text("هل تؤكد قيامك بهذه المهمة؟", textAlign: TextAlign.center),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("إلغاء")),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
+                child: const Text("تأكيد", style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+        if (confirmed != true) return;
+        setState(() => _isProcessing = true);
+      }
+    }
+
+    try {
+      final todayStr = _getTodayDateString();
+
+      await FirebaseFirestore.instance.collection('tasks').add({
+        'userId': user.uid,
+        'taskId': taskId,
+        'date': todayStr,
+        'pts': pts,
+        'imageUrl': photoUrl ?? '',
+        'status': 'pending', 
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      if (mounted) {
+        setState(() => _completedTasks[taskId] = 'pending');
+        _showFeedback("تم إرسال المهمة للمراجعة ✅", true);
+      }
+    } catch (e) {
+      _showFeedback(e.toString(), false);
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 
-  Future<void> _pickAndSubmit(String taskId, String title, int points) async {
-    showModalBottomSheet(
+  // --- حوار مؤقت الاستحمام (Shower Timer) ---
+  Future<void> _showShowerTimerDialog(String taskId, int pts, AppLocalizations l10n) async {
+    int secondsRemaining = 5 * 60; // 5 دقائق كهدف
+    Timer? timer;
+
+    await showDialog(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          void startTimer() {
+            timer = Timer.periodic(const Duration(seconds: 1), (t) {
+              if (secondsRemaining > 0) {
+                setDialogState(() => secondsRemaining--);
+              } else {
+                t.cancel();
+              }
+            });
+          }
+
+          String formatTime(int seconds) {
+            int mins = seconds ~/ 60;
+            int secs = seconds % 60;
+            return "${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}";
+          }
+
+          return AlertDialog(
+            title: const Text("مؤقت الاستحمام 🚿", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("التحدي هو الاستحمام في أقل من 5 دقائق لتوفير لترات من الماء!", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
+                const SizedBox(height: 20),
+                Text(
+                  formatTime(secondsRemaining),
+                  style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.blue),
+                ),
+                const SizedBox(height: 10),
+                if (timer == null)
+                  ElevatedButton(
+                    onPressed: () {
+                      setDialogState(() => startTimer());
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    child: const Text("بدء الاستحمام 🚿", style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                  )
+                else if (secondsRemaining > 0)
+                  const Text("جارٍ التحقق... استحم بسرعة! 🫧", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey))
+                else
+                  const Text("انتهى الوقت! نأمل أنك وفرت الكثير من الماء. ✅", style: TextStyle(fontFamily: 'Cairo', color: Colors.red)),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  timer?.cancel();
+                  Navigator.pop(ctx);
+                },
+                child: const Text("إلغاء"),
+              ),
+              if (timer != null)
+                ElevatedButton(
+                  onPressed: () async {
+                    timer?.cancel();
+                    Navigator.pop(ctx);
+                    setState(() => _isProcessing = true);
+                    try {
+                      final todayStr = _getTodayDateString();
+                      await FirebaseFirestore.instance.collection('tasks').add({
+                        'userId': FirebaseAuth.instance.currentUser?.uid,
+                        'taskId': taskId,
+                        'date': todayStr,
+                        'pts': pts,
+                        'imageUrl': 'Shower Timer Completed (${5*60 - secondsRemaining}s)',
+                        'status': 'pending', 
+                        'createdAt': FieldValue.serverTimestamp(),
+                      });
+                      if (mounted) {
+                        setState(() => _completedTasks[taskId] = 'pending');
+                        _showFeedback("تم إرسال المهمة للمراجعة ✅", true);
+                      }
+                    } catch (e) {
+                      _showFeedback(e.toString(), false);
+                    } finally {
+                      if (mounted) setState(() => _isProcessing = false);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
+                  child: const Text("إرسال إثبات 📤", style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Future<ImageSource?> _showSourcePicker(AppLocalizations l10n) {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("اختر مصدر الصورة 📸", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 18)),
+            const Text("إثبات 📸 - اختر المصدر", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildSourceOption(Icons.camera_alt, "الكاميرا", () {
-                  Navigator.pop(ctx);
-                  _processPicking(taskId, title, points, ImageSource.camera);
-                }),
-                _buildSourceOption(Icons.photo_library, "المعرض", () {
-                  Navigator.pop(ctx);
-                  _processPicking(taskId, title, points, ImageSource.gallery);
-                }),
-              ],
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Colors.blue),
+              title: const Text("الكاميرا"),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Colors.blue),
+              title: const Text("معرض الصور"),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
         ),
@@ -105,138 +282,28 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     );
   }
 
-  Widget _buildSourceOption(IconData icon, String label, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          CircleAvatar(radius: 30, backgroundColor: Colors.blue.shade50, child: Icon(icon, color: Colors.blue.shade700, size: 30)),
-          const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontFamily: 'Cairo')),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _processPicking(String taskId, String title, int points, ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source, imageQuality: 50);
-
-    if (pickedFile == null) return;
-
-    setState(() => _isProcessing = true);
-
-    try {
-      final file = File(pickedFile.path);
-      final url = await StorageService.uploadImage(file);
-      
-      final today = _getTodayId();
-      // إضافة لسجل المراجعات كـ "مقبول تلقائياً" للتوثيق
-      await FirebaseFirestore.instance.collection('task_reviews').add({
-        'userId': FirebaseAuth.instance.currentUser?.uid,
-        'taskId': taskId,
-        'taskTitle': title,
-        'points': points,
-        'imageUrl': url ?? 'Error Uploading',
-        'status': 'approved',
-        'type': 'save_resources',
-        'date': today,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      await _awardPoints(taskId, title, points);
-
-      if (mounted) {
-        _showSnack("✅ أحسنت! تم إثبات المهمة وإضافة $points نقطة لحسابك فوراً.", Colors.green);
-      }
-    } catch (e) {
-      _showSnack("فشل الإرسال: $e", Colors.red);
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
-    }
-  }
-
-  Future<void> _awardPoints(String taskId, String title, int points) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
-    final today = _getTodayId();
-
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      final snapshot = await transaction.get(docRef);
-      int current = snapshot.data()?['points'] ?? 0;
-      transaction.update(docRef, {'points': current + points});
-    });
-
-    await docRef.collection('completedTasks').doc('resources_${taskId}_$today').set({
-      'taskId': taskId,
-      'type': 'save_resources_basic',
-      'date': today,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-
-    setState(() => _completedTasks.add(taskId));
-    await NotificationService.send(
-      title: '💧 مهمة توفير مكتملة!',
-      body: 'رائع! حصلت على $points نقطة لمهمة $title',
-      type: 'resources',
-    );
-  }
-
-  void _showShowerConfirmationDialog(String taskId, String title, int points) {
-    showDialog(
+  Future<bool?> _showImagePreview(File file, AppLocalizations l10n) {
+    return showDialog<bool>(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Text("مؤقت الاستحمام 🚿", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
-        content: const Text("للتأكد من تقليل وقت الاستحمام، نرجو تأكيد انتهاء العملية بنجاح عند خروجك.", textAlign: TextAlign.center),
+      builder: (context) => AlertDialog(
+        title: const Text("إثبات 📸 - هل هذه الصورة واضحة؟", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontFamily: 'Cairo')),
+        content: ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.file(file, height: 250, fit: BoxFit.cover)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("إعادة الالتقاط")),
           ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await _submitForManualReviewNoPhoto(taskId, title, points);
-            },
-            child: const Text("تم بنجاح!", style: TextStyle(color: Colors.white)),
+            child: const Text("تأكيد ورفع", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
 
-  Future<void> _submitForManualReviewNoPhoto(String taskId, String title, int points) async {
-    setState(() => _isProcessing = true);
-    try {
-      final today = _getTodayId();
-      await FirebaseFirestore.instance.collection('task_reviews').add({
-        'userId': FirebaseAuth.instance.currentUser?.uid,
-        'taskId': taskId,
-        'taskTitle': title,
-        'points': points,
-        'imageUrl': 'No Image (Privacy-Sensitive)', 
-        'status': 'approved', 
-        'type': 'save_resources',
-        'date': today,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      
-      await _awardPoints(taskId, title, points);
-
-      if (mounted) {
-        _showSnack("✅ تم تأكيد المهمة بنجاح! تم إضافة $points نقطة لحسابك.", Colors.blue);
-      }
-    } catch (e) {
-       _showSnack("حدث خطأ: $e", Colors.red);
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
-    }
-  }
-
-  void _showSnack(String msg, Color color) {
+  void _showFeedback(String msg, bool isSuccess) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg, style: const TextStyle(fontFamily: 'Cairo')),
-      backgroundColor: color,
+      content: Text(isSuccess ? "✅ $msg" : "❌ خطأ: $msg"),
+      backgroundColor: isSuccess ? Colors.blue.shade600 : Colors.red,
       behavior: SnackBarBehavior.floating,
     ));
   }
@@ -249,13 +316,17 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     required IconData icon,
     bool needsPhoto = true,
   }) {
-    final bool isCompleted = _completedTasks.contains(taskId);
+    final status = _completedTasks[taskId];
+    final bool isCompleted = status != null;
+    final bool isPending = status == 'pending';
+
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       elevation: isCompleted ? 1 : 4,
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: isCompleted ? Colors.blue.shade50 : Colors.white,
+      color: isCompleted ? (isPending ? Colors.orange.shade50 : Colors.blue.shade50) : Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -271,7 +342,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                   ),
                   child: Icon(
                     icon,
-                    color: isCompleted ? Colors.grey : Colors.blue.shade700,
+                    color: isCompleted ? (isPending ? Colors.orange : Colors.grey) : Colors.blue.shade700,
                     size: 28,
                   ),
                 ),
@@ -287,14 +358,14 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: isCompleted ? Colors.grey : const Color(0xFF2D5A3F),
-                          decoration: isCompleted ? TextDecoration.lineThrough : TextDecoration.none,
+                          decoration: (isCompleted && !isPending) ? TextDecoration.lineThrough : TextDecoration.none,
                         ),
                       ),
                       Text(
-                        isCompleted ? "تم الإنجاز اليوم ✅" : "تكسب $points نقطة",
+                        isPending ? "قيد المراجعة ⏳" : (isCompleted ? "تم الإنجاز ✅" : "إثبات 📸 - تكسب $points نقطة"),
                         style: TextStyle(
                           fontFamily: 'Cairo',
-                          color: isCompleted ? Colors.grey.shade400 : Colors.blue.shade700,
+                          color: isPending ? Colors.orange : (isCompleted ? Colors.green : Colors.blue.shade700),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -315,15 +386,17 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isCompleted ? Colors.grey.shade200 : Colors.blue.shade600,
+                  backgroundColor: isPending ? Colors.orange : (isCompleted ? Colors.grey.shade200 : Colors.blue.shade600),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   elevation: 0,
                 ),
                 onPressed: (isCompleted || _isProcessing)
                     ? null
-                    : () => _handleTaskAction(taskId, title, points, needsPhoto: needsPhoto),
+                    : () => _handleTaskCompletion(taskId, points, l10n, needsPhoto: needsPhoto),
                 child: Text(
-                  isCompleted ? "بانتظار غدٍ لمهمة جديدة ⏳" : (needsPhoto ? "صوّر الإثبات" : "تم التنفيذ"),
+                  isPending 
+                      ? "بانتظار المراجعة... ⏳" 
+                      : (isCompleted ? "تمت المهمة بنجاح ✅" : "إرسال إثبات 📤"),
                   style: TextStyle(
                     fontFamily: 'Cairo', 
                     color: isCompleted ? Colors.grey : Colors.white, 

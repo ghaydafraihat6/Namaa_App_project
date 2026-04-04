@@ -65,7 +65,8 @@ class LeaderboardPage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 13,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                     color: Color(0xBFFFFFFF))),
           ]),
         ),
@@ -150,10 +151,10 @@ class LeaderboardPage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(isMe ? '$name ⭐' : name,
-                                style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1B2E1F)),
+                                style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF1B2E1F)),
                                 overflow: TextOverflow.ellipsis),
                             Text('${l10n.tree_level} ${_getLevel(points)}', // ✅ نص مترجم
-                                style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.grey)),
+                                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ),
@@ -163,9 +164,9 @@ class LeaderboardPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(points.toString(), // الرقم فقط
-                              style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF386641))),
+                              style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF386641))),
                           Text(l10n.points, // ✅ كلمة "نقطة" مترجمة
-                              style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: Colors.grey)),
+                              style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ]),

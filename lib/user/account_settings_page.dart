@@ -10,6 +10,7 @@ import 'package:namaa_project_app/admin/task_approvals_page.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
+  static const routeName = '/account-settings';
 
   @override
   State<AccountSettingsPage> createState() => _AccountSettingsPageState();
@@ -440,14 +441,34 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('NAMAA',
-            style: TextStyle(
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800,
-                color: Colors.white)),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('NAMAA',
+                style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    fontSize: 20)),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEBF4DD),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Image.asset(
+                'assets/images/logo_namaa.png',
+                height: 28,
+                errorBuilder: (_, __, ___) => const Icon(Icons.eco, color: _green, size: 20),
+              ),
+            ),
+          ],
+        ),
         backgroundColor: _green,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
+        elevation: 0,
       ),
       body: Form(
         key: _formKey,

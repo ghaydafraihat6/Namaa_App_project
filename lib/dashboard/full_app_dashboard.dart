@@ -7,6 +7,7 @@ import 'package:namaa_project_app/widgets/daily_reminder.dart';
 import 'package:namaa_project_app/widgets/co2_stats.dart';
 import 'package:namaa_project_app/store/admin_orders_page.dart'; // مسار صفحة الأدمين
 import 'package:namaa_project_app/user/notifications_list_page.dart';
+import 'package:namaa_project_app/user/account_settings_page.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
 
 class FullAppDashboard extends StatefulWidget {
@@ -100,41 +101,36 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Stack(
-                        alignment: Alignment.centerLeft,
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEBF4DD),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/images/logo_namaa.png',
-                                width: 60,
-                                height: 70,
-                              ),
+                    Row(
+                      children: [
+                        Text(l10n.appName,
+                            style: const TextStyle(
+                                fontFamily: 'Cairo',
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white)),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEBF4DD),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Image.asset(
+                              'assets/images/logo_namaa.png',
+                              width: 28,
+                              height: 28,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 70, right: 70), // إضافة Padding للجهتين لدعم العربي/إنجليزي
-                            child: Text(l10n.appName,
-                                style: const TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white)),
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      _notifBell(context),
-                      const SizedBox(width: 10),
-                      _iconBtn('👤', () => _goTo(4)),
-                    ]),
+                        ),
+                        const Spacer(),
+                        _notifBell(context),
+                        const SizedBox(width: 10),
+                        _iconBtn(Icons.person, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountSettingsPage()))),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     // ✅ استخدام الترحيب المترجم مع تمرير الاسم
                     Text(l10n.welcome_user(name),
@@ -297,7 +293,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   final int percent = (progress * 100).toInt();
 
                   return GestureDetector(
-                    onTap: () => _goTo(1),
+                    onTap: () => Navigator.pushNamed(context, '/bike-challenge'),
                     child: Container(
                       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       padding: const EdgeInsets.all(18),
@@ -434,7 +430,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
         ),
       );
 
-  Widget _iconBtn(String icon, VoidCallback onTap) => GestureDetector(
+  Widget _iconBtn(dynamic icon, VoidCallback onTap) => GestureDetector(
     onTap: onTap,
     child: Container(
       width: 40,
@@ -442,7 +438,11 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
       decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.15),
           borderRadius: BorderRadius.circular(12)),
-      child: Center(child: Text(icon, style: const TextStyle(fontSize: 18))),
+      child: Center(
+        child: icon is IconData
+            ? Icon(icon, color: Colors.blue, size: 20)
+            : Text(icon.toString(), style: const TextStyle(fontSize: 18)),
+      ),
     ),
   );
   Widget _notifBell(BuildContext context) => StreamBuilder<int>(
@@ -462,15 +462,15 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   color: Colors.white.withAlpha(38),
                   borderRadius: BorderRadius.circular(12)),
               child: const Center(
-                  child: Text('🔔', style: TextStyle(fontSize: 18))),
+                  child: Icon(Icons.notifications, color: Colors.amber, size: 22)),
             ),
             if (count > 0)
               Positioned(
                 top: -4,
                 right: -4,
                 child: Container(
-                  width: 20,
-                  height: 20,
+                  width: 22,
+                  height: 22,
                   decoration: const BoxDecoration(
                       color: Colors.red, shape: BoxShape.circle),
                   child: Center(
@@ -478,8 +478,9 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                       count > 9 ? '9+' : '$count',
                       style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Cairo'),
                     ),
                   ),
                 ),

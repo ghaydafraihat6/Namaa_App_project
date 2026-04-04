@@ -98,6 +98,11 @@ class _TreePageState extends State<TreePage>
         'غابة برقش الطبيعية',
         'غابة وصفي التل',
         'غابات اليوبيل الوطني',
+        'غابة ملكا الطبيعية',
+        'غابات لواء الكورة',
+        'غابة الأمير فيصل',
+        'غابات اشتفينا الجميلة',
+        'متنزه غمدان الوطني',
       ];
       final plantedLocation = (locations.toList()..shuffle()).first;
 
@@ -112,6 +117,7 @@ class _TreePageState extends State<TreePage>
         'treeName': 'شجرة $userName #$treesCount',
         'plantedLocation': plantedLocation,
         'points': 500,
+        'treeNumber': treesCount,
         'treeCompletedAt': FieldValue.serverTimestamp(),
       });
       if (mounted) _showTreeCompletedDialog(data, treesCount);
@@ -187,7 +193,10 @@ class _TreePageState extends State<TreePage>
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => CertificatePage(userName: name)));
+                          builder: (_) => CertificatePage(
+                            userName: name,
+                            treeNumber: treeNumber,
+                          )));
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF386641)),
@@ -296,41 +305,45 @@ class _TreePageState extends State<TreePage>
           children: [
           Row(children: [
           Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-          color: Colors.white.withAlpha(30),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-          color: Colors.white.withAlpha(60), width: 1),
-          ),
-          child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-          'assets/images/logo_namaa.png',
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) =>
-          const Center(
-          child: Text('🌱',
-          style: TextStyle(fontSize: 22))),
-          ),
-          ),
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))
+              ],
+              border: Border.all(color: Colors.white, width: 2),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(13),
+              child: Image.asset(
+                'assets/images/logo_namaa.png',
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) =>
+                const Center(
+                    child: Text('🌱',
+                        style: TextStyle(fontSize: 30))),
+              ),
+            ),
           ),
           const SizedBox(width: 10),
           Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
           const Text('نماء',
-          style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w900,
-          color: Colors.white,
-          fontFamily: 'Cairo')),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontFamily: 'Cairo')),
           Text(
-          isArabic ? 'شجرتي الخضراء 🌱' : 'My Green Tree 🌱',
-          style: const TextStyle(
-          fontSize: 11,
-          color: Color(0xBFFFFFFF))),
+              isArabic ? 'شجرتي الخضراء' : 'My Green Tree',
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontFamily: 'Cairo')),
           ]),
           ]),
           GestureDetector(
@@ -340,19 +353,20 @@ class _TreePageState extends State<TreePage>
           builder: (_) => const ForestPage())),
           child: Container(
           padding: const EdgeInsets.symmetric(
-          horizontal: 10, vertical: 6),
+          horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
           color: Colors.white.withAlpha(50),
-          borderRadius: BorderRadius.circular(12)),
+          borderRadius: BorderRadius.circular(15)),
           child: Row(children: [
           const Text('🌳',
-          style: TextStyle(fontSize: 13)),
-          const SizedBox(width: 4),
+          style: TextStyle(fontSize: 18)),
+          const SizedBox(width: 6),
           Text(l10n.forest,
           style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Colors.white)),
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+          color: Colors.white,
+          fontFamily: 'Cairo')),
           ]),
           ),
           ),
@@ -371,16 +385,16 @@ class _TreePageState extends State<TreePage>
           borderRadius: BorderRadius.circular(20)),
           child: Column(children: [
           Text(l10n.currentPoints,
-          style: const TextStyle(
-          color: Color(0xFF386641), fontSize: 13)),
+              style: const TextStyle(
+                  color: Color(0xFF386641), fontSize: 16, fontWeight: FontWeight.w500, fontFamily: 'Cairo')),
           Text('${_pointsAnimation.value}',
-          style: const TextStyle(
-          fontSize: 42,
-          fontWeight: FontWeight.w900,
-          color: Color(0xFF386641))),
+              style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF386641))),
           Text(_getTreeLevelName(points, l10n),
-          style:
-          const TextStyle(fontSize: 15, color: Colors.grey)),
+              style:
+              const TextStyle(fontSize: 18, color: Color(0xFF6A994E), fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
           ]),
           ),
 
@@ -424,13 +438,13 @@ class _TreePageState extends State<TreePage>
           child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text(isArabic ? "كوبون خصم 20% فعال!" : "20% Discount Active!",
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
-          Text(
-          isArabic ? "ينتهي خلال ${_getDaysLeft(data['discountExpiry'])} أيام"
-              : "Expires in ${_getDaysLeft(data['discountExpiry'])} days",
-          style: const TextStyle(fontSize: 11, color: Colors.orange),
-          ),
+              Text(isArabic ? "كوبون خصم 20% فعال!" : "20% Discount Active!",
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange, fontSize: 16, fontFamily: 'Cairo')),
+              Text(
+                isArabic ? "ينتهي خلال ${_getDaysLeft(data['discountExpiry'])} أيام"
+                    : "Expires in ${_getDaysLeft(data['discountExpiry'])} days",
+                style: const TextStyle(fontSize: 13, color: Colors.orange, fontWeight: FontWeight.w500, fontFamily: 'Cairo'),
+              ),
           ],
           ),
           ),
@@ -465,15 +479,16 @@ class _TreePageState extends State<TreePage>
           Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-          Text(
-          '${l10n.progressToLevel} ${lvl < 5 ? lvl + 1 : 5}',
-          style: const TextStyle(
-          fontSize: 13, fontWeight: FontWeight.bold)),
-          Text('${(prog * 100).toInt()}%',
-          style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF386641))),
+              Text(
+                  '${l10n.progressToLevel} ${lvl < 5 ? lvl + 1 : 5}',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+              Text('${(prog * 100).toInt()}%',
+                  style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF386641),
+                      fontFamily: 'Cairo')),
           ]),
           const SizedBox(height: 10),
           LinearProgressIndicator(
@@ -484,10 +499,10 @@ class _TreePageState extends State<TreePage>
           const AlwaysStoppedAnimation(Color(0xFF386641))),
           const SizedBox(height: 8),
           Text(
-          lvl < 5
-          ? l10n.tree_next_level_needs(next)
-              : l10n.tree_max_level,
-          style: const TextStyle(fontSize: 11, color: Colors.grey),
+            lvl < 5
+                ? l10n.tree_next_level_needs(next)
+                : l10n.tree_max_level,
+            style: const TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
           ),
           ]),
           ),
@@ -519,26 +534,29 @@ class _TreePageState extends State<TreePage>
           child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text(
-          isArabic
-          ? 'شهادة إنجاز الشجرة'
-              : 'Tree Achievement Certificate',
-          style: const TextStyle(
-          fontWeight: FontWeight.w800,
-          color: Colors.white,
-          fontSize: 14)),
+              Text(
+                  isArabic
+                      ? 'شهادة إنجاز الشجرة'
+                      : 'Tree Achievement Certificate',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontFamily: 'Cairo')),
           const SizedBox(height: 4),
-          Text(
-          treesCompleted > 0
-          ? (isArabic
-          ? 'لديك $treesCompleted شهادة - اضغط لعرضها'
-              : 'You have $treesCompleted certificate(s)')
-              : (isArabic
-          ? 'أكمل 500 نقطة للحصول على شهادة'
-              : 'Reach 500 pts to earn a certificate'),
-          style: const TextStyle(
-          fontSize: 11,
-          color: Color(0xBFFFFFFF))),
+              Text(
+                  treesCompleted > 0
+                      ? (isArabic
+                      ? 'لديك $treesCompleted شهادة - اضغط لعرضها'
+                      : 'You have $treesCompleted certificate(s)')
+                      : (isArabic
+                      ? 'أكمل 500 نقطة للحصول على شهادة'
+                      : 'Reach 500 pts to earn a certificate'),
+                  style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Cairo')),
           ]),
           ),
           if (treesCompleted > 0)
@@ -547,7 +565,7 @@ class _TreePageState extends State<TreePage>
           context,
           MaterialPageRoute(
           builder: (_) =>
-          CertificatePage(userName: userName))),
+          CertificatePage(userName: userName, treeNumber: treesCompleted))),
           child: Container(
           padding: const EdgeInsets.symmetric(
           horizontal: 12, vertical: 8),
@@ -575,7 +593,7 @@ class _TreePageState extends State<TreePage>
           child: Center(
           child: Text(
           isArabic ? "🌲 $totalTrees شجرة مزروعة حتى الآن" : "🌲 $totalTrees trees planted so far",
-          style: const TextStyle(fontSize: 12, color: Color(0xFF386641), fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, color: Color(0xFF386641), fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
           ),
           ),
           );
@@ -587,7 +605,7 @@ class _TreePageState extends State<TreePage>
           padding: const EdgeInsets.all(16),
           child: Text(l10n.badges,
           style: const TextStyle(
-          fontSize: 16, fontWeight: FontWeight.bold)),
+          fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
           ),
 
           _buildBadge(
@@ -611,11 +629,12 @@ class _TreePageState extends State<TreePage>
       child: Column(children: [
         Text(val,
             style: const TextStyle(
-                fontSize: 18,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF386641))),
+                color: Color(0xFF386641),
+                fontFamily: 'Cairo')),
         Text(lbl,
-            style: const TextStyle(fontSize: 9, color: Colors.grey)),
+            style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
       ]),
     ),
   );
@@ -626,18 +645,20 @@ class _TreePageState extends State<TreePage>
         required String label,
         bool earned = true}) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
           color: color.withAlpha(earned ? 25 : 10),
           borderRadius: BorderRadius.circular(16)),
       child: Row(children: [
-        Icon(icon, color: earned ? color : Colors.grey),
-        const SizedBox(width: 12),
+        Icon(icon, color: earned ? color : Colors.grey, size: 28),
+        const SizedBox(width: 14),
         Text(label,
             style: TextStyle(
                 color: earned ? color : Colors.grey,
-                fontWeight: FontWeight.bold)),
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Cairo')),
       ]),
     );
   }

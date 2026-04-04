@@ -1,15 +1,155 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart'; // ستحتاج لإضافة intl في pubspec.yaml للتاريخ
+import 'dart:async';
 
-class MyImpactGalleryPage extends StatelessWidget {
+class MyImpactGalleryPage extends StatefulWidget {
   const MyImpactGalleryPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+  State<MyImpactGalleryPage> createState() => _MyImpactGalleryPageState();
+}
 
+class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
+  List<Map<String, dynamic>> _allItems = [];
+  bool _isLoading = true;
+  final List<StreamSubscription> _subscriptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _startListening();
+  }
+
+  void _startListening() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    final Map<String, List<Map<String, dynamic>>> collectionsData = {
+      'tasks': [],
+      'recycle': [],
+      'initiatives': [],
+      'legacy': [],
+    };
+
+    void updateGallery() {
+      if (!mounted) return;
+      List<Map<String, dynamic>> combined = [];
+      collectionsData.forEach((key, list) => combined.addAll(list));
+      
+      // ترتيب تنازلي حسب التاريخ
+      combined.sort((a, b) {
+        final tA = a['_time'] as DateTime? ?? DateTime(2000);
+        final tB = b['_time'] as DateTime? ?? DateTime(2000);
+        return tB.compareTo(tA);
+      });
+
+      setState(() {
+        _allItems = combined;
+        _isLoading = false;
+      });
+    }
+
+    // 1. المهام الجديدة والتجارب
+    _subscriptions.add(
+      FirebaseFirestore.instance
+          .collection('tasks')
+          .where('userId', isEqualTo: user.uid)
+          .snapshots()
+          .listen((snap) {
+        collectionsData['tasks'] = snap.docs.map((doc) {
+          final d = doc.data();
+          return {
+            ...d,
+            '_type': d['type'] ?? 'task',
+            '_url': d['imageUrl'] ?? d['photoUrl'] ?? '',
+            '_time': (d['createdAt'] as Timestamp?)?.toDate() ?? (d['date'] != null ? DateTime.tryParse(d['date']) : null),
+            '_pts': d['pts'] ?? 0,
+          };
+        }).where((i) => (i['_url'] as String).isNotEmpty).toList();
+        updateGallery();
+      }),
+    );
+
+    // 2. طلبات التدوير
+    _subscriptions.add(
+      FirebaseFirestore.instance
+          .collection('recycle_requests')
+          .where('userId', isEqualTo: user.uid)
+          .snapshots()
+          .listen((snap) {
+        collectionsData['recycle'] = snap.docs.map((doc) {
+          final d = doc.data();
+          return {
+            ...d,
+            '_type': 'recycle',
+            '_url': d['imageUrl'] ?? '',
+            '_time': (d['createdAt'] as Timestamp?)?.toDate(),
+            '_pts': d['points'] ?? 0,
+          };
+        }).where((i) => (i['_url'] as String).isNotEmpty).toList();
+        updateGallery();
+      }),
+    );
+
+    // 3. مبادرات قبل وبعد
+    _subscriptions.add(
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('initiatives')
+          .snapshots()
+          .listen((snap) {
+        collectionsData['initiatives'] = snap.docs.map((doc) {
+          final d = doc.data();
+          return {
+            ...d,
+            '_type': 'initiative',
+            '_url': d['after'] ?? d['before'] ?? '',
+            '_time': (d['timestamp'] as Timestamp?)?.toDate(),
+            '_pts': 10,
+          };
+        }).where((i) => (i['_url'] as String).isNotEmpty).toList();
+        updateGallery();
+      }),
+    );
+
+    // 4. المهام القديمة (Legacy)
+    _subscriptions.add(
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('completedTasks')
+          .snapshots()
+          .listen((snap) {
+        collectionsData['legacy'] = snap.docs.map((doc) {
+          final d = doc.data();
+          return {
+            ...d,
+            '_type': 'old_task',
+            '_url': d['photoUrl'] ?? d['imageUrl'] ?? '',
+            '_time': (d['createdAt'] as Timestamp?)?.toDate() ?? (d['date'] != null ? DateTime.tryParse(d['date']) : null),
+            '_pts': d['pts'] ?? 0,
+          };
+        }).where((i) => (i['_url'] as String).isNotEmpty).toList();
+        updateGallery();
+      }),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var sub in _subscriptions) {
+      sub.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
@@ -20,80 +160,100 @@ class MyImpactGalleryPage extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: user == null
-          ? const Center(child: Text("يرجى تسجيل الدخول"))
-          : StreamBuilder<QuerySnapshot>(
-        // جلب المهام التي تحتوي على صورة فقط مرتبة بالأحدث
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .collection('completedTasks')
-            .where('photoUrl', isNotEqualTo: null)
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Color(0xFF386641)));
-          }
-
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          final docs = snapshot.data!.docs;
-
-          return GridView.builder(
-            padding: const EdgeInsets.all(12),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.8,
-            ),
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
-              return _buildGalleryItem(context, data);
-            },
-          );
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF386641)))
+          : _allItems.isEmpty
+          ? _buildEmptyState()
+          : GridView.builder(
+        padding: const EdgeInsets.all(12),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 15,
+          mainAxisSpacing: 15,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: _allItems.length,
+        itemBuilder: (context, index) {
+          return _buildGalleryItem(context, _allItems[index]);
         },
       ),
     );
   }
 
   Widget _buildGalleryItem(BuildContext context, Map<String, dynamic> data) {
-    final String url = data['photoUrl'] ?? '';
-    final String date = data['date'] ?? '';
-    final int pts = data['pts'] ?? 0;
+    final String url = data['_url'] ?? '';
+    final String date = data['date'] ?? (data['_time'] != null ? "${data['_time'].year}-${data['_time'].month}-${data['_time'].day}" : "");
+    final int pts = data['_pts'] ?? 0;
+    final String type = data['_type'] ?? 'task';
+    final String status = data['status'] ?? 'completed';
+
+    String typeLabel = "مهمة";
+    if (type == 'recycle') typeLabel = "تدوير ♻️";
+    if (type == 'initiative') typeLabel = "مبادرة 📸";
+    if (type == 'experiment') typeLabel = "تجربة 🧪";
 
     return GestureDetector(
       onTap: () => _showFullImage(context, url),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)],
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 4))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.network(url, fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
-                ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                      child: Image.network(url, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image, color: Colors.grey, size: 40)),
+                      ),
+                    ),
+                  ),
+                  // ملصق نوع المهمة
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(typeLabel, style: const TextStyle(color: Colors.white, fontSize: 10, fontFamily: 'Cairo')),
+                    ),
+                  ),
+                  if (status == 'pending')
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                        child: const Icon(Icons.hourglass_empty, color: Colors.white, size: 14),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(date, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                  const SizedBox(height: 2),
+                  Text(date, style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
                   Text('🌟 +$pts نقطة',
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF386641))),
+                      style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF386641)
+                      )),
                 ],
               ),
             ),
@@ -133,8 +293,10 @@ class MyImpactGalleryPage extends StatelessWidget {
         children: [
           const Text('📸', style: TextStyle(fontSize: 60)),
           const SizedBox(height: 16),
-          const Text('لا توجد صور بعد!', style: TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.grey)),
-          const Text('ابدأ بتنفيذ المهام البيئية وصور أثرك.', style: TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.grey)),
+          const Text('لا توجد صور بعد!',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.grey)),
+          const Text('ابدأ بتنفيذ المهام البيئية وصور أثرك.',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.grey)),
         ],
       ),
     );

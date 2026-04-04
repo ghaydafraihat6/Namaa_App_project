@@ -73,7 +73,7 @@ class AchievementsPage extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: 18,
                   color: unlocked ? const Color(0xFF1B2E1F) : Colors.grey.shade500,
                 ),
               ),
@@ -83,15 +83,16 @@ class AchievementsPage extends StatelessWidget {
                   unlocked ? l10n.completed : l10n.tree_next_level_needs(requiredPoints),
                   style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 12,
+                    fontSize: 14,
                     color: unlocked ? const Color(0xFF52B788) : Colors.grey,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
               // ✅ إضافة علامة الصح للشارات المكتملة
               trailing: unlocked
-                  ? const Icon(Icons.check_circle, color: Color(0xFF386641))
-                  : Text("$userPoints/$requiredPoints", style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                  ? const Icon(Icons.check_circle, color: Color(0xFF386641), size: 28)
+                  : Text("$userPoints/$requiredPoints", style: const TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold)),
             ),
             if (!unlocked)
               Padding(
@@ -160,11 +161,11 @@ class AchievementsPage extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       l10n.tree_current_points,
-                      style: const TextStyle(fontFamily: 'Cairo', color: Colors.white70, fontSize: 14),
+                      style: const TextStyle(fontFamily: 'Cairo', color: Colors.white70, fontSize: 17, fontWeight: FontWeight.w500),
                     ),
                     Text(
                       "$points",
-                      style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 42, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
