@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:namaa_project_app/admin/task_approvals_page.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
@@ -33,6 +34,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   bool _obscureNew      = true;
   bool _obscureConfirm  = true;
   String _displayEmail  = '';
+  bool _isAdmin        = false;
 
   static const Color _green      = Color(0xFF386641);
   static const Color _lightGreen = Color(0xFFEBF4DD);
@@ -60,6 +62,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       _selectedGender = data['gender'] ?? 'Male';
       _photoUrl       = data['photoUrl'];
       _displayEmail   = data['email'] ?? user.email ?? '';
+      _isAdmin        = data['isAdmin'] == true;
     });
   }
 
@@ -478,6 +481,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             ),
 
             const SizedBox(height: 28),
+
+            // ── Admin Dashboard (Visible only via Firebase isAdmin field) ──
+            if (_isAdmin) 
+              _adminDashboardCard(),
 
             // ── قسم المعلومات الشخصية ──
             _sectionLabel('المعلومات الشخصية'),
@@ -969,4 +976,36 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           ),
         ]),
       );
+
+  Widget _adminDashboardCard() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(colors: [_green, Color(0xFF2D5A3F)]),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [BoxShadow(color: _green.withAlpha(50), blurRadius: 10, offset: const Offset(0, 4))],
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.admin_panel_settings_outlined, color: Colors.white, size: 40),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('لوحة تحكم المسؤول', style: TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                Text('لديك طلبات مراجعة معلقة!', style: TextStyle(fontFamily: 'Cairo', color: Colors.white.withAlpha(180), fontSize: 12)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => const TaskApprovalsPage())),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: _green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            child: const Text('دخول', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -60,44 +60,73 @@ class _EcoActionPageState extends State<EcoActionPage> {
     return '${now.year}-${now.month}-${now.day}';
   }
 
-  // ✅ المهمة الرئيسية: التقاط الصورة والرفع لـ Cloudinary ثم الحفظ في Firebase
-  Future<void> _handleTaskCompletion(String taskId, int pts, AppLocalizations l10n) async {
+  // ✅ المهمة الرئيسية: التقاط الصورة (أو التأكيد) وحفظ النقاط
+  Future<void> _handleTaskCompletion(String taskId, int pts, AppLocalizations l10n, {bool needsPhoto = true}) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    // 1. اختيار مصدر الصورة
-    final ImageSource? source = await _showSourcePicker(l10n);
-    if (source == null) return;
+    String? photoUrl;
 
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: source,
-      imageQuality: 50, // ضغط الصورة لتقليل استهلاك البيانات
-      maxWidth: 800,
-    );
-    if (pickedFile == null) return;
+    if (needsPhoto) {
+      // 1. اختيار مصدر الصورة
+      final ImageSource? source = await _showSourcePicker(l10n);
+      if (source == null) return;
 
-    // 2. تأكيد الصورة من المستخدم
-    final bool? confirmed = await _showImagePreview(File(pickedFile.path), l10n);
-    if (confirmed != true) return;
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: source,
+        imageQuality: 50, 
+        maxWidth: 800,
+      );
+      if (pickedFile == null) return;
 
-    setState(() => _isProcessing = true);
+      // 2. تأكيد الصورة من المستخدم
+      final bool? confirmed = await _showImagePreview(File(pickedFile.path), l10n);
+      if (confirmed != true) return;
+
+      setState(() => _isProcessing = true);
+
+      try {
+        // 3. الرفع إلى سيرفر ImgBB 
+        final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
+        final request = http.MultipartRequest('POST', url)
+          ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
+        
+        final reqResponse = await request.send();
+        if (reqResponse.statusCode == 200) {
+          final responseData = await reqResponse.stream.bytesToString();
+          final jsonResult = json.decode(responseData);
+          photoUrl = jsonResult['data']['url'];
+        } else {
+          throw Exception('فشل رفع الصورة لمزود الخدمة.');
+        }
+      } catch (e) {
+        _showFeedback(e.toString(), false);
+        return;
+      }
+    } else {
+      // مهمة لا تتطلب صورة (تأكيد بسيط)
+      final bool? confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("تأكيد المهمة ✅", style: TextStyle(fontFamily: 'Cairo')),
+          content: const Text("هل تؤكد قيامك بهذه المهمة البيئية اليوم؟", textAlign: TextAlign.center),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("إلغاء")),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
+              child: const Text("تأكيد", style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+      setState(() => _isProcessing = true);
+    }
 
     try {
-      // 3. الرفع إلى سيرفر ImgBB المجاني
-      // ستحتاج للحصول على مفتاح مجاني من api.imgbb.com ووضعه هنا لتفعيل الرفع
-      final url = Uri.parse('https://api.imgbb.com/1/upload?key=045d79d3e3886e915ec3f338a1b2a806');
-      final request = http.MultipartRequest('POST', url)
-        ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
-      
-      final reqResponse = await request.send();
-      if (reqResponse.statusCode != 200) throw Exception('لم يتم رفع الصورة. الرجاء تفعيل مفتاح ImgBB المجاني في الكود.');
-
-      final responseData = await reqResponse.stream.bytesToString();
-      final jsonResult = json.decode(responseData);
-      final String photoUrl = jsonResult['data']['url'];
-
-      // 4. تحديث النقاط وحفظ الإنجاز في Firestore (Transaction)
+      // 4. تحديث النقاط وحفظ الإنجاز 
       final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
       final todayStr = _getTodayDateString();
 
@@ -105,26 +134,24 @@ class _EcoActionPageState extends State<EcoActionPage> {
         final snapshot = await transaction.get(userDoc);
         final currentPoints = (snapshot.data()?['points'] ?? 0) as int;
 
-        // زيادة النقاط
         transaction.update(userDoc, {'points': currentPoints + pts});
 
-        // تسجيل المهمة في الـ Sub-collection
         final taskRef = userDoc.collection('completedTasks').doc('${taskId}_$todayStr');
         transaction.set(taskRef, {
           'taskId': taskId,
           'date': todayStr,
           'pts': pts,
-          'imageUrl': photoUrl, // ✅ الرابط القادم من Cloudinary
+          'imageUrl': photoUrl ?? (needsPhoto ? '' : 'Instant Confirmation'),
           'completedAt': FieldValue.serverTimestamp(),
         });
       });
 
       if (mounted) {
-        setState(() => _completedTasks[taskId] = photoUrl);
+        setState(() => _completedTasks[taskId] = photoUrl ?? 'Confirmed');
         _showFeedback(l10n.tree_points_stat(pts), true);
         await NotificationService.send(
           title: '🌿 مهمة بيئية مكتملة!',
-          body: 'حصلت على $pts نقطة من إثبات مهمتك البيئية بالصورة 📸',
+          body: 'حصلت على $pts نقطة من إتمام هذه المهمة! 👏',
           type: 'eco_action',
         );
       }
@@ -180,10 +207,15 @@ class _EcoActionPageState extends State<EcoActionPage> {
     final l10n = AppLocalizations.of(context)!;
 
     // بيانات المهام (يمكنك لاحقاً جلبها من Firestore)
+    // بيانات المهام (المهام العامة ومهام النقل والطاقة)
     final dailyTasks = [
-      {'id': 'recycle_1', 'title': 'إعادة تدوير النفايات', 'pts': 30, 'icon': '♻️', 'color': const Color(0xFFEBF4DD)},
-      {'id': 'water_1', 'title': 'توفير المياه اليوم', 'pts': 20, 'icon': '💧', 'color': const Color(0xFFE8F4F8)},
-      {'id': 'bike_1', 'title': 'استخدام الدراجة', 'pts': 50, 'icon': '🚴', 'color': const Color(0xFFFFF3E8)},
+      {'id': 'recycle_1', 'title': 'إعادة تدوير النفايات', 'pts': 30, 'icon': '♻️', 'color': const Color(0xFFEBF4DD), 'needsPhoto': true},
+      {'id': 'unplug_electronics', 'title': 'فصل القوابس الكهربائية', 'pts': 10, 'icon': '⚡', 'color': const Color(0xFFFFFDE7), 'needsPhoto': true},
+      {'id': 'natural_light', 'title': 'الاعتماد على ضوء الشمس', 'pts': 15, 'icon': '☀️', 'color': const Color(0xFFFFF8E1), 'needsPhoto': true},
+      {'id': 'stairs_instead', 'title': 'استخدام السلالم', 'pts': 10, 'icon': '🏃', 'color': const Color(0xFFF3E5F5), 'needsPhoto': false},
+      {'id': 'no_car_day', 'title': 'يوم بدون سيارة', 'pts': 25, 'icon': '🚌', 'color': const Color(0xFFE3F2FD), 'needsPhoto': true},
+      {'id': 'use_bicycle', 'title': 'استخدام الدراجة', 'pts': 50, 'icon': '🚲', 'color': const Color(0xFFF1F8E9), 'needsPhoto': true},
+      {'id': 'tree_care', 'title': 'العناية بنبات منزلي', 'pts': 20, 'icon': '🪴', 'color': const Color(0xFFE8F5E9), 'needsPhoto': true},
     ];
 
     return Scaffold(
@@ -417,13 +449,18 @@ class _EcoActionPageState extends State<EcoActionPage> {
                 ? null 
                 : isDone 
                     ? () => _showUploadedImage(task['title'], _completedTasks[task['id']]!)
-                    : () => _handleTaskCompletion(task['id'], task['pts'], l10n),
+                    : () => _handleTaskCompletion(task['id'], task['pts'], l10n, needsPhoto: task['needsPhoto'] ?? true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isDone ? Colors.grey : const Color(0xFF386641),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               elevation: 0,
             ),
-            child: Text(isDone ? "عرض الدليل 🖼️" : "إثبات 📸", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+            child: Text(
+              isDone 
+                ? (task['needsPhoto'] == false ? "مكتمل ✅" : "عرض الدليل 🖼️") 
+                : (task['needsPhoto'] == false ? "تنفيذ ✅" : "إثبات 📸"), 
+              style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontSize: 12)
+            ),
           ),
         ],
       ),

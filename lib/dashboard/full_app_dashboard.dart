@@ -272,7 +272,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         color: Color(0xFF1B2E1F))),
               ),
 
-              // ── التحدي الأسبوعي ──
+              // ── التحدي الأسبوعي (ديناميكي) ──
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
                 child: Text(l10n.weeklyChallenge,
@@ -282,71 +282,87 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF1B2E1F))),
               ),
-              GestureDetector(
-                onTap: () => _goTo(1),
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2D5A3F),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                          color: const Color(0xFF386641).withOpacity(0.35),
-                          blurRadius: 16,
-                          offset: const Offset(0, 6))
-                    ],
-                  ),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('تحدٍّ نشط · 4 أيام متبقية',
-                            style: TextStyle(
-                                fontFamily: 'Cairo',
-                                fontSize: 10,
-                                color: Color(0xFF52B788),
-                                fontWeight: FontWeight.w700)),
-                        const SizedBox(height: 6),
-                        const Text('أسبوع بدون سيارة 🚗🚫',
-                            style: TextStyle(
-                                fontFamily: 'Cairo',
-                                fontSize: 17,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white)),
-                        const SizedBox(height: 4),
-                        const Text('التنقل بالدراجة أو المشي فقط',
-                            style: TextStyle(
-                                fontFamily: 'Cairo',
-                                fontSize: 12,
-                                color: Color(0x99FFFFFF))),
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: const LinearProgressIndicator(
-                            value: 0.4,
-                            minHeight: 7,
-                            backgroundColor: Color(0x26FFFFFF),
-                            valueColor: AlwaysStoppedAnimation(Color(0xFF52B788)),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(l10n.completed.replaceFirst('تم الإنجاز', '40% مكتمل'), // مثال للتعديل
-                                  style: const TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontSize: 12,
-                                      color: Color(0xFF52B788),
-                                      fontWeight: FontWeight.w700)),
-                              const Text('🎁 +200 نقطة',
-                                  style: TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontSize: 12,
-                                      color: Color(0x99FFFFFF))),
-                            ]),
-                      ]),
-                ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .collection('completedTasks')
+                    .where('taskId', whereIn: ['no_car_day', 'use_bicycle'])
+                    .where('createdAt', isGreaterThanOrEqualTo: DateTime.now().subtract(Duration(days: DateTime.now().weekday % 7)))
+                    .snapshots(),
+                builder: (context, challengeSnap) {
+                  final int count = challengeSnap.data?.docs.length ?? 0;
+                  const int goal = 5; // الهدف: 5 مرات في الأسبوع
+                  final double progress = (count / goal).clamp(0.0, 1.0);
+                  final int percent = (progress * 100).toInt();
+
+                  return GestureDetector(
+                    onTap: () => _goTo(1),
+                    child: Container(
+                      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2D5A3F),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                              color: const Color(0xFF386641).withOpacity(0.35),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6))
+                        ],
+                      ),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                             Text('تحدٍّ نشط · ${7 - DateTime.now().weekday % 7} أيام متبقية',
+                                style: const TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 10,
+                                    color: Color(0xFF52B788),
+                                    fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 6),
+                            const Text('أسبوع بدون سيارة 🚗🚫',
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white)),
+                            const SizedBox(height: 4),
+                            const Text('التنقل بالدراجة أو المشي فقط',
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 12,
+                                    color: Color(0x99FFFFFF))),
+                            const SizedBox(height: 12),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: LinearProgressIndicator(
+                                value: progress,
+                                minHeight: 7,
+                                backgroundColor: const Color(0x26FFFFFF),
+                                valueColor: const AlwaysStoppedAnimation(Color(0xFF52B788)),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text('$percent% مكتمل 🎊', 
+                                      style: const TextStyle(
+                                          fontFamily: 'Cairo',
+                                          fontSize: 12,
+                                          color: Color(0xFF52B788),
+                                          fontWeight: FontWeight.w700)),
+                                  const Text('🎁 +200 نقطة',
+                                      style: TextStyle(
+                                          fontFamily: 'Cairo',
+                                          fontSize: 12,
+                                          color: Color(0x99FFFFFF))),
+                                ]),
+                          ]),
+                    ),
+                  );
+                },
               ),
 
               // ── استكشف ──
