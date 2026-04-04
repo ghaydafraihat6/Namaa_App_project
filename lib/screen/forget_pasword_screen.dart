@@ -142,8 +142,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   Text(
                     l10n.login_forgot_password, // مترجم
                     style: const TextStyle(
+                      fontFamily: 'Cairo',
                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                       color: Color(0xFF2D5A3F),
                     ),
                   ),
@@ -153,7 +154,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                         ? "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور."
                         : "Enter your email address and we will send you a link to reset your password.",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey, fontSize: 16),
+                    style: const TextStyle(
+                      fontFamily: 'Cairo',
+                      color: Colors.grey,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   const SizedBox(height: 40),
                   Container(
@@ -165,7 +171,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        hintText: l10n.email, // مترجم
+                        hintText: l10n.email,
+                        hintStyle: const TextStyle(
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w900,
+                            color: Colors.grey),
                         prefixIcon: const Icon(
                           Icons.email_outlined,
                           color: Color(0xFF426B4F),
@@ -176,6 +186,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           horizontal: 10,
                         ),
                       ),
+                      style: const TextStyle(
+                          fontFamily: 'Cairo', fontWeight: FontWeight.w900),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -194,13 +206,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : Text(
-                        l10n.arabic == "العربية" ? "إرسال الرابط" : "Send Reset Link",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                              l10n.arabic == "العربية"
+                                  ? "إرسال الرابط"
+                                  : "Send Reset Link",
+                              style: const TextStyle(
+                                fontFamily: 'Cairo',
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 40),

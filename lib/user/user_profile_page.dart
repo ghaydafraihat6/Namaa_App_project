@@ -130,28 +130,29 @@ class ProfilePage extends StatelessWidget {
                   Text(name,
                       style: const TextStyle(
                           fontFamily: 'Cairo',
-                          fontSize: 20,
+                          fontSize: 22,
                           fontWeight: FontWeight.w900,
                           color: Colors.white)),
                   const SizedBox(height: 4),
                   Text(email,
                       style: const TextStyle(
                           fontFamily: 'Cairo',
-                          fontSize: 13,
-                          color: Colors.white60)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white70)),
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
+                      color: Colors.white.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text('🏅 ${l10n.level} $lvl',
                         style: const TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
                             color: Colors.white)),
                   ),
                 ]),
@@ -223,8 +224,8 @@ class ProfilePage extends StatelessWidget {
                           Text(l10n.logout,
                               style: const TextStyle(
                                   fontFamily: 'Cairo',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
                                   color: Color(0xFFE63946))),
                         ]),
                   ),
@@ -245,21 +246,22 @@ class ProfilePage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 10)],
       ),
       child: Column(children: [
         Text(val,
             style: const TextStyle(
                 fontFamily: 'Cairo',
-                fontSize: 17,
+                fontSize: 19,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF386641))),
         const SizedBox(height: 2),
         Text(lbl,
             style: const TextStyle(
                 fontFamily: 'Cairo',
-                fontSize: 10,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
                 color: Colors.grey)),
       ]),
     ),
@@ -276,7 +278,7 @@ class ProfilePage extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: Colors.black.withOpacity(0.05),
                 blurRadius: 8)],
           ),
           child: Row(children: [
@@ -292,8 +294,8 @@ class ProfilePage extends StatelessWidget {
             Expanded(child: Text(label,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFF1B2E1F)))),
             const Icon(Icons.chevron_left,
                 color: Colors.grey, size: 20),

@@ -37,7 +37,8 @@ class HelpCenterPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('مركز المساعدة',
             style: TextStyle(fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800, color: Colors.white)),
+                fontSize: 19,
+                fontWeight: FontWeight.w900, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
@@ -57,32 +58,33 @@ class HelpCenterPage extends StatelessWidget {
             ),
             child: Column(children: [
               Container(
-                width: 150, // حجم المربع (مثلاً)
+                width: 150,
                 height: 150,
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Color(0xFFEBF4DD).withOpacity(0.3),
+                  color: const Color(0xFFEBF4DD).withOpacity(0.3),
                   borderRadius: BorderRadius.circular(30),
-                  image: DecorationImage(
+                  image: const DecorationImage(
                     image: AssetImage('assets/images/logo_namaa.png'),
-                    fit: BoxFit.contain, // يملأ المربع ويحافظ على نسبة الصورة
-                    alignment: Alignment.center, // يضعها في الوسط
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              Text('كيف يمكننا مساعدتك؟',
+              const SizedBox(height: 10),
+              const Text('كيف يمكننا مساعدتك؟',
                   style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 18,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
                       color: Colors.white)),
-              SizedBox(height: 4),
-              Text('اجد إجابات لأسئلتك الشائعة',
+              const SizedBox(height: 4),
+              const Text('اجد إجابات لأسئلتك الشائعة',
                   style: TextStyle(
                       fontFamily: 'Cairo',
-                      fontSize: 13,
-                      color: Color(0xBFFFFFFF))),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white70)),
         ]),
           ),
 
@@ -93,8 +95,8 @@ class HelpCenterPage extends StatelessWidget {
             child: Text('الأسئلة الشائعة',
                 style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey)),
           ),
 
@@ -113,32 +115,33 @@ class HelpCenterPage extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Colors.black.withOpacity(0.05),
                   blurRadius: 8)],
             ),
-            child: const Column(children: [
-              Text('لم تجد إجابتك؟',
+            child: Column(children: [
+              const Text('لم تجد إجابتك؟',
+                  style: TextStyle(
+                      fontFamily: 'Cairo',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1B2E1F))),
+              const SizedBox(height: 6),
+              const Text('تواصل معنا عبر البريد الإلكتروني',
                   style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1B2E1F))),
-              SizedBox(height: 6),
-              Text('تواصل معنا عبر البريد الإلكتروني',
-                  style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
                       color: Colors.grey)),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Icon(Icons.email_outlined,
-                    color: Color(0xFF386641), size: 18),
-                SizedBox(width: 6),
-                Text('namaa.app@gmail.com',
+                const Icon(Icons.email_outlined,
+                    color: Color(0xFF386641), size: 20),
+                const SizedBox(width: 6),
+                const Text('namaa.app@gmail.com',
                     style: TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF386641))),
               ]),
             ]),
@@ -162,15 +165,13 @@ class _FaqItemState extends State<_FaqItem> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8)],
       ),
       child: Column(children: [
@@ -179,8 +180,8 @@ class _FaqItemState extends State<_FaqItem> {
           title: Text(widget.question,
               style: const TextStyle(
                   fontFamily: 'Cairo',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
                   color: Color(0xFF1B2E1F))),
           trailing: AnimatedRotation(
             duration: const Duration(milliseconds: 200),
@@ -195,7 +196,8 @@ class _FaqItemState extends State<_FaqItem> {
             child: Text(widget.answer,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 13,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey,
                     height: 1.6)),
           ),

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
 import 'package:namaa_project_app/services/material_classifier.dart';
 import 'package:namaa_project_app/services/storage_service.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class RecycleTasksPage extends StatefulWidget {
   const RecycleTasksPage({super.key});
@@ -221,6 +222,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
   Widget _buildCard(String id, String title, String desc, int pts, IconData icon, String expectedLabel) {
     bool done = _completedTasks.contains(id);
 
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: 15),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -231,8 +233,8 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
           backgroundColor: done ? Colors.green.shade100 : const Color(0xFFEBF4DD),
           child: Icon(icon, color: done ? Colors.green : const Color(0xFF386641)),
         ),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, decoration: done ? TextDecoration.lineThrough : null)),
-        subtitle: Text("$desc\nنقاط: $pts"),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 17, decoration: done ? TextDecoration.lineThrough : null, fontFamily: 'Cairo')),
+        subtitle: Text("$desc\n${l10n.ecoPoints}: $pts", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
         trailing: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: done ? Colors.grey : const Color(0xFF386641),
@@ -240,7 +242,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
           onPressed: (done || _isProcessing) ? null : () => _pickAndVerify(pts, id, expectedLabel),
           child: Text(
             done ? "مكتملة ✅" : "صوّر واربح",
-            style: const TextStyle(color: Colors.white, fontSize: 11),
+            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
           ),
         ),
       ),

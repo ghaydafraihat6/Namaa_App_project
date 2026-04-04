@@ -42,7 +42,7 @@ class AboutPage extends StatelessWidget {
                       height: 200,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.05),
+                        color: Colors.white.withOpacity(0.05),
                       ),
                     ),
                   ),
@@ -54,7 +54,7 @@ class AboutPage extends StatelessWidget {
                       height: 150,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.05),
+                        color: Colors.white.withOpacity(0.05),
                       ),
                     ),
                   ),
@@ -65,17 +65,24 @@ class AboutPage extends StatelessWidget {
                     right: 0,
                     child: Column(
                       children: [
-                        Image.asset(
-                          'assets/images/logo_namaa.png',
-                          width: 80,
-                          height: 80,
+                        Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEBF4DD).withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Image.asset(
+                            'assets/images/logo_namaa.png',
+                            width: 80,
+                            height: 80,
+                          ),
                         ),
                         SizedBox(height: 12),
                         Text(
                           "نـمـاء",
                           style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 40,
+                            fontSize: 42,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
                             letterSpacing: 2,
@@ -86,9 +93,9 @@ class AboutPage extends StatelessWidget {
                           "بصمتك الخضراء تبدأ من هنا",
                           style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 30,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w300,
+                            fontSize: 24,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
                       ],
@@ -116,7 +123,8 @@ class AboutPage extends StatelessWidget {
                       "نماء هو تطبيق بيئي تفاعلي يهدف إلى تحفيز الأفراد على اتخاذ خطوات يومية نحو حياة أكثر استدامة. نؤمن بأن كل فعل إيجابي صغير، مهما كان بسيطاً، يمكن أن يُحدث فرقاً حقيقياً في عالمنا.",
                       style: TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 20,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                         height: 1.8,
                         color: Color(0xFF2D3A2E),
                       ),
@@ -228,8 +236,8 @@ class AboutPage extends StatelessWidget {
           title,
           style: const TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
             color: Color(0xFF1B4332),
           ),
         ),
@@ -246,7 +254,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -269,7 +277,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF386641).withValues(alpha: 0.3),
+            color: const Color(0xFF386641).withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -281,9 +289,10 @@ class AboutPage extends StatelessWidget {
             "\"نؤمن بأن حماية البيئة مسؤولية الجميع، وأن التغيير الحقيقي يبدأ بخطوة صغيرة واحدة كل يوم\"",
             style: TextStyle(
               fontFamily: 'Cairo',
-              fontSize: 15,
+              fontSize: 17,
               height: 1.8,
               color: Colors.white,
+              fontWeight: FontWeight.w900,
               fontStyle: FontStyle.italic,
             ),
             textAlign: TextAlign.center,
@@ -293,9 +302,9 @@ class AboutPage extends StatelessWidget {
             "— فريق نماء 🌱",
             style: TextStyle(
               fontFamily: 'Cairo',
-              fontSize: 13,
-              color: Colors.white70,
-              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -317,7 +326,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -329,7 +338,7 @@ class AboutPage extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
+                color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: color, size: 26),
@@ -343,8 +352,8 @@ class AboutPage extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFF1B4332),
                   ),
                 ),
@@ -353,7 +362,8 @@ class AboutPage extends StatelessWidget {
                   subtitle,
                   style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 12,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey,
                     height: 1.4,
                   ),
@@ -384,7 +394,7 @@ class AboutPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Colors.black.withOpacity(0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -401,8 +411,8 @@ class AboutPage extends StatelessWidget {
                   member["name"]!,
                   style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFF1B4332),
                   ),
                   textAlign: TextAlign.center,
@@ -412,7 +422,8 @@ class AboutPage extends StatelessWidget {
                   member["role"]!,
                   style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 10,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey,
                   ),
                   textAlign: TextAlign.center,
@@ -459,7 +470,8 @@ class AboutPage extends StatelessWidget {
                   stat["label"]!,
                   style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 11,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFF52835E),
                   ),
                   textAlign: TextAlign.center,
@@ -489,7 +501,7 @@ class AboutPage extends StatelessWidget {
           ),
           const Divider(height: 20),
           _buildContactRow(
-            icon: Icons.camera_alt_outlined,
+            icon: Icons.camera_alt,
             text: "@namaa_app",
             color: const Color(0xFFE1306C),
           ),
@@ -498,18 +510,14 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactRow({
-    required IconData icon,
-    required String text,
-    required Color color,
-  }) {
+  Widget _buildContactRow({required IconData icon, required String text, required Color color}) {
     return Row(
       children: [
         Container(
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -519,9 +527,9 @@ class AboutPage extends StatelessWidget {
           text,
           style: const TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 14,
+            fontSize: 16,
             color: Color(0xFF2D3A2E),
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ],
@@ -542,7 +550,7 @@ class AboutPage extends StatelessWidget {
             "🌱 نماء",
             style: TextStyle(
               fontFamily: 'Cairo',
-              fontSize: 22,
+              fontSize: 24,
               fontWeight: FontWeight.w900,
               color: Colors.white,
             ),
@@ -552,8 +560,9 @@ class AboutPage extends StatelessWidget {
             "معاً نبني مستقبلاً أخضر أفضل",
             style: TextStyle(
               fontFamily: 'Cairo',
-              fontSize: 13,
-              color: Colors.white60,
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+              color: Colors.white70,
             ),
           ),
           SizedBox(height: 12),
@@ -561,7 +570,8 @@ class AboutPage extends StatelessWidget {
             "الإصدار 1.0.0 • 2026",
             style: TextStyle(
               fontFamily: 'Cairo',
-              fontSize: 11,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
               color: Colors.white38,
             ),
           ),

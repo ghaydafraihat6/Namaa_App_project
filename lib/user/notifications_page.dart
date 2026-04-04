@@ -22,7 +22,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       appBar: AppBar(
         title: const Text('التنبيهات',
             style: TextStyle(fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800, color: Colors.white)),
+                fontSize: 19,
+                fontWeight: FontWeight.w900, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
@@ -92,8 +93,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: const Text('حفظ الإعدادات',
                   style: TextStyle(
                       fontFamily: 'Cairo',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
                       color: Colors.white)),
             ),
           ),
@@ -107,8 +108,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
     child: Text(title,
         style: const TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            fontWeight: FontWeight.w900,
             color: Colors.grey)),
   );
 
@@ -126,14 +127,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 8)],
         ),
         child: Row(children: [
           Container(
             width: 42, height: 42,
             decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
+                color: color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, color: color, size: 22),
           ),
@@ -144,13 +145,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 Text(title,
                     style: const TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF1B2E1F))),
                 Text(subtitle,
                     style: const TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 11,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
                         color: Colors.grey)),
               ])),
           Switch(
@@ -160,4 +162,4 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ]),
       );
-}
+}

@@ -14,7 +14,7 @@ class RecycleDashboard extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
         title: const Text("مركز إعادة التدوير ♻️",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Cairo')),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
         elevation: 0,
@@ -26,9 +26,9 @@ class RecycleDashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text("أهلاً بك في نماء! 🌱",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: primaryGreen, fontFamily: 'Cairo')),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: primaryGreen, fontFamily: 'Cairo')),
             const Text("كيف تود المساهمة في حماية البيئة اليوم؟",
-                style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: 'Cairo')),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
             const SizedBox(height: 30),
 
             // كرت طلب تجميع ميداني (Submission)
@@ -85,14 +85,14 @@ class RecycleDashboard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
-          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
               child: Icon(icon, color: color, size: 35),
             ),
             const SizedBox(width: 20),
@@ -100,9 +100,9 @@ class RecycleDashboard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                  Text(title, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900, fontFamily: 'Cairo')),
                   const SizedBox(height: 5),
-                  Text(desc, style: const TextStyle(fontSize: 13, color: Colors.grey, fontFamily: 'Cairo')),
+                  Text(desc, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
                 ],
               ),
             ),

@@ -18,7 +18,7 @@ class RecycleHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: const Text("سجل طلباتي 🗂️", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+        title: const Text("سجل طلباتي 🗂️", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -87,7 +87,7 @@ class RecycleHistoryPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Row(
@@ -109,7 +109,7 @@ class RecycleHistoryPage extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Expanded(child: Text(materials, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo'), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                    Expanded(child: Text(materials, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, fontFamily: 'Cairo'), maxLines: 1, overflow: TextOverflow.ellipsis)),
                                     if (isPending)
                                       PopupMenuButton<String>(
                                         icon: const Icon(Icons.more_vert, color: Colors.grey),
@@ -130,17 +130,17 @@ class RecycleHistoryPage extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 5),
-                                Text(dateString, style: const TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Cairo')),
+                                Text(dateString, style: const TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w900, fontFamily: 'Cairo')),
                                 const SizedBox(height: 10),
                                 Row(
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(color: isPending ? Colors.orange.shade50 : Colors.green.shade50, borderRadius: BorderRadius.circular(8)),
-                                      child: Text(isPending ? "قيد التسليم ⏳" : "مكتمل ✅", style: TextStyle(color: isPending ? Colors.orange.shade800 : Colors.green.shade800, fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                                      child: Text(isPending ? "قيد التسليم ⏳" : "مكتمل ✅", style: TextStyle(color: isPending ? Colors.orange.shade800 : Colors.green.shade800, fontSize: 13, fontWeight: FontWeight.w900, fontFamily: 'Cairo')),
                                     ),
                                     const Spacer(),
-                                    Text("+$points ⭐", style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontFamily: 'Cairo', fontSize: 14)),
+                                    Text("+$points ⭐", style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w900, fontFamily: 'Cairo', fontSize: 16)),
                                   ],
                                 ),
                               ],

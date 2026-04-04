@@ -223,7 +223,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       appBar: AppBar(
         title: Text(
           l10n.challenges_intro_text.split('.')[0],
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo', fontSize: 16),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontFamily: 'Cairo', fontSize: 18),
           overflow: TextOverflow.ellipsis,
         ),
         backgroundColor: const Color(0xFF386641),
@@ -328,8 +328,8 @@ class _EcoActionPageState extends State<EcoActionPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(taskInfo['title'] as String, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Cairo')),
-                        Text("$dateStr | +$pts ⭐", style: const TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Cairo')),
+                        Text(taskInfo['title'] as String, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17, fontFamily: 'Cairo')),
+                        Text("$dateStr | +$pts ⭐", style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w900, fontSize: 13, fontFamily: 'Cairo')),
                       ],
                     ),
                   ),
@@ -348,7 +348,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: const BorderSide(color: Color(0xFF386641))),
                           elevation: 0,
                         ),
-                        child: const Text("الإثبات 🖼️", style: TextStyle(color: Color(0xFF386641), fontFamily: 'Cairo', fontSize: 12)),
+                        child: const Text("الإثبات 🖼️", style: TextStyle(color: Color(0xFF386641), fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w900)),
                       ),
                     ],
                   )
@@ -406,7 +406,8 @@ class _EcoActionPageState extends State<EcoActionPage> {
           child: Center(
             child: Text(label, style: TextStyle(
                 color: isSelected ? Colors.white : Colors.grey,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
                 fontFamily: 'Cairo'
             )),
           ),
@@ -439,8 +440,8 @@ class _EcoActionPageState extends State<EcoActionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(task['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, fontFamily: 'Cairo')),
-                Text("+${task['pts']} ${l10n.points}", style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(task['title'], style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 17, fontFamily: 'Cairo')),
+                Text("+${task['pts']} ${l10n.points}", style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w900, fontSize: 14)),
               ],
             ),
           ),
@@ -459,7 +460,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
               isDone 
                   ? (_completedTasks[task['id']] == 'pending' ? "بانتظار المراجعة... ⏳" : "تمت المهمة بنجاح ✅") 
                   : (task['needsPhoto'] == false ? "تأكيد التنفيذ ✅" : "إرسال إثبات 📤"), 
-              style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontSize: 11)
+              style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w900)
             ),
           ),
         ],

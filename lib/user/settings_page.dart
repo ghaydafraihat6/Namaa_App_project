@@ -32,7 +32,8 @@ class SettingsPage extends StatelessWidget {
         title: Text('⚙️ ${l10n.settings}',
             style: const TextStyle(
                 fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800,
+                fontSize: 19,
+                fontWeight: FontWeight.w900,
                 color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -110,13 +111,13 @@ class SettingsPage extends StatelessWidget {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.logout, color: Color(0xFFE63946), size: 20),
+                    const Icon(Icons.logout, color: Color(0xFFE63946), size: 22),
                     const SizedBox(width: 8),
                     Text(l10n.logout,
                         style: const TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
                             color: Color(0xFFE63946))),
                   ]),
             ),
@@ -127,7 +128,8 @@ class SettingsPage extends StatelessWidget {
             child: Text('نماء v1.0.0',
                 style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 12,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey)),
           ),
         ],
@@ -140,17 +142,17 @@ class SettingsPage extends StatelessWidget {
     child: Text(title,
         style: const TextStyle(
             fontFamily: 'Cairo',
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            fontWeight: FontWeight.w900,
             color: Colors.grey)),
-  );
+);
 
   Widget _menuCard(List<Widget> items) => Container(
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: [BoxShadow(
-          color: Colors.black.withValues(alpha: 0.05),
+          color: Colors.black.withOpacity(0.05),
           blurRadius: 10)],
     ),
     child: Column(children: items),
@@ -169,15 +171,15 @@ class SettingsPage extends StatelessWidget {
           leading: Container(
             width: 38, height: 38,
             decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
+                color: color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, color: color, size: 20),
           ),
           title: Text(label,
               style: const TextStyle(
                   fontFamily: 'Cairo',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
                   color: Color(0xFF1B2E1F))),
           trailing: const Icon(Icons.chevron_left,
               color: Colors.grey, size: 20),

@@ -225,12 +225,22 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const SizedBox(height: 260),
                     Text(
-                      l10n.login_welcome, // مترجم
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF2D5A3F)),
+                      l10n.login_welcome,
+                      style: const TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF2D5A3F),
+                      ),
                     ),
                     Text(
-                      l10n.login_subtitle, // مترجم
-                      style: const TextStyle(color: Colors.grey, fontSize: 16),
+                      l10n.login_subtitle,
+                      style: const TextStyle(
+                        fontFamily: 'Cairo',
+                        color: Colors.grey,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                     const SizedBox(height: 40),
 
@@ -266,12 +276,26 @@ class _LoginPageState extends State<LoginPage> {
                               activeColor: const Color(0xFF426B4F),
                               onChanged: (val) => setState(() => _rememberMe = val!),
                             ),
-                            Text(l10n.login_remember_me, style: const TextStyle(color: Colors.grey)),
+                            Text(
+                              l10n.login_remember_me,
+                              style: const TextStyle(
+                                fontFamily: 'Cairo',
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                           ],
                         ),
                         TextButton(
                           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordPage())),
-                          child: Text(l10n.login_forgot_password, style: const TextStyle(color: Color(0xFF426B4F))),
+                          child: Text(
+                            l10n.login_forgot_password,
+                            style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF426B4F),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -290,12 +314,21 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: _isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
-                            : Text(l10n.login_button, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                            : Text(l10n.login_button,
+                                style: const TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900)),
                       ),
                     ),
 
                     const SizedBox(height: 25),
-                    Text(l10n.login_or, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+                    Text(l10n.login_or,
+                        style: const TextStyle(
+                            fontFamily: 'Cairo',
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w900)),
                     const SizedBox(height: 25),
 
                     _buildGoogleButton(l10n.login_google),
@@ -305,10 +338,24 @@ class _LoginPageState extends State<LoginPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l10n.login_no_account),
+                        Text(
+                          l10n.login_no_account,
+                          style: const TextStyle(
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
                         GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, CreateAccountPage.routeName),
-                          child: Text(l10n.login_signup, style: const TextStyle(color: Color(0xFF386641), fontWeight: FontWeight.bold)),
+                          onTap: () => Navigator.pushNamed(
+                              context, CreateAccountPage.routeName),
+                          child: Text(
+                            l10n.login_signup,
+                            style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              color: Color(0xFF386641),
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -339,11 +386,13 @@ class _LoginPageState extends State<LoginPage> {
         validator: validator,
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: Colors.grey),
           prefixIcon: Icon(icon, color: const Color(0xFF426B4F)),
           suffixIcon: suffix,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
         ),
+        style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900),
       ),
     );
   }
@@ -365,7 +414,15 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             Image.asset('assets/images/google_logo.png', width: 24, height: 24),
             const SizedBox(width: 12),
-            Text(label, style: const TextStyle(fontSize: 16, color: Colors.black87, fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: const TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 16,
+                color: Colors.black87,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ],
         ),
       ),

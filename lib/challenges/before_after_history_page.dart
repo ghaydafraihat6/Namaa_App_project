@@ -105,7 +105,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                                   children: [
                                     const Text("قبل", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey)),
                                     const SizedBox(height: 5),
-                                    ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(beforeUrl, height: 120, fit: BoxFit.cover, errorBuilder: (c,e,s) => Container(height: 100, color: Colors.grey.shade200))),
+                                    ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(beforeUrl, height: 120, fit: BoxFit.contain, errorBuilder: (c,e,s) => Container(height: 100, color: Colors.grey.shade200))),
                                   ],
                                 )
                               ),
@@ -115,7 +115,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                                   children: [
                                     const Text("بعد", style: TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 5),
-                                    ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(afterUrl, height: 120, fit: BoxFit.cover, errorBuilder: (c,e,s) => Container(height: 100, color: Colors.grey.shade200))),
+                                    ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(afterUrl, height: 120, fit: BoxFit.contain, errorBuilder: (c,e,s) => Container(height: 100, color: Colors.grey.shade200))),
                                   ],
                                 )
                               ),

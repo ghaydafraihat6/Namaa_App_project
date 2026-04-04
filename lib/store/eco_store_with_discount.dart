@@ -593,7 +593,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               Container(
                 width: 44, height: 44,
                 decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(14)),
                 child: const Icon(Icons.shopping_cart_outlined,
                     color: Colors.white, size: 24),
@@ -775,7 +775,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               color: inCart ? const Color(0xFF52B788) : Colors.transparent,
               width: 1.5),
           boxShadow: [BoxShadow(
-              color: Colors.black.withValues(alpha: 0.07),
+              color: Colors.black.withOpacity(0.07),
               blurRadius: 12, offset: const Offset(0, 3))],
         ),
         padding: const EdgeInsets.all(12),

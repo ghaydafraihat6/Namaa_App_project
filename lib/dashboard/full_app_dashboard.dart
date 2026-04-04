@@ -106,7 +106,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         Text(l10n.appName,
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
-                                fontSize: 22,
+                                fontSize: 24,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white)),
                         const SizedBox(width: 8),
@@ -136,8 +136,9 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     Text(l10n.welcome_user(name),
                         style: const TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 13,
-                            color: Colors.white70)),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white)),
                   ],
                 ),
               ),
@@ -163,7 +164,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         Text(l10n.ecoPoints,
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
-                                fontSize: 12,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
                                 color: Colors.grey)),
                         Text('$pts',
                             style: const TextStyle(
@@ -174,7 +176,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         Text(l10n.pointsEarned,
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
-                                fontSize: 12,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w900,
                                 color: Colors.grey)),
                       ]),
                   const Spacer(),
@@ -189,8 +192,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                       child: Text('${l10n.level} $lvl',
                           style: const TextStyle(
                               fontFamily: 'Cairo',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
                               color: Colors.white)),
                     ),
                     const SizedBox(height: 8),
@@ -198,7 +201,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     const Text('🔥 12 يوم متواصل',
                         style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 12,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
                             color: Colors.grey)),
                   ]),
                 ]),
@@ -230,13 +234,14 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                               Text(l10n.myTree,
                                   style: const TextStyle(
                                       fontFamily: 'Cairo',
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w800,
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w900,
                                       color: Color(0xFF1B2E1F))),
                               Text('${l10n.level} $lvl · ${_getLevelName(pts, l10n)}',
                                   style: const TextStyle(
                                       fontFamily: 'Cairo',
-                                      fontSize: 11,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w900,
                                       color: Color(0xFF52B788))),
                               const SizedBox(height: 6),
                               ClipRRect(
@@ -263,8 +268,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                 child: Text(l10n.dailyTasks,
                     style: const TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF1B2E1F))),
               ),
 
@@ -274,8 +279,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                 child: Text(l10n.weeklyChallenge,
                     style: const TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF1B2E1F))),
               ),
               StreamBuilder<QuerySnapshot>(
@@ -313,22 +318,23 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                              Text('تحدٍّ نشط · ${7 - DateTime.now().weekday % 7} أيام متبقية',
                                 style: const TextStyle(
                                     fontFamily: 'Cairo',
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     color: Color(0xFF52B788),
-                                    fontWeight: FontWeight.w700)),
+                                    fontWeight: FontWeight.w900)),
                             const SizedBox(height: 6),
                             const Text('أسبوع بدون سيارة 🚗🚫',
                                 style: TextStyle(
                                     fontFamily: 'Cairo',
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w800,
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w900,
                                     color: Colors.white)),
                             const SizedBox(height: 4),
                             const Text('التنقل بالدراجة أو المشي فقط',
                                 style: TextStyle(
                                     fontFamily: 'Cairo',
-                                    fontSize: 12,
-                                    color: Color(0x99FFFFFF))),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    color: Color(0xCCFFFFFF))),
                             const SizedBox(height: 12),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(6),
@@ -367,8 +373,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                 child: Text(l10n.explore,
                     style: const TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF1B2E1F))),
               ),
               Padding(
@@ -423,8 +429,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFF1B2E1F))),
           ]),
         ),

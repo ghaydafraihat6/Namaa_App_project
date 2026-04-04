@@ -19,7 +19,7 @@ class InviteFriendPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "دعوة صديق 🤝",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo'),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
@@ -39,13 +39,13 @@ class InviteFriendPage extends StatelessWidget {
             const Text(
               "انشر الوعي البيئي واكسب نقاطاً!",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 15),
             const Text(
               "عندما يسجل صديقك باستخدام رمز الدعوة الخاص بك، ستحصل على 100 نقطة لشجرتك! 🌱",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 40),
 
@@ -63,7 +63,7 @@ class InviteFriendPage extends StatelessWidget {
                 children: [
                   const Text(
                     "رمز الدعوة الخاص بك",
-                    style: TextStyle(color: Color(0xFF386641)),
+                    style: TextStyle(color: Color(0xFF386641), fontSize: 14, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -73,9 +73,10 @@ class InviteFriendPage extends StatelessWidget {
                         referralCode,
                         style: const TextStyle(
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w900,
                           letterSpacing: 2,
                           color: Color(0xFF386641),
+                          fontFamily: 'Cairo',
                         ),
                       ),
                       const SizedBox(width: 15),
@@ -118,7 +119,7 @@ class InviteFriendPage extends StatelessWidget {
                 icon: const Icon(Icons.share, color: Colors.white),
                 label: const Text(
                   "مشاركة الرمز عبر التطبيقات",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
                 ),
               ),
             ),

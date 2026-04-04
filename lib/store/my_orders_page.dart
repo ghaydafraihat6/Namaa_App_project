@@ -125,7 +125,7 @@ class _OrderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06), blurRadius: 10)
+              color: Colors.black.withOpacity(0.06), blurRadius: 10)
         ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -149,7 +149,7 @@ class _OrderCard extends StatelessWidget {
                   padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(10)),
                   child: Text(status.label,
                       style: TextStyle(

@@ -227,9 +227,9 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
     DecorationImage? decorImage;
     if (image != null) {
-      decorImage = DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.cover);
+      decorImage = DecorationImage(image: FileImage(File(image.path)), fit: BoxFit.contain);
     } else if (existUrl != null) {
-      decorImage = DecorationImage(image: NetworkImage(existUrl), fit: BoxFit.cover);
+      decorImage = DecorationImage(image: NetworkImage(existUrl), fit: BoxFit.contain);
     }
 
     return GestureDetector(

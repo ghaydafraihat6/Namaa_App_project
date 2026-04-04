@@ -79,7 +79,8 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                           child: Image.asset(
                             'assets/images/logo_namaa.png',
-                            width: 180,
+                            width: 240, 
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
@@ -91,8 +92,8 @@ class _SplashScreenState extends State<SplashScreen> {
                           text: const TextSpan(
                             style: TextStyle(
                               fontFamily: 'Cairo',
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
                             ),
                             children: [
                               TextSpan(
@@ -134,9 +135,10 @@ class _SplashScreenState extends State<SplashScreen> {
                       const Text(
                         "Version 1.0.0",
                         style: TextStyle(
+                          fontFamily: 'Cairo',
                           color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
                           letterSpacing: 1.2,
                         ),
                       ),

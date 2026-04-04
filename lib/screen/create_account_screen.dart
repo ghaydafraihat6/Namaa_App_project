@@ -187,7 +187,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     const SizedBox(height: 180),
                     Text(
                       l10n.login_signup,
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF2D5A3F)),
+                      style: const TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF2D5A3F),
+                      ),
                     ),
                     const SizedBox(height: 25),
 
@@ -223,7 +228,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           const SizedBox(width: 15),
                           const Icon(Icons.phone_android_outlined, color: Color(0xFF426B4F)),
                           const SizedBox(width: 12),
-                          Text(_selectedCountryCode, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2D5A3F))),
+                          Text(_selectedCountryCode,
+                              style: const TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF2D5A3F))),
                           const SizedBox(width: 8),
                           Container(height: 20, width: 1, color: Colors.grey.withAlpha(100)),
                           Expanded(
@@ -235,7 +244,19 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                                 if (val.length != 9) return l10n.phoneInvalid;
                                 return null;
                               },
-                              decoration: const InputDecoration(hintText: "7XXXXXXXX", border: InputBorder.none, contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                              decoration: const InputDecoration(
+                                hintText: "7XXXXXXXX",
+                                hintStyle: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.grey),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10),
+                              ),
+                              style: const TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontWeight: FontWeight.w900),
                             ),
                           ),
                         ],
@@ -266,19 +287,30 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                             children: [
                               const Icon(Icons.wc, color: Color(0xFF426B4F)),
                               const SizedBox(width: 12),
-                              Text(l10n.gender, style: const TextStyle(color: Color(0xFF2D5A3F), fontWeight: FontWeight.bold)),
+                                Text(l10n.gender,
+                                    style: const TextStyle(
+                                        fontFamily: 'Cairo',
+                                        color: Color(0xFF2D5A3F),
+                                        fontWeight: FontWeight.w900)),
                             ],
                           ),
                           Row(
                             children: [
-                              Text(l10n.male),
+                              Text(l10n.male,
+                                  style: const TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontWeight: FontWeight.w900)),
                               Radio<String>(
                                 value: "Male",
                                 groupValue: _selectedGender,
                                 activeColor: const Color(0xFF386641),
-                                onChanged: (v) => setState(() => _selectedGender = v!),
+                                onChanged: (v) =>
+                                    setState(() => _selectedGender = v!),
                               ),
-                              Text(l10n.female),
+                              Text(l10n.female,
+                                  style: const TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontWeight: FontWeight.w900)),
                               Radio<String>(
                                 value: "Female",
                                 groupValue: _selectedGender,
@@ -332,17 +364,29 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
                         child: _isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
-                            : Text(l10n.login_signup, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                            : Text(l10n.login_signup,
+                                style: const TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900)),
                       ),
                     ),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l10n.haveAccount),
+                        Text(l10n.haveAccount,
+                            style: const TextStyle(
+                                fontFamily: 'Cairo',
+                                fontWeight: FontWeight.w900)),
                         GestureDetector(
                           onTap: () => Navigator.pop(context),
-                          child: Text(l10n.login, style: const TextStyle(color: Color(0xFF386641), fontWeight: FontWeight.bold)),
+                          child: Text(l10n.login,
+                              style: const TextStyle(
+                                  fontFamily: 'Cairo',
+                                  color: Color(0xFF386641),
+                                  fontWeight: FontWeight.w900)),
                         ),
                       ],
                     ),
@@ -376,12 +420,22 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         validator: validator,
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: const TextStyle(
+              fontFamily: 'Cairo',
+              fontWeight: FontWeight.w900,
+              color: Colors.grey),
           prefixIcon: Icon(icon, color: const Color(0xFF426B4F)),
           suffixIcon: suffix,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
-          errorStyle: const TextStyle(fontSize: 12, height: 1),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 18, horizontal: 10),
+          errorStyle: const TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 12,
+              height: 1,
+              fontWeight: FontWeight.w900),
         ),
+        style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900),
       ),
     );
   }

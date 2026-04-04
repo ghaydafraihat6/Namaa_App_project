@@ -13,7 +13,7 @@ enum OrderStatus {
   final Color  color;
   final String icon;
 
-  Color get bg => color.withValues(alpha: 0.12);
+  Color get bg => color.withOpacity(0.12);
 
   static OrderStatus fromLabel(String label) =>
       OrderStatus.values.firstWhere(

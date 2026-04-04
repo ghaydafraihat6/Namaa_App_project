@@ -355,9 +355,9 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                         title,
                         style: TextStyle(
                           fontFamily: 'Cairo',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isCompleted ? Colors.grey : const Color(0xFF2D5A3F),
+                          fontSize: 21,
+                          fontWeight: FontWeight.w900,
+                          color: isCompleted ? Colors.grey : const Color(0xFF1B4332),
                           decoration: (isCompleted && !isPending) ? TextDecoration.lineThrough : TextDecoration.none,
                         ),
                       ),
@@ -365,9 +365,9 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                         isPending ? "قيد المراجعة ⏳" : (isCompleted ? "تم الإنجاز ✅" : "إثبات 📸 - تكسب $points نقطة"),
                         style: TextStyle(
                           fontFamily: 'Cairo',
-                          color: isPending ? Colors.orange : (isCompleted ? Colors.green : Colors.blue.shade700),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          color: isPending ? Colors.orange.shade900 : (isCompleted ? Colors.green.shade900 : Colors.blue.shade900),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15,
                         ),
                       ),
                     ],
@@ -378,7 +378,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
             const SizedBox(height: 12),
             Text(
               description,
-              style: TextStyle(fontFamily: 'Cairo', color: Colors.grey.shade700, fontSize: 14),
+              style: TextStyle(fontFamily: 'Cairo', color: Colors.black, fontSize: 17, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 15),
             SizedBox(
@@ -418,7 +418,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         Scaffold(
           backgroundColor: const Color(0xFFF8FBFE),
           appBar: AppBar(
-            title: const Text("💧 ترشيد استهلاك المياه", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
+            title: const Text("💧 ترشيد استهلاك المياه", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white)),
             centerTitle: true,
             backgroundColor: Colors.blue.shade700,
             elevation: 0,
@@ -429,7 +429,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
             children: [
               const Text(
                 "هذه المهام تساعد في تقليل هدر المياه يومياً. وعيك هو أساس استدامة الحياة!",
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontFamily: 'Cairo', fontSize: 17, color: Colors.black, fontWeight: FontWeight.w900),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 25),

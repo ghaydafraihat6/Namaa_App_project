@@ -52,13 +52,14 @@ class DailyReminderWidget extends StatelessWidget {
                     Text('لم تنجز مهامك اليوم!',
                         style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
                             color: Colors.white)),
                     Text('أنجز مهمة الآن واكسب نقاطك اليومية 🌿',
                         style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 11,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
                             color: Color(0xDDFFFFFF))),
                   ]),
             ),
@@ -69,14 +70,14 @@ class DailyReminderWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.25),
+                  color: Colors.white.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Text('ابدأ →',
                     style: TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
                         color: Colors.white)),
               ),
             ),

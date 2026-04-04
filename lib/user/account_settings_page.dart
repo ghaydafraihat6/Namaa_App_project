@@ -449,7 +449,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     fontFamily: 'Cairo',
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
-                    fontSize: 20)),
+                    fontSize: 22)),
             const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.all(4),
@@ -486,8 +486,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   name.isNotEmpty ? name : 'اسمك',
                   style: const TextStyle(
                       fontFamily: 'Cairo',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
                       color: Color(0xFF1B2E1F)),
                 ),
                 const SizedBox(height: 2),
@@ -495,7 +495,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   email,
                   style: const TextStyle(
                       fontFamily: 'Cairo',
-                      fontSize: 12,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
                       color: Colors.grey),
                 ),
               ]),
@@ -621,8 +622,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     : const Text('تغيير كلمة المرور',
                         style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w900,
                             color: _green)),
               ),
             ),
@@ -645,8 +646,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     : const Text('حفظ التغييرات',
                         style: TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
                             color: Colors.white)),
               ),
             ),
@@ -662,11 +663,11 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   Widget _sectionLabel(String label) => Padding(
         padding: const EdgeInsets.only(right: 4),
         child: Text(label,
-            style: const TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: _green)),
+        style: const TextStyle(
+            fontFamily: 'Cairo',
+            fontSize: 15,
+            fontWeight: FontWeight.w900,
+            color: _green)),
       );
 
   // ── حقل كلمة المرور ──
@@ -689,7 +690,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         child: TextField(
           controller: ctrl,
           obscureText: obscure,
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
+          style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900),
           decoration: InputDecoration(
             prefixIcon: Container(
               margin: const EdgeInsets.all(10),
@@ -717,7 +718,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             filled: true,
             fillColor: Colors.white,
             labelStyle: const TextStyle(
-                fontFamily: 'Cairo', color: Colors.grey, fontSize: 12),
+                fontFamily: 'Cairo', color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w900),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
@@ -747,7 +748,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           keyboardType: type,
           validator: validator,
           onChanged: onChanged,
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
+          style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900),
           decoration: InputDecoration(
             prefixIcon: Container(
               margin: const EdgeInsets.all(10),
@@ -768,7 +769,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             filled: true,
             fillColor: Colors.white,
             labelStyle: const TextStyle(
-                fontFamily: 'Cairo', color: Colors.grey, fontSize: 12),
+                fontFamily: 'Cairo', color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w900),
             contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16, vertical: 16),
           ),
@@ -806,8 +807,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             child: const Text('+962',
                 style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
                     color: _green)),
           ),
           const SizedBox(width: 8),
@@ -828,7 +829,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 border: InputBorder.none,
                 labelText: 'رقم الهاتف',
                 labelStyle: TextStyle(
-                    fontFamily: 'Cairo', color: Colors.grey, fontSize: 12),
+                    fontFamily: 'Cairo', color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -865,14 +866,16 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   const Text('تاريخ الميلاد',
                       style: TextStyle(
                           fontFamily: 'Cairo',
-                          fontSize: 11,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w900,
                           color: Colors.grey)),
                   const SizedBox(height: 2),
                   Text(
                     _dobCtrl.text.isNotEmpty ? _dobCtrl.text : 'اختر التاريخ',
                     style: TextStyle(
                         fontFamily: 'Cairo',
-                        fontSize: 14,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
                         color: _dobCtrl.text.isNotEmpty
                             ? const Color(0xFF1B2E1F)
                             : Colors.grey),
@@ -910,8 +913,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           const Text('الجنس',
               style: TextStyle(
                   fontFamily: 'Cairo',
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
                   color: Color(0xFF1B2E1F))),
           const Spacer(),
           // ذكر
@@ -936,8 +939,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         child: Text(label,
             style: TextStyle(
                 fontFamily: 'Cairo',
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
                 color: selected ? Colors.white : _green)),
       ),
     );

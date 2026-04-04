@@ -18,7 +18,7 @@ class Co2StatsWidget extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 12)],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,14 +26,15 @@ class Co2StatsWidget extends StatelessWidget {
             const Text('🌍 أثرك البيئي',
                 style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
                     color: Color(0xFF1B2E1F))),
             const SizedBox(height: 4),
             const Text('كل مهمة تنجزها تُفرق!',
                 style: TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 11,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey)),
             const SizedBox(height: 16),
 
@@ -75,8 +76,8 @@ class Co2StatsWidget extends StatelessWidget {
                         Text('${co2Saved.toStringAsFixed(1)} / 10 كغ',
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w900,
                                 color: Color(0xFF386641))),
                       ]),
                   const SizedBox(height: 6),
@@ -106,10 +107,10 @@ class Co2StatsWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
               vertical: 14, horizontal: 8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.08),
+            color: color.withOpacity(0.08),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-                color: color.withValues(alpha: 0.2)),
+                color: color.withOpacity(0.2)),
           ),
           child: Column(children: [
             Text(emoji, style: const TextStyle(fontSize: 24)),
@@ -125,7 +126,8 @@ class Co2StatsWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
-                    fontSize: 9,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
                     color: Colors.grey)),
           ]),
         ),
