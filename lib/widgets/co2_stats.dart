@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 class Co2StatsWidget extends StatelessWidget {
   final int points;
   const Co2StatsWidget({super.key, required this.points});
@@ -11,6 +11,7 @@ class Co2StatsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       padding: const EdgeInsets.all(18),
@@ -23,15 +24,15 @@ class Co2StatsWidget extends StatelessWidget {
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('🌍 أثرك البيئي',
-                style: TextStyle(
+            Text(l10n.co2_impact,
+                style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF1B2E1F))),
             const SizedBox(height: 4),
-            const Text('كل مهمة تنجزها تُفرق!',
-                style: TextStyle(
+            Text(l10n.co2_subtitle,
+                style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
@@ -41,22 +42,22 @@ class Co2StatsWidget extends StatelessWidget {
             Row(children: [
               _co2Card(
                 emoji: '💨',
-                value: '${co2Saved.toStringAsFixed(1)} كغ',
-                label: 'CO2 وُفِّر',
+                value: '${co2Saved.toStringAsFixed(1)} kg',
+                label: l10n.co2Saved,
                 color: const Color(0xFF52B788),
               ),
               const SizedBox(width: 10),
               _co2Card(
                 emoji: '🌳',
                 value: '${treesEquivalent.toStringAsFixed(1)}',
-                label: 'شجرة معادلة',
+                label: l10n.treesEquivalent,
                 color: const Color(0xFF386641),
               ),
               const SizedBox(width: 10),
               _co2Card(
                 emoji: '🚴',
-                value: '${kmWalked.toStringAsFixed(0)} كم',
-                label: 'مسافة خضراء',
+                value: '${kmWalked.toStringAsFixed(0)} km',
+                label: l10n.greenDistance,
                 color: const Color(0xFFF4A261),
               ),
             ]),
@@ -68,12 +69,12 @@ class Co2StatsWidget extends StatelessWidget {
                 children: [
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('هدف CO2 الشهري',
-                            style: TextStyle(
+                        Text(l10n.co2_monthly_goal,
+                            style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 12,
                                 color: Colors.grey)),
-                        Text('${co2Saved.toStringAsFixed(1)} / 10 كغ',
+                        Text('${co2Saved.toStringAsFixed(1)} / 10 kg',
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 13,

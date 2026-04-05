@@ -553,4 +553,381 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finish_challenge_btn => 'Finish Challenge';
+
+  @override
+  String get co2_impact => '🌍 Your Eco Impact';
+
+  @override
+  String get co2_subtitle => 'Every task you complete makes a difference!';
+
+  @override
+  String get co2_monthly_goal => 'Monthly CO2 Goal';
+
+  @override
+  String get reminder_no_tasks_today =>
+      'You haven\'t completed your daily tasks!';
+
+  @override
+  String get reminder_do_task_now =>
+      'Complete a task now and earn your daily points 🌿';
+
+  @override
+  String get reminder_start => 'Start →';
+
+  @override
+  String get help_title => 'Help Center';
+
+  @override
+  String get help_how_can_we_help => 'How can we help you?';
+
+  @override
+  String get help_find_answers => 'Find answers to FAQ';
+
+  @override
+  String get help_faq => 'FAQ';
+
+  @override
+  String get help_did_not_find_answer => 'Didn\'t find your answer?';
+
+  @override
+  String get help_contact_us => 'Contact us via email';
+
+  @override
+  String get notif_delete_all_title => 'Delete all notifications?';
+
+  @override
+  String get notif_cancel => 'Cancel';
+
+  @override
+  String get notif_delete_all => 'Delete All';
+
+  @override
+  String get notif_mark_all_read => 'Mark all as read';
+
+  @override
+  String get notif_please_login => 'Please login';
+
+  @override
+  String get notif_no_notifications => 'No notifications yet';
+
+  @override
+  String get notif_complete_tasks_for_notifs =>
+      'Complete your tasks to get notifications 🌱';
+
+  @override
+  String get notif_settings_title => 'Notifications';
+
+  @override
+  String get notif_settings_saved => '✅ Notification settings saved';
+
+  @override
+  String get notif_save_settings => 'Save Settings';
+
+  @override
+  String get notif_tasks_title => 'Task Notifications';
+
+  @override
+  String get notif_tasks_remind_title => 'Daily Task Reminder';
+
+  @override
+  String get notif_tasks_remind_sub =>
+      'Daily reminder to complete your eco tasks';
+
+  @override
+  String get notif_challenge_title => 'Challenge Notifications';
+
+  @override
+  String get notif_challenge_sub => 'Notification when weekly challenges end';
+
+  @override
+  String get notif_points_title => 'Points Notifications';
+
+  @override
+  String get notif_points_update_title => 'Points Updates';
+
+  @override
+  String get notif_points_update_sub => 'Notification when you earn new points';
+
+  @override
+  String get notif_weekly_report_title => 'Weekly Report';
+
+  @override
+  String get notif_weekly_report_sub => 'Weekly summary of your eco activity';
+
+  @override
+  String get notif_time_now => 'Now';
+
+  @override
+  String notif_time_mins(int mins) {
+    return '$mins mins ago';
+  }
+
+  @override
+  String notif_time_hours(int hours) {
+    return '$hours hours ago';
+  }
+
+  @override
+  String notif_time_days(int days) {
+    return '$days days ago';
+  }
+
+  @override
+  String notif_time_weeks(int weeks) {
+    return '$weeks weeks ago';
+  }
+
+  @override
+  String get notif_delete_forever =>
+      'All notifications will be deleted permanently';
+
+  @override
+  String get settings_version => 'Namaa v1.0.0';
+
+  @override
+  String get cert_share_failed => 'Failed to prepare sharing, try again';
+
+  @override
+  String get cert_my_certs => '🏅 My Certificates';
+
+  @override
+  String get cert_load_error => 'An error occurred while loading certificates';
+
+  @override
+  String get cert_no_certs => 'No certificates yet';
+
+  @override
+  String get cert_date => 'Date';
+
+  @override
+  String get cert_app_name => 'Namaa App';
+
+  @override
+  String get acc_changes_saved => '✅ Changes saved successfully';
+
+  @override
+  String get acc_error => 'An error occurred: ';
+
+  @override
+  String get acc_photo_updated => '✅ Photo updated successfully';
+
+  @override
+  String get acc_photo_upload_error => 'Upload error: ';
+
+  @override
+  String get acc_change_email => 'Change Email';
+
+  @override
+  String get acc_cancel => 'Cancel';
+
+  @override
+  String get acc_change => 'Change';
+
+  @override
+  String get acc_email_label => 'Email';
+
+  @override
+  String get acc_change_icon => 'Change ✏️';
+
+  @override
+  String get acc_change_password => 'Change Password';
+
+  @override
+  String get invite_code_copied => 'Code copied successfully! ✅';
+
+  @override
+  String get invite_friend_title => 'Invite a Friend 🤝';
+
+  @override
+  String get invite_friend_desc =>
+      'Spread environmental awareness and earn points!';
+
+  @override
+  String get invite_friend_subdesc =>
+      'When your friend registers using your code, you get 100 points for your tree! 🌱';
+
+  @override
+  String get invite_code_label => 'Your Invitation Code';
+
+  @override
+  String get invite_copied => 'Code copied! ✅';
+
+  @override
+  String invite_share_text(String code) {
+    return 'Join me on Namaa to save the environment! Use my code: $code to get a starter bonus 🌱✨';
+  }
+
+  @override
+  String get invite_share_btn => 'Share Code';
+
+  @override
+  String get tree_no_data => 'No Data Found';
+
+  @override
+  String get global_error => 'An error occurred: ';
+
+  @override
+  String get friend_close_comparison => 'Close Comparison';
+
+  @override
+  String get friend_recent_searches => 'Recently searched friends';
+
+  @override
+  String get exp_proof_uploaded => 'Proof submitted for review successfully! ✅';
+
+  @override
+  String get exp_error => 'Error: ';
+
+  @override
+  String get exp_choose_source => 'Choose image source as proof';
+
+  @override
+  String get exp_camera => 'Camera';
+
+  @override
+  String get exp_gallery => 'Gallery';
+
+  @override
+  String get exp_is_proof_valid => 'Is this image a valid proof?';
+
+  @override
+  String get exp_retake => 'Retake';
+
+  @override
+  String get exp_confirm_upload => 'Confirm and Upload';
+
+  @override
+  String get exp_proof => 'Proof 📸';
+
+  @override
+  String get exp_uploading => 'Uploading proof... 🌿';
+
+  @override
+  String get bike_warning_stopped =>
+      '⚠️ Looks like you stopped! Keep moving to continue the challenge';
+
+  @override
+  String get ba_choose_two_images => 'Please choose before and after images';
+
+  @override
+  String get ba_edited_success => 'Initiative edited successfully! ✏️';
+
+  @override
+  String get ba_published_success =>
+      'Initiative published successfully! 🎉 +10 points';
+
+  @override
+  String get ba_upload_failed_partial => 'Failed to upload some images.';
+
+  @override
+  String get ba_upload_error => 'An error occurred during upload: ';
+
+  @override
+  String get task_confirm_task => 'Confirm Task ✅';
+
+  @override
+  String get task_confirm_question => 'Do you confirm completing this task?';
+
+  @override
+  String get task_confirm => 'Confirm';
+
+  @override
+  String get task_shower_timer => 'Shower Timer 🚿';
+
+  @override
+  String get task_shower_desc =>
+      'Take a shower in less than 5 minutes to save liters of water!';
+
+  @override
+  String get task_start_shower => 'Start Shower 🚿';
+
+  @override
+  String get task_verifying_shower => 'Verifying... Shower quickly! 🫧';
+
+  @override
+  String get task_time_up => 'Time\'s up! Hope you saved a lot of water. ✅';
+
+  @override
+  String get task_send_proof => 'Send Proof 📤';
+
+  @override
+  String get task_proof_choose_source => 'Proof 📸 - Choose Source';
+
+  @override
+  String get task_proof_is_clear => 'Proof 📸 - Is this image clear?';
+
+  @override
+  String get task_water_saving => '💧 Water Conservation';
+
+  @override
+  String get task_processing_proof => 'Processing proof... ✨';
+
+  @override
+  String get admin_review_tasks => 'Review User Tasks';
+
+  @override
+  String get admin_no_pending => 'No pending requests right now ✅';
+
+  @override
+  String get admin_task_not_found => 'User not found';
+
+  @override
+  String get admin_task_approved_notif_title => '✅ Your task was approved!';
+
+  @override
+  String admin_task_approved_notif_body(String taskTitle, int points) {
+    return 'Great job! Your $taskTitle was approved and you earned $points points.';
+  }
+
+  @override
+  String get admin_task_approved_snack => '✅ Request approved successfully';
+
+  @override
+  String get admin_reject_title => 'Reject Request';
+
+  @override
+  String get admin_reject_hint => 'Rejection reason (optional)';
+
+  @override
+  String get admin_reject_btn => 'Reject';
+
+  @override
+  String get admin_reject_snack => '❌ Request rejected';
+
+  @override
+  String get admin_proof_without_image => '💡 Proof without image (Privacy)';
+
+  @override
+  String admin_reward_points(int points) {
+    return 'Reward: $points points';
+  }
+
+  @override
+  String get admin_user => 'User:';
+
+  @override
+  String get admin_time => 'Time:';
+
+  @override
+  String get admin_reject_icon => 'Reject ❌';
+
+  @override
+  String get admin_approve_icon => 'Approve ✅';
+
+  @override
+  String get admin_status_approved => 'Approved ✅';
+
+  @override
+  String get admin_status_rejected => 'Rejected ❌';
+
+  @override
+  String get admin_status_pending => 'Pending ⏳';
+
+  @override
+  String admin_recycle_task(String material) {
+    return 'Recycling task: $material';
+  }
+
+  @override
+  String get admin_eco_task => 'Eco Task';
 }

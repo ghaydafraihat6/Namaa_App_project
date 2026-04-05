@@ -9,12 +9,13 @@ class RecycleDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color primaryGreen = Color(0xFF386641);
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: const Text("مركز إعادة التدوير ♻️",
-            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo')),
+        title: Text(isAr ? "مركز إعادة التدوير ♻️" : "Recycle Center ♻️",
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
         elevation: 0,
@@ -25,17 +26,17 @@ class RecycleDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("أهلاً بك في نماء! 🌱",
+            Text(isAr ? "أهلاً بك في نماء! 🌱" : "Welcome to Namaa! 🌱",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: primaryGreen, fontFamily: 'Cairo')),
-            const Text("كيف تود المساهمة في حماية البيئة اليوم؟",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
+            Text(isAr ? "كيف تود المساهمة في حماية البيئة اليوم؟" : "How would you like to help the environment today?",
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
             const SizedBox(height: 30),
 
             // كرت طلب تجميع ميداني (Submission)
             _buildOptionCard(
               context,
-              title: "طلب تجميع مواد تدوير",
-              desc: "ارفع صورة لموادك (بلاستيك، ورق..) وحدد موقعك لنصل إليك.",
+              title: isAr ? "طلب تجميع مواد تدوير" : "Recycling Collection Request",
+              desc: isAr ? "ارفع صورة لموادك (بلاستيك، ورق..) وحدد موقعك لنصل إليك." : "Upload a photo of your materials (plastics, paper...) and set location for pickup.",
               icon: Icons.local_shipping_rounded,
               color: primaryGreen,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleSubmissionPage())),
@@ -46,8 +47,8 @@ class RecycleDashboard extends StatelessWidget {
             // كرت مهام سريعة (Tasks)
             _buildOptionCard(
               context,
-              title: "مهام بيئية يومية",
-              desc: "نفذ مهام بسيطة في منزلك واكسب نقاطاً فورية لشجرتك.",
+              title: isAr ? "مهام بيئية يومية" : "Daily Eco Tasks",
+              desc: isAr ? "نفذ مهام بسيطة في منزلك واكسب نقاطاً فورية لشجرتك." : "Complete simple daily tasks at home and earn instant points.",
               icon: Icons.task_alt_rounded,
               color: const Color(0xFFF4A261), // لون برتقالي للتميز
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleTasksPage())),
@@ -58,8 +59,8 @@ class RecycleDashboard extends StatelessWidget {
             // كرت سجل الطلبات (History)
             _buildOptionCard(
               context,
-              title: "سجل طلباتي 🗂️",
-              desc: "تابع طلبات إعادة التدوير السابقة وحالتها وصورها.",
+              title: isAr ? "سجل طلباتي 🗂️" : "My Requests History 🗂️",
+              desc: isAr ? "تابع طلبات إعادة التدوير السابقة وحالتها وصورها." : "Track your previous recycling requests, statuses, and photos.",
               icon: Icons.history_rounded,
               color: Colors.blueAccent,
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleHistoryPage())),

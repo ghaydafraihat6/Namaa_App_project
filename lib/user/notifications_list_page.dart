@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
@@ -65,13 +66,14 @@ class NotificationsListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text(
-          'الإشعارات',
-          style: TextStyle(
+        title: Text(
+          l10n.notifications,
+          style: const TextStyle(
             fontFamily: 'Cairo',
             fontWeight: FontWeight.w800,
             color: Colors.white,
@@ -93,9 +95,9 @@ class NotificationsListPage extends StatelessWidget {
                   builder: (ctx) => AlertDialog(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16)),
-                    title: const Text('حذف كل الإشعارات؟',
+                    title: Text(l10n.notif_delete_all_title,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontWeight: FontWeight.bold,
                             fontSize: 16)),
@@ -106,16 +108,16 @@ class NotificationsListPage extends StatelessWidget {
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
-                          child: const Text('إلغاء',
-                              style: TextStyle(fontFamily: 'Cairo'))),
+                          child: Text(l10n.notif_cancel,
+                              style: const TextStyle(fontFamily: 'Cairo'))),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(ctx, true),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10))),
-                        child: const Text('حذف الكل',
-                            style: TextStyle(
+                        child: Text(l10n.notif_delete_all,
+                            style: const TextStyle(
                                 fontFamily: 'Cairo', color: Colors.white)),
                       ),
                     ],
@@ -127,22 +129,22 @@ class NotificationsListPage extends StatelessWidget {
               }
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'read_all',
                 child: Row(children: [
-                  Icon(Icons.done_all, color: Color(0xFF386641), size: 20),
-                  SizedBox(width: 8),
-                  Text('تعليم الكل كمقروء',
-                      style: TextStyle(fontFamily: 'Cairo', fontSize: 13)),
+                  const Icon(Icons.done_all, color: Color(0xFF386641), size: 20),
+                  const SizedBox(width: 8),
+                  Text(l10n.notif_mark_all_read,
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
                 ]),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'clear_all',
                 child: Row(children: [
-                  Icon(Icons.delete_sweep, color: Colors.red, size: 20),
-                  SizedBox(width: 8),
-                  Text('حذف كل الإشعارات',
-                      style: TextStyle(fontFamily: 'Cairo', fontSize: 13)),
+                  const Icon(Icons.delete_sweep, color: Colors.red, size: 20),
+                  const SizedBox(width: 8),
+                  Text(l10n.notif_delete_all_title,
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
                 ]),
               ),
             ],
@@ -150,9 +152,9 @@ class NotificationsListPage extends StatelessWidget {
         ],
       ),
       body: user == null
-          ? const Center(
-              child: Text('يرجى تسجيل الدخول',
-                  style: TextStyle(fontFamily: 'Cairo')))
+          ? Center(
+              child: Text(l10n.notif_please_login,
+                  style: const TextStyle(fontFamily: 'Cairo')))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('users')
@@ -175,15 +177,15 @@ class NotificationsListPage extends StatelessWidget {
                         Icon(Icons.notifications_off_outlined,
                             size: 80, color: Colors.grey.shade300),
                         const SizedBox(height: 16),
-                        const Text('لا توجد إشعارات بعد',
-                            style: TextStyle(
+                        Text(l10n.notif_no_notifications,
+                            style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 16,
                                 color: Colors.grey,
                                 fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
-                        const Text('أكمل مهامك وتحدياتك وستصلك إشعارات هنا 🌱',
-                            style: TextStyle(
+                        Text(l10n.notif_complete_tasks_for_notifs,
+                            style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 13,
                                 color: Colors.grey)),

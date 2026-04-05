@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
@@ -15,13 +15,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('التنبيهات',
-            style: TextStyle(fontFamily: 'Cairo',
+        title: Text(l10n.notif_settings_title,
+            style: const TextStyle(fontFamily: 'Cairo',
                 fontSize: 19,
                 fontWeight: FontWeight.w900, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
@@ -77,8 +77,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
             child: ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('✅ تم حفظ إعدادات التنبيهات'),
+                   SnackBar(
+                    content: Text(l10n.notif_settings_saved),
                     backgroundColor: Color(0xFF386641),
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -90,8 +90,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
               ),
-              child: const Text('حفظ الإعدادات',
-                  style: TextStyle(
+              child: Text(l10n.notif_save_settings,
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 17,
                       fontWeight: FontWeight.w900,

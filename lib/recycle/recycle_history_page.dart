@@ -14,18 +14,19 @@ class RecycleHistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
     const Color primaryGreen = Color(0xFF386641);
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: const Text("سجل طلباتي 🗂️", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
+        title: Text(isAr ? "سجل طلباتي 🗂️" : "My Requests History 🗂️", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       body: user == null
-          ? const Center(child: Text("الرجاء تسجيل الدخول أولاً"))
+          ? Center(child: Text(isAr ? "الرجاء تسجيل الدخول أولاً" : "Please login first"))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('recycle_requests')
@@ -42,7 +43,7 @@ class RecycleHistoryPage extends StatelessWidget {
                       children: [
                         Icon(Icons.history, size: 80, color: Colors.grey.shade300),
                         const SizedBox(height: 15),
-                        const Text("لم تقم بإرسال أي طلبات إعادة تدوير بعد.", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
+                        Text(isAr ? "لم تقم بإرسال أي طلبات إعادة تدوير بعد." : "You haven't submitted any recycling requests yet.", style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
                       ],
                     )
                   );
@@ -71,13 +72,26 @@ class RecycleHistoryPage extends StatelessWidget {
                     final status = data['status'] ?? 'pending';
                     final imageUrl = data['imageUrl'] ?? '';
                     final materialsRaw = data['materials'];
-                    final materials = materialsRaw is List ? materialsRaw.join('، ') : 'مواد تدوير';
+                    String materials = materialsRaw is List ? materialsRaw.join('، ') : (isAr ? 'مواد تدوير' : 'Recycling Materials');
+                    if (!isAr && materialsRaw is List) {
+                      materials = materialsRaw.map((e) {
+                        switch (e) {
+                          case 'بلاستيك': return 'Plastic';
+                          case 'معادن': return 'Metals';
+                          case 'ورق': return 'Paper';
+                          case 'زجاج': return 'Glass';
+                          case 'إلكترونيات': return 'Electronics';
+                          case 'بطاريات': return 'Batteries';
+                          default: return e;
+                        }
+                      }).join(', ');
+                    }
                     
                     DateTime? date;
                     if (data['createdAt'] != null) {
                       date = (data['createdAt'] as Timestamp).toDate();
                     }
-                    final dateString = date != null ? _formatDate(date) : 'تاريخ غير متوفر';
+                    final dateString = date != null ? _formatDate(date) : (isAr ? 'تاريخ غير متوفر' : 'Date unavailable');
 
                     bool isPending = status == 'pending';
 
@@ -177,7 +191,7 @@ class RecycleHistoryPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                child: const Text("إغلاق الإثبات", style: TextStyle(color: Colors.white, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                child: Text(Localizations.localeOf(context).languageCode == 'ar' ? "إغلاق الإثبات" : "Close Proof", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
               ),
             )
           ],

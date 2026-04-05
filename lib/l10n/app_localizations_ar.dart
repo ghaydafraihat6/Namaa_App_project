@@ -548,4 +548,374 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get finish_challenge_btn => 'إنهاء التحدي';
+
+  @override
+  String get co2_impact => '🌍 أثرك البيئي';
+
+  @override
+  String get co2_subtitle => 'كل مهمة تنجزها تُفرق!';
+
+  @override
+  String get co2_monthly_goal => 'هدف CO2 الشهري';
+
+  @override
+  String get reminder_no_tasks_today => 'لم تنجز مهامك اليوم!';
+
+  @override
+  String get reminder_do_task_now => 'أنجز مهمة الآن واكسب نقاطك اليومية 🌿';
+
+  @override
+  String get reminder_start => 'ابدأ →';
+
+  @override
+  String get help_title => 'مركز المساعدة';
+
+  @override
+  String get help_how_can_we_help => 'كيف يمكننا مساعدتك؟';
+
+  @override
+  String get help_find_answers => 'اجد إجابات لأسئلتك الشائعة';
+
+  @override
+  String get help_faq => 'الأسئلة الشائعة';
+
+  @override
+  String get help_did_not_find_answer => 'لم تجد إجابتك؟';
+
+  @override
+  String get help_contact_us => 'تواصل معنا عبر البريد الإلكتروني';
+
+  @override
+  String get notif_delete_all_title => 'حذف كل الإشعارات؟';
+
+  @override
+  String get notif_cancel => 'إلغاء';
+
+  @override
+  String get notif_delete_all => 'حذف الكل';
+
+  @override
+  String get notif_mark_all_read => 'تعليم الكل كمقروء';
+
+  @override
+  String get notif_please_login => 'يرجى تسجيل الدخول';
+
+  @override
+  String get notif_no_notifications => 'لا توجد إشعارات بعد';
+
+  @override
+  String get notif_complete_tasks_for_notifs =>
+      'أكمل مهامك وتحدياتك وستصلك إشعارات هنا 🌱';
+
+  @override
+  String get notif_settings_title => 'التنبيهات';
+
+  @override
+  String get notif_settings_saved => '✅ تم حفظ إعدادات التنبيهات';
+
+  @override
+  String get notif_save_settings => 'حفظ الإعدادات';
+
+  @override
+  String get notif_tasks_title => 'تنبيهات المهام';
+
+  @override
+  String get notif_tasks_remind_title => 'تذكير المهام اليومية';
+
+  @override
+  String get notif_tasks_remind_sub => 'تذكير يومي لإكمال مهامك البيئية';
+
+  @override
+  String get notif_challenge_title => 'تنبيهات التحديات';
+
+  @override
+  String get notif_challenge_sub => 'إشعار عند انتهاء التحديات الأسبوعية';
+
+  @override
+  String get notif_points_title => 'تنبيهات النقاط';
+
+  @override
+  String get notif_points_update_title => 'تحديثات النقاط';
+
+  @override
+  String get notif_points_update_sub => 'إشعار عند اكتساب نقاط جديدة';
+
+  @override
+  String get notif_weekly_report_title => 'التقرير الأسبوعي';
+
+  @override
+  String get notif_weekly_report_sub => 'ملخص أسبوعي لنشاطك البيئي';
+
+  @override
+  String get notif_time_now => 'الآن';
+
+  @override
+  String notif_time_mins(int mins) {
+    return 'قبل $mins دقيقة';
+  }
+
+  @override
+  String notif_time_hours(int hours) {
+    return 'قبل $hours ساعة';
+  }
+
+  @override
+  String notif_time_days(int days) {
+    return 'قبل $days يوم';
+  }
+
+  @override
+  String notif_time_weeks(int weeks) {
+    return 'قبل $weeks أسبوع';
+  }
+
+  @override
+  String get notif_delete_forever => 'سيتم حذف جميع الإشعارات نهائياً';
+
+  @override
+  String get settings_version => 'نماء v1.0.0';
+
+  @override
+  String get cert_share_failed => 'فشل تجهيز المشاركة، حاول مرة أخرى';
+
+  @override
+  String get cert_my_certs => '🏅 شهاداتي';
+
+  @override
+  String get cert_load_error => 'حدث خطأ أثناء تحميل الشهادات';
+
+  @override
+  String get cert_no_certs => 'لا توجد شهادات بعد';
+
+  @override
+  String get cert_date => 'التاريخ';
+
+  @override
+  String get cert_app_name => 'تطبيق نماء';
+
+  @override
+  String get acc_changes_saved => '✅ تم حفظ التغييرات بنجاح';
+
+  @override
+  String get acc_error => 'حدث خطأ: ';
+
+  @override
+  String get acc_photo_updated => '✅ تم تحديث الصورة بنجاح';
+
+  @override
+  String get acc_photo_upload_error => 'خطأ في الرفع: ';
+
+  @override
+  String get acc_change_email => 'تغيير البريد الإلكتروني';
+
+  @override
+  String get acc_cancel => 'إلغاء';
+
+  @override
+  String get acc_change => 'تغيير';
+
+  @override
+  String get acc_email_label => 'البريد الإلكتروني';
+
+  @override
+  String get acc_change_icon => 'تغيير ✏️';
+
+  @override
+  String get acc_change_password => 'تغيير كلمة المرور';
+
+  @override
+  String get invite_code_copied => 'تم نسخ الرمز بنجاح! ✅';
+
+  @override
+  String get invite_friend_title => 'دعوة صديق 🤝';
+
+  @override
+  String get invite_friend_desc => 'انشر الوعي البيئي واكسب نقاطاً!';
+
+  @override
+  String get invite_friend_subdesc =>
+      'عندما يسجل صديقك باستخدام رمز الدعوة الخاص بك، ستحصل على 100 نقطة لشجرتك! 🌱';
+
+  @override
+  String get invite_code_label => 'رمز الدعوة الخاص بك';
+
+  @override
+  String get invite_copied => 'تم نسخ الرمز بنجاح! ✅';
+
+  @override
+  String invite_share_text(String code) {
+    return 'انضم إليّ في تطبيق نماء للحفاظ على البيئة! استخدم رمز الدعوة الخاص بي: $code لتحصل على مكافأة بداية 🌱✨';
+  }
+
+  @override
+  String get invite_share_btn => 'مشاركة الرمز عبر التطبيقات';
+
+  @override
+  String get tree_no_data => 'لا توجد بيانات';
+
+  @override
+  String get global_error => 'حدث خطأ: ';
+
+  @override
+  String get friend_close_comparison => 'إغلاق المقارنة';
+
+  @override
+  String get friend_recent_searches => 'أصدقاء تم البحث عنهم مؤخراً';
+
+  @override
+  String get exp_proof_uploaded => 'تم إرسال الإثبات للمراجعة بنجاح! ✅';
+
+  @override
+  String get exp_error => 'خطأ: ';
+
+  @override
+  String get exp_choose_source => 'اختر مصدر الصورة كدليل';
+
+  @override
+  String get exp_camera => 'الكاميرا';
+
+  @override
+  String get exp_gallery => 'معرض الصور';
+
+  @override
+  String get exp_is_proof_valid => 'هل هذه الصورة دليل صحيح؟';
+
+  @override
+  String get exp_retake => 'إعادة الالتقاط';
+
+  @override
+  String get exp_confirm_upload => 'تأكيد ورفع';
+
+  @override
+  String get exp_proof => 'إثبات 📸';
+
+  @override
+  String get exp_uploading => 'جاري رفع الدليل... 🌿';
+
+  @override
+  String get bike_warning_stopped => '⚠️ يبدو أنك توقفت! تحرك لمواصلة التحدي';
+
+  @override
+  String get ba_choose_two_images => 'يرجى اختيار صورتي قبل وبعد';
+
+  @override
+  String get ba_edited_success => 'تم تعديل المبادرة بنجاح! ✏️';
+
+  @override
+  String get ba_published_success => 'تم نشر مبادرتك بنجاح! 🎉 +10 نقاط';
+
+  @override
+  String get ba_upload_failed_partial => 'فشل في رفع بعض الصور.';
+
+  @override
+  String get ba_upload_error => 'حدث خطأ أثناء الرفع: ';
+
+  @override
+  String get task_confirm_task => 'تأكيد المهمة ✅';
+
+  @override
+  String get task_confirm_question => 'هل تؤكد قيامك بهذه المهمة؟';
+
+  @override
+  String get task_confirm => 'تأكيد';
+
+  @override
+  String get task_shower_timer => 'مؤقت الاستحمام 🚿';
+
+  @override
+  String get task_shower_desc =>
+      'التحدي هو الاستحمام في أقل من 5 دقائق لتوفير لترات من الماء!';
+
+  @override
+  String get task_start_shower => 'بدء الاستحمام 🚿';
+
+  @override
+  String get task_verifying_shower => 'جارٍ التحقق... استحم بسرعة! 🫧';
+
+  @override
+  String get task_time_up => 'انتهى الوقت! نأمل أنك وفرت الكثير من الماء. ✅';
+
+  @override
+  String get task_send_proof => 'إرسال إثبات 📤';
+
+  @override
+  String get task_proof_choose_source => 'إثبات 📸 - اختر المصدر';
+
+  @override
+  String get task_proof_is_clear => 'إثبات 📸 - هل هذه الصورة واضحة؟';
+
+  @override
+  String get task_water_saving => '💧 ترشيد استهلاك المياه';
+
+  @override
+  String get task_processing_proof => 'جاري معالجة الإثبات... ✨';
+
+  @override
+  String get admin_review_tasks => 'مراجعة مهام المستخدمين';
+
+  @override
+  String get admin_no_pending => 'لا توجد طلبات معلقة حالياً ✅';
+
+  @override
+  String get admin_task_not_found => 'المستخدم غير موجود';
+
+  @override
+  String get admin_task_approved_notif_title => '✅ تمت الموافقة على مهمتك!';
+
+  @override
+  String admin_task_approved_notif_body(String taskTitle, int points) {
+    return 'أحسنت! تمت الموافقة على $taskTitle وحصلت على $points نقطة.';
+  }
+
+  @override
+  String get admin_task_approved_snack => '✅ تم قبول الطلب بنجاح';
+
+  @override
+  String get admin_reject_title => 'رفض الطلب';
+
+  @override
+  String get admin_reject_hint => 'سبب الرفض (اختياري)';
+
+  @override
+  String get admin_reject_btn => 'رفض';
+
+  @override
+  String get admin_reject_snack => '❌ تم رفض الطلب';
+
+  @override
+  String get admin_proof_without_image => '💡 إثبات بدون صورة (خصوصية)';
+
+  @override
+  String admin_reward_points(int points) {
+    return 'المكافأة: $points نقطة';
+  }
+
+  @override
+  String get admin_user => 'المستخدم:';
+
+  @override
+  String get admin_time => 'التوقيت:';
+
+  @override
+  String get admin_reject_icon => 'رفض ❌';
+
+  @override
+  String get admin_approve_icon => 'قبول ✅';
+
+  @override
+  String get admin_status_approved => 'مقبول ✅';
+
+  @override
+  String get admin_status_rejected => 'مرفوض ❌';
+
+  @override
+  String get admin_status_pending => 'قيد المراجعة ⏳';
+
+  @override
+  String admin_recycle_task(String material) {
+    return 'مهمة تدوير: $material';
+  }
+
+  @override
+  String get admin_eco_task => 'مهمة بيئية';
 }

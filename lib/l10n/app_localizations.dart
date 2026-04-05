@@ -1123,6 +1123,708 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish Challenge'**
   String get finish_challenge_btn;
+
+  /// No description provided for @co2_impact.
+  ///
+  /// In en, this message translates to:
+  /// **'🌍 Your Eco Impact'**
+  String get co2_impact;
+
+  /// No description provided for @co2_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every task you complete makes a difference!'**
+  String get co2_subtitle;
+
+  /// No description provided for @co2_monthly_goal.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly CO2 Goal'**
+  String get co2_monthly_goal;
+
+  /// No description provided for @reminder_no_tasks_today.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t completed your daily tasks!'**
+  String get reminder_no_tasks_today;
+
+  /// No description provided for @reminder_do_task_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a task now and earn your daily points 🌿'**
+  String get reminder_do_task_now;
+
+  /// No description provided for @reminder_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start →'**
+  String get reminder_start;
+
+  /// No description provided for @help_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center'**
+  String get help_title;
+
+  /// No description provided for @help_how_can_we_help.
+  ///
+  /// In en, this message translates to:
+  /// **'How can we help you?'**
+  String get help_how_can_we_help;
+
+  /// No description provided for @help_find_answers.
+  ///
+  /// In en, this message translates to:
+  /// **'Find answers to FAQ'**
+  String get help_find_answers;
+
+  /// No description provided for @help_faq.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get help_faq;
+
+  /// No description provided for @help_did_not_find_answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t find your answer?'**
+  String get help_did_not_find_answer;
+
+  /// No description provided for @help_contact_us.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us via email'**
+  String get help_contact_us;
+
+  /// No description provided for @notif_delete_all_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all notifications?'**
+  String get notif_delete_all_title;
+
+  /// No description provided for @notif_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get notif_cancel;
+
+  /// No description provided for @notif_delete_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete All'**
+  String get notif_delete_all;
+
+  /// No description provided for @notif_mark_all_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get notif_mark_all_read;
+
+  /// No description provided for @notif_please_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login'**
+  String get notif_please_login;
+
+  /// No description provided for @notif_no_notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notif_no_notifications;
+
+  /// No description provided for @notif_complete_tasks_for_notifs.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your tasks to get notifications 🌱'**
+  String get notif_complete_tasks_for_notifs;
+
+  /// No description provided for @notif_settings_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notif_settings_title;
+
+  /// No description provided for @notif_settings_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Notification settings saved'**
+  String get notif_settings_saved;
+
+  /// No description provided for @notif_save_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Settings'**
+  String get notif_save_settings;
+
+  /// No description provided for @notif_tasks_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Notifications'**
+  String get notif_tasks_title;
+
+  /// No description provided for @notif_tasks_remind_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Task Reminder'**
+  String get notif_tasks_remind_title;
+
+  /// No description provided for @notif_tasks_remind_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily reminder to complete your eco tasks'**
+  String get notif_tasks_remind_sub;
+
+  /// No description provided for @notif_challenge_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge Notifications'**
+  String get notif_challenge_title;
+
+  /// No description provided for @notif_challenge_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification when weekly challenges end'**
+  String get notif_challenge_sub;
+
+  /// No description provided for @notif_points_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Notifications'**
+  String get notif_points_title;
+
+  /// No description provided for @notif_points_update_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Updates'**
+  String get notif_points_update_title;
+
+  /// No description provided for @notif_points_update_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification when you earn new points'**
+  String get notif_points_update_sub;
+
+  /// No description provided for @notif_weekly_report_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Report'**
+  String get notif_weekly_report_title;
+
+  /// No description provided for @notif_weekly_report_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly summary of your eco activity'**
+  String get notif_weekly_report_sub;
+
+  /// No description provided for @notif_time_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get notif_time_now;
+
+  /// No description provided for @notif_time_mins.
+  ///
+  /// In en, this message translates to:
+  /// **'{mins} mins ago'**
+  String notif_time_mins(int mins);
+
+  /// No description provided for @notif_time_hours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours ago'**
+  String notif_time_hours(int hours);
+
+  /// No description provided for @notif_time_days.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days ago'**
+  String notif_time_days(int days);
+
+  /// No description provided for @notif_time_weeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{weeks} weeks ago'**
+  String notif_time_weeks(int weeks);
+
+  /// No description provided for @notif_delete_forever.
+  ///
+  /// In en, this message translates to:
+  /// **'All notifications will be deleted permanently'**
+  String get notif_delete_forever;
+
+  /// No description provided for @settings_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Namaa v1.0.0'**
+  String get settings_version;
+
+  /// No description provided for @cert_share_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to prepare sharing, try again'**
+  String get cert_share_failed;
+
+  /// No description provided for @cert_my_certs.
+  ///
+  /// In en, this message translates to:
+  /// **'🏅 My Certificates'**
+  String get cert_my_certs;
+
+  /// No description provided for @cert_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading certificates'**
+  String get cert_load_error;
+
+  /// No description provided for @cert_no_certs.
+  ///
+  /// In en, this message translates to:
+  /// **'No certificates yet'**
+  String get cert_no_certs;
+
+  /// No description provided for @cert_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get cert_date;
+
+  /// No description provided for @cert_app_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Namaa App'**
+  String get cert_app_name;
+
+  /// No description provided for @acc_changes_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Changes saved successfully'**
+  String get acc_changes_saved;
+
+  /// No description provided for @acc_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: '**
+  String get acc_error;
+
+  /// No description provided for @acc_photo_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Photo updated successfully'**
+  String get acc_photo_updated;
+
+  /// No description provided for @acc_photo_upload_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload error: '**
+  String get acc_photo_upload_error;
+
+  /// No description provided for @acc_change_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email'**
+  String get acc_change_email;
+
+  /// No description provided for @acc_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get acc_cancel;
+
+  /// No description provided for @acc_change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get acc_change;
+
+  /// No description provided for @acc_email_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get acc_email_label;
+
+  /// No description provided for @acc_change_icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Change ✏️'**
+  String get acc_change_icon;
+
+  /// No description provided for @acc_change_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get acc_change_password;
+
+  /// No description provided for @invite_code_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied successfully! ✅'**
+  String get invite_code_copied;
+
+  /// No description provided for @invite_friend_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a Friend 🤝'**
+  String get invite_friend_title;
+
+  /// No description provided for @invite_friend_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Spread environmental awareness and earn points!'**
+  String get invite_friend_desc;
+
+  /// No description provided for @invite_friend_subdesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When your friend registers using your code, you get 100 points for your tree! 🌱'**
+  String get invite_friend_subdesc;
+
+  /// No description provided for @invite_code_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Invitation Code'**
+  String get invite_code_label;
+
+  /// No description provided for @invite_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied! ✅'**
+  String get invite_copied;
+
+  /// No description provided for @invite_share_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me on Namaa to save the environment! Use my code: {code} to get a starter bonus 🌱✨'**
+  String invite_share_text(String code);
+
+  /// No description provided for @invite_share_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Code'**
+  String get invite_share_btn;
+
+  /// No description provided for @tree_no_data.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data Found'**
+  String get tree_no_data;
+
+  /// No description provided for @global_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: '**
+  String get global_error;
+
+  /// No description provided for @friend_close_comparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Comparison'**
+  String get friend_close_comparison;
+
+  /// No description provided for @friend_recent_searches.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently searched friends'**
+  String get friend_recent_searches;
+
+  /// No description provided for @exp_proof_uploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof submitted for review successfully! ✅'**
+  String get exp_proof_uploaded;
+
+  /// No description provided for @exp_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: '**
+  String get exp_error;
+
+  /// No description provided for @exp_choose_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose image source as proof'**
+  String get exp_choose_source;
+
+  /// No description provided for @exp_camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get exp_camera;
+
+  /// No description provided for @exp_gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get exp_gallery;
+
+  /// No description provided for @exp_is_proof_valid.
+  ///
+  /// In en, this message translates to:
+  /// **'Is this image a valid proof?'**
+  String get exp_is_proof_valid;
+
+  /// No description provided for @exp_retake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get exp_retake;
+
+  /// No description provided for @exp_confirm_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm and Upload'**
+  String get exp_confirm_upload;
+
+  /// No description provided for @exp_proof.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof 📸'**
+  String get exp_proof;
+
+  /// No description provided for @exp_uploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading proof... 🌿'**
+  String get exp_uploading;
+
+  /// No description provided for @bike_warning_stopped.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Looks like you stopped! Keep moving to continue the challenge'**
+  String get bike_warning_stopped;
+
+  /// No description provided for @ba_choose_two_images.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose before and after images'**
+  String get ba_choose_two_images;
+
+  /// No description provided for @ba_edited_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiative edited successfully! ✏️'**
+  String get ba_edited_success;
+
+  /// No description provided for @ba_published_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiative published successfully! 🎉 +10 points'**
+  String get ba_published_success;
+
+  /// No description provided for @ba_upload_failed_partial.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload some images.'**
+  String get ba_upload_failed_partial;
+
+  /// No description provided for @ba_upload_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred during upload: '**
+  String get ba_upload_error;
+
+  /// No description provided for @task_confirm_task.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Task ✅'**
+  String get task_confirm_task;
+
+  /// No description provided for @task_confirm_question.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you confirm completing this task?'**
+  String get task_confirm_question;
+
+  /// No description provided for @task_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get task_confirm;
+
+  /// No description provided for @task_shower_timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Shower Timer 🚿'**
+  String get task_shower_timer;
+
+  /// No description provided for @task_shower_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a shower in less than 5 minutes to save liters of water!'**
+  String get task_shower_desc;
+
+  /// No description provided for @task_start_shower.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Shower 🚿'**
+  String get task_start_shower;
+
+  /// No description provided for @task_verifying_shower.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying... Shower quickly! 🫧'**
+  String get task_verifying_shower;
+
+  /// No description provided for @task_time_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Time\'s up! Hope you saved a lot of water. ✅'**
+  String get task_time_up;
+
+  /// No description provided for @task_send_proof.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Proof 📤'**
+  String get task_send_proof;
+
+  /// No description provided for @task_proof_choose_source.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof 📸 - Choose Source'**
+  String get task_proof_choose_source;
+
+  /// No description provided for @task_proof_is_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof 📸 - Is this image clear?'**
+  String get task_proof_is_clear;
+
+  /// No description provided for @task_water_saving.
+  ///
+  /// In en, this message translates to:
+  /// **'💧 Water Conservation'**
+  String get task_water_saving;
+
+  /// No description provided for @task_processing_proof.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing proof... ✨'**
+  String get task_processing_proof;
+
+  /// No description provided for @admin_review_tasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Review User Tasks'**
+  String get admin_review_tasks;
+
+  /// No description provided for @admin_no_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending requests right now ✅'**
+  String get admin_no_pending;
+
+  /// No description provided for @admin_task_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found'**
+  String get admin_task_not_found;
+
+  /// No description provided for @admin_task_approved_notif_title.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Your task was approved!'**
+  String get admin_task_approved_notif_title;
+
+  /// No description provided for @admin_task_approved_notif_body.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! Your {taskTitle} was approved and you earned {points} points.'**
+  String admin_task_approved_notif_body(String taskTitle, int points);
+
+  /// No description provided for @admin_task_approved_snack.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Request approved successfully'**
+  String get admin_task_approved_snack;
+
+  /// No description provided for @admin_reject_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Request'**
+  String get admin_reject_title;
+
+  /// No description provided for @admin_reject_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason (optional)'**
+  String get admin_reject_hint;
+
+  /// No description provided for @admin_reject_btn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get admin_reject_btn;
+
+  /// No description provided for @admin_reject_snack.
+  ///
+  /// In en, this message translates to:
+  /// **'❌ Request rejected'**
+  String get admin_reject_snack;
+
+  /// No description provided for @admin_proof_without_image.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Proof without image (Privacy)'**
+  String get admin_proof_without_image;
+
+  /// No description provided for @admin_reward_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Reward: {points} points'**
+  String admin_reward_points(int points);
+
+  /// No description provided for @admin_user.
+  ///
+  /// In en, this message translates to:
+  /// **'User:'**
+  String get admin_user;
+
+  /// No description provided for @admin_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time:'**
+  String get admin_time;
+
+  /// No description provided for @admin_reject_icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject ❌'**
+  String get admin_reject_icon;
+
+  /// No description provided for @admin_approve_icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve ✅'**
+  String get admin_approve_icon;
+
+  /// No description provided for @admin_status_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved ✅'**
+  String get admin_status_approved;
+
+  /// No description provided for @admin_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected ❌'**
+  String get admin_status_rejected;
+
+  /// No description provided for @admin_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending ⏳'**
+  String get admin_status_pending;
+
+  /// No description provided for @admin_recycle_task.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycling task: {material}'**
+  String admin_recycle_task(String material);
+
+  /// No description provided for @admin_eco_task.
+  ///
+  /// In en, this message translates to:
+  /// **'Eco Task'**
+  String get admin_eco_task;
 }
 
 class _AppLocalizationsDelegate

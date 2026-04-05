@@ -72,6 +72,8 @@ class MainWrapperState extends State<MainWrapper> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
+
     return WillPopScope(
         onWillPop: () async {
           final isFirstRouteInCurrentTab =
@@ -106,7 +108,7 @@ class MainWrapperState extends State<MainWrapper> {
                   children: [
                     _navItem(0, '🏠', l10n.home),
                     // ✅ التعديل هنا: الأيقونة والنص الجديد للتدوير
-                    _navItem(1, '♻️', 'التدوير'),
+                    _navItem(1, '♻️', isAr ? 'التدوير' : 'Recycle'),
                     _navItem(2, '🌳', l10n.myTree),
                     _navItem(3, '🛒', l10n.store),
                     _navItem(4, '👤', l10n.profile),

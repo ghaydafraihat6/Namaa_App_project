@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class DailyReminderWidget extends StatelessWidget {
   const DailyReminderWidget({super.key});
@@ -25,6 +26,7 @@ class DailyReminderWidget extends StatelessWidget {
     return FutureBuilder<bool>(
       future: _hasCompletedTaskToday(),
       builder: (context, snapshot) {
+        final l10n = AppLocalizations.of(context)!;
         final done = snapshot.data ?? true;
 
         if (done) return const SizedBox();
@@ -45,18 +47,18 @@ class DailyReminderWidget extends StatelessWidget {
           child: Row(children: [
             const Text('⏰', style: TextStyle(fontSize: 32)),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('لم تنجز مهامك اليوم!',
-                        style: TextStyle(
+                    Text(l10n.reminder_no_tasks_today,
+                        style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.white)),
-                    Text('أنجز مهمة الآن واكسب نقاطك اليومية 🌿',
-                        style: TextStyle(
+                    Text(l10n.reminder_do_task_now,
+                        style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 13,
                             fontWeight: FontWeight.w900,
@@ -73,8 +75,8 @@ class DailyReminderWidget extends StatelessWidget {
                   color: Colors.white.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text('ابدأ →',
-                    style: TextStyle(
+                child: Text(l10n.reminder_start,
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 14,
                         fontWeight: FontWeight.w900,

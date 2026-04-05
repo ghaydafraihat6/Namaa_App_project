@@ -62,6 +62,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
   }
 
   Future<void> _pickAndVerify(int pts, String taskId, String expectedLabel) async {
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
@@ -70,16 +71,16 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("اختر مصدر الصورة 📸", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(isAr ? "اختر مصدر الصورة 📸" : "Choose Image Source 📸", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 18)),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildSourceOption(Icons.camera_alt, "الكاميرا", () {
+                _buildSourceOption(Icons.camera_alt, isAr ? "الكاميرا" : "Camera", () {
                   Navigator.pop(ctx);
                   _processPicking(pts, taskId, expectedLabel, ImageSource.camera);
                 }),
-                _buildSourceOption(Icons.photo_library, "المعرض", () {
+                _buildSourceOption(Icons.photo_library, isAr ? "المعرض" : "Gallery", () {
                   Navigator.pop(ctx);
                   _processPicking(pts, taskId, expectedLabel, ImageSource.gallery);
                 }),
@@ -105,6 +106,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
   }
 
   Future<void> _processPicking(int pts, String taskId, String expectedLabel, ImageSource source) async {
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source, imageQuality: 50);
 
@@ -122,13 +124,13 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
       if (aiMatched) {
         // نجاح فوري بواسطة AI
         await _awardPoints(pts, taskId);
-        _showSnack("✨ ذكاء اصطناعي: تم التعرف على المادة! تم إضافة النقاط فوراً. ✅", Colors.green);
+        _showSnack(isAr ? "✨ ذكاء اصطناعي: تم التعرف على المادة! تم إضافة النقاط فوراً. ✅" : "✨ AI: Material recognized! Points added instantly. ✅", Colors.green);
       } else {
         // فشل AI -> عرض خيار المراجعة اليدوية
         _showManualReviewDialog(file, taskId, pts, expectedLabel);
       }
     } catch (e) {
-      _showSnack("حدث خطأ أثناء التحقق: $e", Colors.red);
+      _showSnack(isAr ? "حدث خطأ أثناء التحقق: $e" : "Verification Error: $e", Colors.red);
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -162,6 +164,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
   }
 
   Future<void> _submitForFinalConfirmation(File file, String taskId, int pts, String label) async {
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     setState(() => _isProcessing = true);
     try {
       final url = await StorageService.uploadImage(file);
@@ -182,29 +185,30 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
       });
 
       await _awardPoints(pts, taskId);
-      _showSnack("✅ تم تأكيد المهمة بنجاح! تم إضافة $pts نقطة لحسابك.", Colors.green);
+      _showSnack(isAr ? "✅ تم تأكيد المهمة بنجاح! تم إضافة $pts نقطة لحسابك." : "✅ Task confirmed naturally! $pts points added.", Colors.green);
     } catch (e) {
-      _showSnack("فشل التأكيد: $e", Colors.red);
+      _showSnack(isAr ? "فشل التأكيد: $e" : "Confirmation Failed: $e", Colors.red);
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
   }
 
   void _showManualReviewDialog(File file, String taskId, int pts, String label) {
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("تأكيد المهمة 📸", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
-        content: const Text("هل تؤكد قيامك بجمع هذه المواد للتدوير؟ سيتم إضافة النقاط لحسابك فوراً.", textAlign: TextAlign.center),
+        title: Text(isAr ? "تأكيد المهمة 📸" : "Confirm Task 📸", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
+        content: Text(isAr ? "هل تؤكد قيامك بجمع هذه المواد للتدوير؟ سيتم إضافة النقاط لحسابك فوراً." : "Do you confirm collecting these materials? points will be added instantly.", textAlign: TextAlign.center),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(isAr ? "إلغاء" : "Cancel")),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
             onPressed: () {
               Navigator.pop(ctx);
               _submitForFinalConfirmation(file, taskId, pts, label);
             },
-            child: const Text("تأكيد والحصول على النقاط", style: TextStyle(color: Colors.white)),
+            child: Text(isAr ? "تأكيد والحصول على النقاط" : "Confirm and get points", style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -221,6 +225,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
 
   Widget _buildCard(String id, String title, String desc, int pts, IconData icon, String expectedLabel) {
     bool done = _completedTasks.contains(id);
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     final l10n = AppLocalizations.of(context)!;
     return Card(
@@ -241,7 +246,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
           ),
           onPressed: (done || _isProcessing) ? null : () => _pickAndVerify(pts, id, expectedLabel),
           child: Text(
-            done ? "مكتملة ✅" : "صوّر واربح",
+            done ? (isAr ? "مكتملة ✅" : "Done ✅") : (isAr ? "صوّر واربح" : "Snap & Earn"),
             style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
           ),
         ),
@@ -251,35 +256,37 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
+
     return Stack(
       children: [
         Scaffold(
           appBar: AppBar(
-            title: const Text("مهام بيئية سريعة 🌱", style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+            title: Text(isAr ? "مهام بيئية سريعة 🌱" : "Quick Eco Tasks 🌱", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
             backgroundColor: const Color(0xFF386641),
             iconTheme: const IconThemeData(color: Colors.white),
           ),
           body: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              _buildCard("plastic_task", "توفير البلاستيك", "استخدم مطرة ماء دائمة بدلاً من العبوات.", 10, Icons.eco, "plastic"),
-              _buildCard("paper_task", "فصل الورق", "ضع الأوراق في حاوية مستقلة اليوم.", 15, Icons.description, "paper"),
-              _buildCard("metal_task", "جمع الألمنيوم", "اجمع 5 علب معدنية وضعها في مكان التدوير.", 20, Icons.recycling, "metal"),
+              _buildCard("plastic_task", isAr ? "توفير البلاستيك" : "Save Plastics", isAr ? "استخدم مطرة ماء دائمة بدلاً من العبوات." : "Use a reusable bottle instead of plastic ones.", 10, Icons.eco, "plastic"),
+              _buildCard("paper_task", isAr ? "فصل الورق" : "Sort Paper", isAr ? "ضع الأوراق في حاوية مستقلة اليوم." : "Put papers in a separate bin.", 15, Icons.description, "paper"),
+              _buildCard("metal_task", isAr ? "جمع الألمنيوم" : "Collect Metals", isAr ? "اجمع 5 علب معدنية وضعها في مكان التدوير." : "Collect 5 metal cans and sort them.", 20, Icons.recycling, "metal"),
             ],
           ),
         ),
         if (_isProcessing)
           Container(
             color: Colors.black45,
-            child: const Center(
+            child: Center(
               child: Card(
-                margin: EdgeInsets.all(24),
+                margin: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(color: Color(0xFF386641)),
-                    SizedBox(height: 16),
-                    Text("جاري التحقق... ✨", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                    const CircularProgressIndicator(color: Color(0xFF386641)),
+                    const SizedBox(height: 16),
+                    Text(isAr ? "جاري التحقق... ✨" : "Verifying... ✨", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),

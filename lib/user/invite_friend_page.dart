@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class InviteFriendPage extends StatelessWidget {
   const InviteFriendPage({super.key});
@@ -14,12 +15,13 @@ class InviteFriendPage extends StatelessWidget {
         ? uid.substring(0, 8).toUpperCase() 
         : "NAMAA2026";
 
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "دعوة صديق 🤝",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo'),
+        title: Text(
+          l10n.invite_friend_title,
+          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo'),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
@@ -35,17 +37,16 @@ class InviteFriendPage extends StatelessWidget {
             const Icon(Icons.group_add, size: 100, color: Color(0xFF386641)),
             const SizedBox(height: 30),
 
-            // ✅ تعديل 2: نصوص محايدة للجنسين
-            const Text(
-              "انشر الوعي البيئي واكسب نقاطاً!",
+            Text(
+              l10n.invite_friend_desc,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 15),
-            const Text(
-              "عندما يسجل صديقك باستخدام رمز الدعوة الخاص بك، ستحصل على 100 نقطة لشجرتك! 🌱",
+            Text(
+              l10n.invite_friend_subdesc,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo'),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo'),
             ),
             const SizedBox(height: 40),
 
@@ -61,9 +62,9 @@ class InviteFriendPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Text(
-                    "رمز الدعوة الخاص بك",
-                    style: TextStyle(color: Color(0xFF386641), fontSize: 14, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
+                  Text(
+                    l10n.invite_code_label,
+                    style: const TextStyle(color: Color(0xFF386641), fontSize: 14, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
                   ),
                   const SizedBox(height: 15),
                   Row(
@@ -85,8 +86,8 @@ class InviteFriendPage extends StatelessWidget {
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: referralCode));
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("تم نسخ الرمز بنجاح! ✅"),
+                            SnackBar(
+                              content: Text(l10n.invite_copied),
                               behavior: SnackBarBehavior.floating,
                             ),
                           );
@@ -112,14 +113,12 @@ class InviteFriendPage extends StatelessWidget {
                 ),
                 onPressed: () {
                   // ✅ تعديل 2: نص المشاركة محايد
-                  Share.share(
-                    "انضم إليّ في تطبيق نماء للحفاظ على البيئة! استخدم رمز الدعوة الخاص بي: $referralCode لتحصل على مكافأة بداية 🌱✨",
-                  );
+                  Share.share(l10n.invite_share_text(referralCode));
                 },
                 icon: const Icon(Icons.share, color: Colors.white),
-                label: const Text(
-                  "مشاركة الرمز عبر التطبيقات",
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
+                label: Text(
+                  l10n.invite_share_btn,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, fontFamily: 'Cairo'),
                 ),
               ),
             ),

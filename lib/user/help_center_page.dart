@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 class HelpCenterPage extends StatelessWidget {
   const HelpCenterPage({super.key});
 
@@ -32,11 +32,12 @@ class HelpCenterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('مركز المساعدة',
-            style: TextStyle(fontFamily: 'Cairo',
+        title: Text(l10n.help_title,
+            style: const TextStyle(fontFamily: 'Cairo',
                 fontSize: 19,
                 fontWeight: FontWeight.w900, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
@@ -72,15 +73,15 @@ class HelpCenterPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text('كيف يمكننا مساعدتك؟',
-                  style: TextStyle(
+              Text(l10n.help_how_can_we_help,
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       color: Colors.white)),
               const SizedBox(height: 4),
-              const Text('اجد إجابات لأسئلتك الشائعة',
-                  style: TextStyle(
+              Text(l10n.help_find_answers,
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 16,
                       fontWeight: FontWeight.w900,
@@ -90,10 +91,10 @@ class HelpCenterPage extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          const Padding(
-            padding: EdgeInsets.only(bottom: 10, right: 4),
-            child: Text('الأسئلة الشائعة',
-                style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10, right: 4),
+            child: Text(l10n.help_faq,
+                style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
@@ -119,15 +120,15 @@ class HelpCenterPage extends StatelessWidget {
                   blurRadius: 8)],
             ),
             child: Column(children: [
-              const Text('لم تجد إجابتك؟',
-                  style: TextStyle(
+              Text(l10n.help_did_not_find_answer,
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF1B2E1F))),
               const SizedBox(height: 6),
-              const Text('تواصل معنا عبر البريد الإلكتروني',
-                  style: TextStyle(
+              Text(l10n.help_contact_us,
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 15,
                       fontWeight: FontWeight.w900,

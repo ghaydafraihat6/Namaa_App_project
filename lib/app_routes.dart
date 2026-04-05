@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:namaa_project_app/admin/admin_tasks_page.dart';
 
 // ── Screens ──
 import 'package:namaa_project_app/screen/splash_screen.dart';
@@ -54,7 +55,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   ForgotPasswordPage.routeName: (context) => const ForgotPasswordPage(),
   '/home': (context) => MainWrapper(),
   '/dashboard': (context) => const FullAppDashboard(),
-
+  '/admin': (context) => const AdminTasksPage(),
   // شجر ونقاط
   '/tree': (context) => const TreePage(),
   '/advanced-tree': (context) => const AdvancedTreePage(),

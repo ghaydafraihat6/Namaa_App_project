@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
 
 class TaskApprovalsPage extends StatelessWidget {
@@ -7,10 +8,11 @@ class TaskApprovalsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FBFE),
       appBar: AppBar(
-        title: const Text("مراجعة مهام المستخدمين", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(l10n.admin_review_tasks, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         elevation: 0,
@@ -25,13 +27,13 @@ class TaskApprovalsPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline, size: 80, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text("لا توجد طلبات معلقة حالياً ✅", style: TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.grey)),
+                  const Icon(Icons.check_circle_outline, size: 80, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(l10n.admin_no_pending, style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.grey)),
                 ],
               ),
             );
@@ -62,16 +64,17 @@ class _ReviewCard extends StatelessWidget {
   const _ReviewCard({required this.data, required this.docId});
 
   Future<void> _approve(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final userId = data['userId'];
     final points = data['points'] ?? 0;
-    final taskTitle = data['taskTitle'] ?? (data['material'] != null ? "مهمة تدوير: ${data['material']}" : "مهمة بيئية");
+    final taskTitle = data['taskTitle'] ?? (data['material'] != null ? l10n.admin_recycle_task(data['material']) : l10n.admin_eco_task);
 
     try {
       final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
       
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final userSnap = await transaction.get(userRef);
-        if (!userSnap.exists) throw "المستخدم غير موجود";
+        if (!userSnap.exists) throw l10n.admin_task_not_found;
         
         int currentPoints = userSnap.data()?['points'] ?? 0;
         transaction.update(userRef, {'points': currentPoints + points});
@@ -95,37 +98,39 @@ class _ReviewCard extends StatelessWidget {
       });
 
       await NotificationService.send(
-        title: "✅ تمت الموافقة على مهمتك!",
-        body: "أحسنت! تمت الموافقة على $taskTitle وحصلت على $points نقطة.",
+        title: l10n.admin_task_approved_notif_title,
+        body: l10n.admin_task_approved_notif_body(taskTitle.toString(), points),
         type: "task_approval",
         // ملاحظة: هنا نحتاج لإرسال الإشعار لـ userId المحدد، 
         // ولكن NotificationService الحالي يرسل للمستخدم الحالي.
         // للتطوير: يجب تعديل الخدمة لتدعم الإرسال لـ UID معين.
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("✅ تم قبول الطلب بنجاح"), backgroundColor: Colors.green));
+      // ignore: use_build_context_synchronously
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.admin_task_approved_snack), backgroundColor: Colors.green));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("خطأ: $e"), backgroundColor: Colors.red));
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.exp_error}$e"), backgroundColor: Colors.red));
     }
   }
 
   Future<void> _reject(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final TextEditingController reasonCtrl = TextEditingController();
     
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("رفض الطلب", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
+        title: Text(l10n.admin_reject_title, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
         content: TextField(
           controller: reasonCtrl,
-          decoration: const InputDecoration(hintText: "سبب الرفض (اختياري)", hintStyle: TextStyle(fontFamily: 'Cairo')),
+          decoration: InputDecoration(hintText: l10n.admin_reject_hint, hintStyle: const TextStyle(fontFamily: 'Cairo')),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("إلغاء")),
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.acc_cancel)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true), 
-            child: const Text("رفض", style: TextStyle(color: Colors.white)),
+            child: Text(l10n.admin_reject_btn, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -137,14 +142,15 @@ class _ReviewCard extends StatelessWidget {
         'rejectionReason': reasonCtrl.text.trim(),
         'rejectedAt': FieldValue.serverTimestamp(),
       });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("❌ تم رفض الطلب"), backgroundColor: Colors.red));
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.admin_reject_snack), backgroundColor: Colors.red));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final points = data['points'] ?? 0;
-    final taskTitle = data['taskTitle'] ?? (data['material'] != null ? "مهمة تدوير: ${data['material']}" : "مهمة بيئية");
+    final taskTitle = data['taskTitle'] ?? (data['material'] != null ? l10n.admin_recycle_task(data['material']) : l10n.admin_eco_task);
     final imageUrl = data['imageUrl'];
     final createdAt = (data['createdAt'] as Timestamp?)?.toDate();
     final dateStr = createdAt != null ? "${createdAt.hour}:${createdAt.minute} - ${createdAt.day}/${createdAt.month}" : "";
@@ -183,7 +189,7 @@ class _ReviewCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        data['status'] == 'approved' ? "مقبول ✅" : (data['status'] == 'rejected' ? "مرفوض ❌" : "قيد المراجعة ⏳"),
+                        data['status'] == 'approved' ? l10n.admin_status_approved : (data['status'] == 'rejected' ? l10n.admin_status_rejected : l10n.admin_status_pending),
                         style: TextStyle(
                           color: data['status'] == 'approved' ? Colors.green : (data['status'] == 'rejected' ? Colors.red : Colors.orange),
                           fontWeight: FontWeight.bold,
@@ -195,10 +201,10 @@ class _ReviewCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text("المكافأة: $points نقطة", style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.blue)),
+                Text(l10n.admin_reward_points(points), style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.blue)),
                 const SizedBox(height: 4),
-                Text("المستخدم: ${data['userId']}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                Text("التوقيت: $dateStr", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text("${l10n.admin_user} ${data['userId']}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text("${l10n.admin_time} $dateStr", style: const TextStyle(fontSize: 12, color: Colors.grey)),
                 const SizedBox(height: 16),
                 if (data['status'] == 'pending')
                   Row(
@@ -207,7 +213,7 @@ class _ReviewCard extends StatelessWidget {
                         child: OutlinedButton(
                           onPressed: () => _reject(context),
                           style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                          child: const Text("رفض ❌", style: TextStyle(color: Colors.red, fontFamily: 'Cairo')),
+                          child: Text(l10n.admin_reject_icon, style: const TextStyle(color: Colors.red, fontFamily: 'Cairo')),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -215,7 +221,7 @@ class _ReviewCard extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () => _approve(context),
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                          child: const Text("قبول ✅", style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                          child: Text(l10n.admin_approve_icon, style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
                         ),
                       ),
                     ],
