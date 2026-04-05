@@ -86,9 +86,10 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
+    final bool isAr = AppLocalizations.of(context)!.localeName == 'ar';
     if ((beforeImage == null && existingBefore == null) || (afterImage == null && existingAfter == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("يرجى اختيار صورتي قبل وبعد", style: TextStyle(fontFamily: 'Cairo'))),
+        SnackBar(content: Text(isAr ? "يرجى اختيار صورتي قبل وبعد" : "Please select before and after photos", style: const TextStyle(fontFamily: 'Cairo'))),
       );
       return;
     }
@@ -111,15 +112,15 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
         if (widget.editId != null) {
           await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').doc(widget.editId).update(payload);
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم تعديل المبادرة بنجاح! ✏️", style: TextStyle(fontFamily: 'Cairo')), backgroundColor: Color(0xFF386641)));
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "تم تعديل المبادرة بنجاح! ✏️" : "Initiative updated successfully! ✏️", style: const TextStyle(fontFamily: 'Cairo')), backgroundColor: const Color(0xFF386641)));
         } else {
           payload['timestamp'] = FieldValue.serverTimestamp();
           await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').add(payload);
           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'points': FieldValue.increment(10)});
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم نشر مبادرتك بنجاح! 🎉 +10 نقاط", style: TextStyle(fontFamily: 'Cairo')), backgroundColor: Color(0xFF386641)));
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "تم نشر مبادرتك بنجاح! 🎉 +10 نقاط" : "Initiative published successfully! 🎉 +10 pts", style: const TextStyle(fontFamily: 'Cairo')), backgroundColor: const Color(0xFF386641)));
           await NotificationService.send(
-            title: '📸 مبادرة جديدة!',
-            body: 'تم نشر مبادرتك البيئية بنجاح وحصلت على 10 نقاط ⭐',
+            title: isAr ? '📸 مبادرة جديدة!' : '📸 New Initiative!',
+            body: isAr ? 'تم نشر مبادرتك البيئية بنجاح وحصلت على 10 نقاط ⭐' : 'Your eco initiative was published and you received 10 points ⭐',
             type: 'initiative',
           );
         }
@@ -133,10 +134,10 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
           if (widget.editId == null) descriptionController.clear();
         });
       } else {
-         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("فشل في رفع بعض الصور.", style: TextStyle(fontFamily: 'Cairo'))));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "فشل في رفع بعض الصور." : "Failed to upload some images.", style: const TextStyle(fontFamily: 'Cairo'))));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("حدث خطأ أثناء الرفع: $e", style: const TextStyle(fontFamily: 'Cairo'))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "حدث خطأ أثناء الرفع: $e" : "Upload error: $e", style: const TextStyle(fontFamily: 'Cairo'))));
     } finally {
       if (mounted) setState(() => isUploading = false);
     }
@@ -144,11 +145,13 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAr = AppLocalizations.of(context)!.localeName == 'ar';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: const Text("قبل وبعد ✨",
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(isAr ? "قبل وبعد ✨" : "Before & After ✨",
+            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -163,18 +166,18 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const Text(
-              "وثّق تغييرك البيئي",
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1B2E1F)),
+            Text(
+              isAr ? "وثّق تغييرك البيئي" : "Document Your Eco Change",
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1B2E1F)),
             ),
             const SizedBox(height: 25),
 
             // مربعات اختيار الصور
             Row(
               children: [
-                Expanded(child: _buildImageSelector("قبل 🕰️", beforeImage, true)),
+                Expanded(child: _buildImageSelector(isAr ? "قبل 🕰️" : "Before 🕰️", beforeImage, true)),
                 const SizedBox(width: 15),
-                Expanded(child: _buildImageSelector("بعد ✨", afterImage, false)),
+                Expanded(child: _buildImageSelector(isAr ? "بعد ✨" : "After ✨", afterImage, false)),
               ],
             ),
 
@@ -186,7 +189,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
               maxLines: 3,
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 16),
               decoration: InputDecoration(
-                hintText: "أخبرنا ماذا فعلت؟ (مثلاً: تنظيف حديقة...)",
+                hintText: isAr ? "أخبرنا ماذا فعلت؟ (مثلاً: تنظيف حديقة...)" : "What did you do? (e.g. cleaned a park...)",
                 hintStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
                 filled: true,
                 fillColor: Colors.white,
@@ -211,7 +214,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
                 onPressed: isUploading ? null : uploadInitiative,
                 child: isUploading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(widget.editId != null ? "تعديل المبادرة" : "نشر المبادرة (+10 نقاط)",
+                    : Text(widget.editId != null ? (isAr ? "تعديل المبادرة" : "Edit Initiative") : (isAr ? "نشر المبادرة (+10 نقاط)" : "Publish Initiative (+10 pts)"),
                     style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),

@@ -205,17 +205,17 @@ class _EcoActionPageState extends State<EcoActionPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
 
-    // بيانات المهام (يمكنك لاحقاً جلبها من Firestore)
     // بيانات المهام (المهام العامة ومهام النقل والطاقة)
     final dailyTasks = [
-      {'id': 'recycle_1', 'title': 'إعادة تدوير النفايات', 'pts': 30, 'icon': '♻️', 'color': const Color(0xFFEBF4DD), 'needsPhoto': true},
-      {'id': 'unplug_electronics', 'title': 'فصل القوابس الكهربائية', 'pts': 10, 'icon': '⚡', 'color': const Color(0xFFFFFDE7), 'needsPhoto': true},
-      {'id': 'natural_light', 'title': 'الاعتماد على ضوء الشمس', 'pts': 15, 'icon': '☀️', 'color': const Color(0xFFFFF8E1), 'needsPhoto': true},
-      {'id': 'stairs_instead', 'title': 'استخدام السلالم', 'pts': 10, 'icon': '🏃', 'color': const Color(0xFFF3E5F5), 'needsPhoto': false},
-      {'id': 'no_car_day', 'title': 'يوم بدون سيارة', 'pts': 25, 'icon': '🚌', 'color': const Color(0xFFE3F2FD), 'needsPhoto': true},
-      {'id': 'use_bicycle', 'title': 'استخدام الدراجة', 'pts': 50, 'icon': '🚲', 'color': const Color(0xFFF1F8E9), 'needsPhoto': true},
-      {'id': 'tree_care', 'title': 'العناية بنبات منزلي', 'pts': 20, 'icon': '🪴', 'color': const Color(0xFFE8F5E9), 'needsPhoto': true},
+      {'id': 'recycle_1', 'title': isAr ? 'إعادة تدوير النفايات' : 'Recycle Waste', 'pts': 30, 'icon': '♻️', 'color': const Color(0xFFEBF4DD), 'needsPhoto': true},
+      {'id': 'unplug_electronics', 'title': isAr ? 'فصل القوابس الكهربائية' : 'Unplug Electronics', 'pts': 10, 'icon': '⚡', 'color': const Color(0xFFFFFDE7), 'needsPhoto': true},
+      {'id': 'natural_light', 'title': isAr ? 'الاعتماد على ضوء الشمس' : 'Natural Lighting', 'pts': 15, 'icon': '☀️', 'color': const Color(0xFFFFF8E1), 'needsPhoto': true},
+      {'id': 'stairs_instead', 'title': isAr ? 'استخدام السلالم' : 'Take Stairs', 'pts': 10, 'icon': '🏃', 'color': const Color(0xFFF3E5F5), 'needsPhoto': false},
+      {'id': 'no_car_day', 'title': isAr ? 'يوم بدون سيارة' : 'Car-Free Day', 'pts': 25, 'icon': '🚌', 'color': const Color(0xFFE3F2FD), 'needsPhoto': true},
+      {'id': 'use_bicycle', 'title': isAr ? 'استخدام الدراجة' : 'Ride a Bicycle', 'pts': 50, 'icon': '🚲', 'color': const Color(0xFFF1F8E9), 'needsPhoto': true},
+      {'id': 'tree_care', 'title': isAr ? 'العناية بنبات منزلي' : 'Houseplant Care', 'pts': 20, 'icon': '🪴', 'color': const Color(0xFFE8F5E9), 'needsPhoto': true},
     ];
 
     return Scaffold(
@@ -243,13 +243,13 @@ class _EcoActionPageState extends State<EcoActionPage> {
         children: [
           Column(
             children: [
-              _buildTabs(),
+              _buildTabs(isAr),
               Expanded(
-                child: _tabIndex == 0 ? _buildDailyTasks(dailyTasks, l10n) : _buildHistoryTasks(dailyTasks, l10n),
+                child: _tabIndex == 0 ? _buildDailyTasks(dailyTasks, l10n, isAr) : _buildHistoryTasks(dailyTasks, l10n, isAr),
               ),
             ],
           ),
-          if (_isProcessing) _buildLoadingScreen(),
+          if (_isProcessing) _buildLoadingScreen(isAr),
         ],
       ),
     );
@@ -257,17 +257,17 @@ class _EcoActionPageState extends State<EcoActionPage> {
 
   // --- واجهات مساعدة (Helper Widgets) ---
 
-  Widget _buildDailyTasks(List<Map<String, dynamic>> dailyTasks, AppLocalizations l10n) {
+  Widget _buildDailyTasks(List<Map<String, dynamic>> dailyTasks, AppLocalizations l10n, bool isAr) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: dailyTasks.length,
-      itemBuilder: (context, index) => _buildTaskItem(dailyTasks[index], l10n),
+      itemBuilder: (context, index) => _buildTaskItem(dailyTasks[index], l10n, isAr),
     );
   }
 
-  Widget _buildHistoryTasks(List<Map<String, dynamic>> dailyTasks, AppLocalizations l10n) {
+  Widget _buildHistoryTasks(List<Map<String, dynamic>> dailyTasks, AppLocalizations l10n, bool isAr) {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return const Center(child: Text("يرجى تسجيل الدخول"));
+    if (user == null) return Center(child: Text(isAr ? "يرجى تسجيل الدخول" : "Please login"));
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -287,7 +287,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
               children: [
                 Icon(Icons.history, size: 80, color: Colors.grey.shade300),
                 const SizedBox(height: 15),
-                const Text("لم تنجز أي مهام بيئية بعد.", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
+                Text(isAr ? "لم تنجز أي مهام بيئية بعد." : "No eco tasks done yet.", style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
               ],
             )
           );
@@ -304,7 +304,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
             final dateStr = data['date'] ?? '';
 
             // Find matching task for UI details
-            final fallbackTask = {'title': 'مهمة بيئية', 'icon': '🌱', 'color': Colors.grey.shade200};
+            final fallbackTask = {'title': isAr ? 'مهمة بيئية' : 'Eco Task', 'icon': '🌱', 'color': Colors.grey.shade200};
             final taskInfo = dailyTasks.firstWhere((t) => t['id'] == taskId, orElse: () => fallbackTask);
 
             return Container(
@@ -338,17 +338,17 @@ class _EcoActionPageState extends State<EcoActionPage> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.edit_square, color: Colors.orange, size: 20),
-                        tooltip: "تغيير الصورة",
+                        tooltip: isAr ? "تغيير الصورة" : "Change Image",
                         onPressed: () => _updateHistoryTaskImage(snapshot.data!.docs[index].id, l10n),
                       ),
                       ElevatedButton(
-                        onPressed: () => _showUploadedImage(taskInfo['title'] as String, imageUrl),
+                        onPressed: () => _showUploadedImage(taskInfo['title'] as String, imageUrl, isAr),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: const BorderSide(color: Color(0xFF386641))),
                           elevation: 0,
                         ),
-                        child: const Text("الإثبات 🖼️", style: TextStyle(color: Color(0xFF386641), fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w900)),
+                        child: Text(isAr ? "الإثبات 🖼️" : "Proof 🖼️", style: const TextStyle(color: Color(0xFF386641), fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w900)),
                       ),
                     ],
                   )
@@ -379,15 +379,15 @@ class _EcoActionPageState extends State<EcoActionPage> {
     );
   }
 
-  Widget _buildTabs() {
+  Widget _buildTabs(bool isAr) {
     return Container(
       margin: const EdgeInsets.all(16),
       height: 50,
       decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(15)),
       child: Row(
         children: [
-          _buildTabBtn("يومية", 0),
-          _buildTabBtn("سجل إنجازاتي", 1),
+          _buildTabBtn(isAr ? "يومية" : "Daily", 0),
+          _buildTabBtn(isAr ? "سجل إنجازاتي" : "My Record", 1),
         ],
       ),
     );
@@ -416,7 +416,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
     );
   }
 
-  Widget _buildTaskItem(Map<String, dynamic> task, AppLocalizations l10n) {
+  Widget _buildTaskItem(Map<String, dynamic> task, AppLocalizations l10n, bool isAr) {
     bool isDone = _completedTasks.containsKey(task['id']);
 
     return Container(
@@ -447,7 +447,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
           ),
           ElevatedButton(
             onPressed: (isDone || _isProcessing)
-                ? (isDone ? () => _showUploadedImage(task['title'], _completedTasks[task['id']]!) : null)
+                ? (isDone ? () => _showUploadedImage(task['title'], _completedTasks[task['id']]!, isAr) : null)
                 : () => _handleTaskCompletion(task['id'], task['pts'], l10n, needsPhoto: task['needsPhoto'] ?? true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isDone 
@@ -458,8 +458,8 @@ class _EcoActionPageState extends State<EcoActionPage> {
             ),
             child: Text(
               isDone 
-                  ? (_completedTasks[task['id']] == 'pending' ? "بانتظار المراجعة... ⏳" : "تمت المهمة بنجاح ✅") 
-                  : (task['needsPhoto'] == false ? "تأكيد التنفيذ ✅" : "إرسال إثبات 📤"), 
+                  ? (_completedTasks[task['id']] == 'pending' ? (isAr ? "بانتظار المراجعة... ⏳" : "Pending... ⏳") : (isAr ? "تمت المهمة بنجاح ✅" : "Done ✅")) 
+                  : (task['needsPhoto'] == false ? (isAr ? "تأكيد التنفيذ ✅" : "Confirm ✅") : (isAr ? "إرسال إثبات 📤" : "Send Proof 📤")), 
               style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w900)
             ),
           ),
@@ -468,16 +468,16 @@ class _EcoActionPageState extends State<EcoActionPage> {
     );
   }
 
-  Widget _buildLoadingScreen() {
+  Widget _buildLoadingScreen(bool isAr) {
     return Container(
       color: Colors.black54,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(height: 20),
-            Text("جاري رفع الدليل وحفظ النقاط...", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+            const CircularProgressIndicator(color: Colors.white),
+            const SizedBox(height: 20),
+            Text(isAr ? "جاري رفع الدليل وحفظ النقاط..." : "Uploading proof and saving points...", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
           ],
         ),
       ),
@@ -486,20 +486,20 @@ class _EcoActionPageState extends State<EcoActionPage> {
 
   // --- الحوارات (Dialogs) ---
 
-  void _showUploadedImage(String title, String imageUrl) {
+  void _showUploadedImage(String title, String imageUrl, bool isAr) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text("إثبات: $title", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
+        title: Text(isAr ? "إثبات: $title" : "Proof: $title", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
         content: imageUrl.isEmpty 
-            ? const Text("لا توجد صورة متاحة (ربما رُفعت سابقاً)", textAlign: TextAlign.center)
+            ? Text(isAr ? "لا توجد صورة متاحة (ربما رُفعت سابقاً)" : "No image available (might be previously uploaded)", textAlign: TextAlign.center)
             : ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.network(imageUrl, height: 350, fit: BoxFit.cover)),
         actions: [
           Center(
             child: ElevatedButton(
               onPressed: () => Navigator.pop(ctx), 
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
-              child: const Text("إغلاق", style: TextStyle(color: Colors.white))
+              child: Text(isAr ? "إغلاق" : "Close", style: const TextStyle(color: Colors.white))
             ),
           )
         ],

@@ -58,6 +58,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
+    final bool isAr = l10n.localeName == 'ar';
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -198,8 +199,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     ),
                     const SizedBox(height: 8),
                     // يمكنك أيضاً ترجمة الـ Streak إذا أردت
-                    const Text('🔥 12 يوم متواصل',
-                        style: TextStyle(
+                    Text(isAr ? '🔥 12 يوم متواصل' : '🔥 12 day streak',
+                        style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
@@ -315,22 +316,22 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             Text('تحدٍّ نشط · ${7 - DateTime.now().weekday % 7} أيام متبقية',
+                             Text(isAr ? 'تحدٍّ نشط · ${7 - DateTime.now().weekday % 7} أيام متبقية' : 'Active Challenge · ${7 - DateTime.now().weekday % 7} days left',
                                 style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 12,
                                     color: Color(0xFF52B788),
                                     fontWeight: FontWeight.w900)),
                             const SizedBox(height: 6),
-                            const Text('أسبوع بدون سيارة 🚗🚫',
-                                style: TextStyle(
+                            Text(isAr ? 'أسبوع بدون سيارة 🚗🚫' : 'No Car Week 🚗🚫',
+                                style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 19,
                                     fontWeight: FontWeight.w900,
                                     color: Colors.white)),
                             const SizedBox(height: 4),
-                            const Text('التنقل بالدراجة أو المشي فقط',
-                                style: TextStyle(
+                            Text(isAr ? 'التنقل بالدراجة أو المشي فقط' : 'Commute by biking or walking only',
+                                style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
@@ -349,14 +350,14 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('$percent% مكتمل 🎊', 
+                                  Text(isAr ? '$percent% مكتمل 🎊' : '$percent% complete 🎊', 
                                       style: const TextStyle(
                                           fontFamily: 'Cairo',
                                           fontSize: 12,
                                           color: Color(0xFF52B788),
                                           fontWeight: FontWeight.w700)),
-                                  const Text('🎁 +200 نقطة',
-                                      style: TextStyle(
+                                  Text(isAr ? '🎁 +200 نقطة' : '🎁 +200 pts',
+                                      style: const TextStyle(
                                           fontFamily: 'Cairo',
                                           fontSize: 12,
                                           color: Color(0x99FFFFFF))),
@@ -387,17 +388,17 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.3,
                   children: [
-                    _gridItem('🌿', 'المهام البيئية', () => Navigator.pushNamed(context, '/eco-action')),
-                    _gridItem('💧', 'توفير الاستهلاك', () => Navigator.pushNamed(context, '/save-resources')),
+                    _gridItem('🌿', isAr ? 'المهام البيئية' : 'Eco Tasks', () => Navigator.pushNamed(context, '/eco-action')),
+                    _gridItem('💧', isAr ? 'توفير الاستهلاك' : 'Save Resources', () => Navigator.pushNamed(context, '/save-resources')),
                     _gridItem('🌳', l10n.myTree, () => _goTo(2)),
                     _gridItem('🏆', l10n.leaderboard, () => Navigator.pushNamed(context, '/leaderboard')),
                     _gridItem('🛍️', l10n.store, () => _goTo(3)),
-                    _gridItem('🧪', 'تجارب بيئية', () => Navigator.pushNamed(context, '/eco-experiments')),
+                    _gridItem('🧪', isAr ? 'تجارب بيئية' : 'Eco Labs', () => Navigator.pushNamed(context, '/eco-experiments')),
                     _gridItem('🏅', l10n.badges, () => Navigator.pushNamed(context, '/achievements')),
-                    _gridItem('🚴', 'تحدي الدراجة', () => Navigator.pushNamed(context, '/bike-challenge')),
-                    _gridItem('🖼️', 'معرض أثري', () => Navigator.pushNamed(context, '/impact-gallery')),
-                    _gridItem('🔄', 'قبل وبعد', () => Navigator.pushNamed(context, '/before-after')),
-                    if (isAdmin) _gridItem('🛠️', 'إدارة الطلبات', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersPage()))),
+                    _gridItem('🚴', isAr ? 'تحدي الدراجة' : 'Bike Challenge', () => Navigator.pushNamed(context, '/bike-challenge')),
+                    _gridItem('🖼️', isAr ? 'معرض أثري' : 'Impact Gallery', () => Navigator.pushNamed(context, '/impact-gallery')),
+                    _gridItem('🔄', isAr ? 'قبل وبعد' : 'Before & After', () => Navigator.pushNamed(context, '/before-after')),
+                    if (isAdmin) _gridItem('🛠️', isAr ? 'إدارة الطلبات' : 'Order Mgmt', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersPage()))),
                   ],
                 ),
               ),

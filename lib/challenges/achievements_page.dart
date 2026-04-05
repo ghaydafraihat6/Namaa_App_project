@@ -21,6 +21,7 @@ class AchievementsPage extends StatelessWidget {
     required int requiredPoints,
     required int userPoints,
     required String emoji,
+    required bool isAr,
   }) {
     final l10n = AppLocalizations.of(context)!;
     bool unlocked = userPoints >= requiredPoints;
@@ -116,6 +117,7 @@ class AchievementsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8), // لون خلفية هادئ
@@ -175,10 +177,11 @@ class AchievementsPage extends StatelessWidget {
               // قائمة الشارات
               buildBadge(
                 context: context,
-                title: "صديق البيئة المبتدئ",
+                title: isAr ? "صديق البيئة المبتدئ" : "Eco Beginner",
                 requiredPoints: 10,
                 userPoints: points,
                 emoji: "🎖️",
+                isAr: isAr,
               ),
               buildBadge(
                 context: context,
@@ -186,6 +189,7 @@ class AchievementsPage extends StatelessWidget {
                 requiredPoints: 50,
                 userPoints: points,
                 emoji: "🌿",
+                isAr: isAr,
               ),
               buildBadge(
                 context: context,
@@ -193,6 +197,7 @@ class AchievementsPage extends StatelessWidget {
                 requiredPoints: 150,
                 userPoints: points,
                 emoji: "🌳",
+                isAr: isAr,
               ),
               buildBadge(
                 context: context,
@@ -200,6 +205,7 @@ class AchievementsPage extends StatelessWidget {
                 requiredPoints: 300,
                 userPoints: points,
                 emoji: "🍎",
+                isAr: isAr,
               ),
               buildBadge(
                 context: context,
@@ -207,6 +213,7 @@ class AchievementsPage extends StatelessWidget {
                 requiredPoints: 500,
                 userPoints: points,
                 emoji: "🌲",
+                isAr: isAr,
               ),
             ],
           );

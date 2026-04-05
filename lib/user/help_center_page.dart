@@ -3,36 +3,39 @@ import 'package:namaa_project_app/l10n/app_localizations.dart';
 class HelpCenterPage extends StatelessWidget {
   const HelpCenterPage({super.key});
 
-  final List<Map<String, String>> _faqs = const [
+  List<Map<String, String>> _getFaqs(bool isAr) => [
     {
-      'q': 'كيف أجمع النقاط؟',
-      'a': 'تجمع النقاط بإكمال المهام اليومية والتحديات الأسبوعية. كل مهمة لها عدد محدد من النقاط.',
+      'q': isAr ? 'كيف أجمع النقاط؟' : 'How do I collect points?',
+      'a': isAr ? 'تجمع النقاط بإكمال المهام اليومية والتحديات الأسبوعية. كل مهمة لها عدد محدد من النقاط.' : 'You collect points by completing daily tasks and weekly challenges. Each task has a set number of points.',
     },
     {
-      'q': 'كيف تنمو شجرتي؟',
-      'a': 'شجرتك تنمو مع كل نقاط تجمعها. كلما زادت نقاطك كلما أصبحت شجرتك أكبر وأكثر خضرة!',
+      'q': isAr ? 'كيف تنمو شجرتي؟' : 'How does my tree grow?',
+      'a': isAr ? 'شجرتك تنمو مع كل نقاط تجمعها. كلما زادت نقاطك كلما أصبحت شجرتك أكبر وأكثر خضرة!' : 'Your tree grows with every point you collect. The more points you have, the bigger and greener your tree becomes!',
     },
     {
-      'q': 'كيف أستخدم كوبون الخصم؟',
-      'a': 'عند وصولك لـ 300 نقطة تحصل تلقائياً على كوبون خصم 20% في المتجر البيئي لمدة 7 أيام.',
+      'q': isAr ? 'كيف أستخدم كوبون الخصم؟' : 'How do I use a discount coupon?',
+      'a': isAr ? 'عند وصولك لـ 300 نقطة تحصل تلقائياً على كوبون خصم 20% في المتجر البيئي لمدة 7 أيام.' : 'When you reach 300 points, you automatically get a 20% discount coupon in the eco store for 7 days.',
     },
     {
-      'q': 'كيف أدعو أصدقائي؟',
-      'a': 'من صفحة حسابي اضغط على "دعوة صديق" وشارك رمز الدعوة الخاص بك.',
+      'q': isAr ? 'كيف أدعو أصدقائي؟' : 'How do I invite friends?',
+      'a': isAr ? 'من صفحة حسابي اضغط على "دعوة صديق" وشارك رمز الدعوة الخاص بك.' : 'Go to your profile, tap "Invite a Friend" and share your invitation code.',
     },
     {
-      'q': 'هل التطبيق مجاني؟',
-      'a': 'نعم! تطبيق نماء مجاني 100% ولا يحتاج اشتراك.',
+      'q': isAr ? 'هل التطبيق مجاني؟' : 'Is the app free?',
+      'a': isAr ? 'نعم! تطبيق نماء مجاني 100% ولا يحتاج اشتراك.' : 'Yes! Namaa is 100% free with no subscription needed.',
     },
     {
-      'q': 'كيف أتواصل مع الدعم؟',
-      'a': 'يمكنك التواصل معنا عبر البريد الإلكتروني: namaa.support@gmail.com',
+      'q': isAr ? 'كيف أتواصل مع الدعم؟' : 'How do I contact support?',
+      'a': isAr ? 'يمكنك التواصل معنا عبر البريد الإلكتروني: namaa.support@gmail.com' : 'You can reach us at: namaa.support@gmail.com',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
+    final faqs = _getFaqs(isAr);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
@@ -102,7 +105,7 @@ class HelpCenterPage extends StatelessWidget {
           ),
 
           // ── الأسئلة ──
-          ..._faqs.map((faq) => _FaqItem(
+          ...faqs.map((faq) => _FaqItem(
             question: faq['q']!,
             answer: faq['a']!,
           )),

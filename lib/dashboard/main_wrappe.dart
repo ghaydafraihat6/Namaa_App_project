@@ -71,8 +71,7 @@ class MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final bool isAr = l10n.localeName == 'ar';
 
     return WillPopScope(
         onWillPop: () async {

@@ -110,6 +110,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
       }
     } else {
       // إذا كانت مهمة الاستحمام، نفتح المؤقت، وإلا حوار تأكيد بسيط
+      final bool isAr = l10n.localeName == 'ar';
       if (taskId == "short_shower_timing") {
         await _showShowerTimerDialog(taskId, pts, l10n);
         return;
@@ -117,14 +118,14 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         final bool? confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text("تأكيد المهمة ✅", style: TextStyle(fontFamily: 'Cairo')),
-            content: const Text("هل تؤكد قيامك بهذه المهمة؟", textAlign: TextAlign.center),
+            title: Text(isAr ? "تأكيد المهمة ✅" : "Confirm Task ✅", style: const TextStyle(fontFamily: 'Cairo')),
+            content: Text(isAr ? "هل تؤكد قيامك بهذه المهمة؟" : "Do you confirm completing this task?", textAlign: TextAlign.center),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("إلغاء")),
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(isAr ? "إلغاء" : "Cancel")),
               ElevatedButton(
                 onPressed: () => Navigator.pop(ctx, true),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
-                child: const Text("تأكيد", style: TextStyle(color: Colors.white)),
+                child: Text(isAr ? "تأكيد" : "Confirm", style: const TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -149,7 +150,8 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
 
       if (mounted) {
         setState(() => _completedTasks[taskId] = 'pending');
-        _showFeedback("تم إرسال المهمة للمراجعة ✅", true);
+        final bool isAr = l10n.localeName == 'ar';
+        _showFeedback(isAr ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
       }
     } catch (e) {
       _showFeedback(e.toString(), false);
@@ -184,12 +186,13 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
             return "${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}";
           }
 
+          final bool isAr = l10n.localeName == 'ar';
           return AlertDialog(
-            title: const Text("مؤقت الاستحمام 🚿", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
+            title: Text(isAr ? "مؤقت الاستحمام 🚿" : "Shower Timer 🚿", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("التحدي هو الاستحمام في أقل من 5 دقائق لتوفير لترات من الماء!", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo')),
+                Text(isAr ? "التحدي هو الاستحمام في أقل من 5 دقائق لتوفير لترات من الماء!" : "The challenge is to shower in under 5 minutes to save gallons of water!", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
                 const SizedBox(height: 20),
                 Text(
                   formatTime(secondsRemaining),
@@ -202,12 +205,12 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                       setDialogState(() => startTimer());
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    child: const Text("بدء الاستحمام 🚿", style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                    child: Text(isAr ? "بدء الاستحمام 🚿" : "Start Shower 🚿", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
                   )
                 else if (secondsRemaining > 0)
-                  const Text("جارٍ التحقق... استحم بسرعة! 🫧", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey))
+                  Text(isAr ? "جارٍ التحقق... استحم بسرعة! 🫧" : "Running... Shower fast! 🫧", style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey))
                 else
-                  const Text("انتهى الوقت! نأمل أنك وفرت الكثير من الماء. ✅", style: TextStyle(fontFamily: 'Cairo', color: Colors.red)),
+                  Text(isAr ? "انتهى الوقت! نأمل أنك وفرت الكثير من الماء. ✅" : "Time's up! Hope you saved water. ✅", style: const TextStyle(fontFamily: 'Cairo', color: Colors.red)),
               ],
             ),
             actions: [
@@ -216,7 +219,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                   timer?.cancel();
                   Navigator.pop(ctx);
                 },
-                child: const Text("إلغاء"),
+                child: Text(isAr ? "إلغاء" : "Cancel"),
               ),
               if (timer != null)
                 ElevatedButton(
@@ -237,7 +240,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                       });
                       if (mounted) {
                         setState(() => _completedTasks[taskId] = 'pending');
-                        _showFeedback("تم إرسال المهمة للمراجعة ✅", true);
+                        _showFeedback(isAr ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
                       }
                     } catch (e) {
                       _showFeedback(e.toString(), false);
@@ -246,7 +249,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
-                  child: const Text("إرسال إثبات 📤", style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                  child: Text(isAr ? "إرسال إثبات 📤" : "Send Proof 📤", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
                 ),
             ],
           );
@@ -321,6 +324,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     final bool isPending = status == 'pending';
 
     final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
 
     return Card(
       elevation: isCompleted ? 1 : 4,
@@ -362,7 +366,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                         ),
                       ),
                       Text(
-                        isPending ? "قيد المراجعة ⏳" : (isCompleted ? "تم الإنجاز ✅" : "إثبات 📸 - تكسب $points نقطة"),
+                        isPending ? (isAr ? "قيد المراجعة ⏳" : "Pending ⏳") : (isCompleted ? (isAr ? "تم الإنجاز ✅" : "Done ✅") : (isAr ? "إثبات 📸 - تكسب $points نقطة" : "Proof 📸 - Earn $points pts")),
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           color: isPending ? Colors.orange.shade900 : (isCompleted ? Colors.green.shade900 : Colors.blue.shade900),
@@ -395,8 +399,8 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     : () => _handleTaskCompletion(taskId, points, l10n, needsPhoto: needsPhoto),
                 child: Text(
                   isPending 
-                      ? "بانتظار المراجعة... ⏳" 
-                      : (isCompleted ? "تمت المهمة بنجاح ✅" : "إرسال إثبات 📤"),
+                      ? (isAr ? "بانتظار المراجعة... ⏳" : "Pending... ⏳") 
+                      : (isCompleted ? (isAr ? "تمت المهمة بنجاح ✅" : "Task successful ✅") : (isAr ? "إرسال إثبات 📤" : "Send Proof 📤")),
                   style: TextStyle(
                     fontFamily: 'Cairo', 
                     color: isCompleted ? Colors.grey : Colors.white, 
@@ -413,12 +417,14 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
     return Stack(
       children: [
         Scaffold(
           backgroundColor: const Color(0xFFF8FBFE),
           appBar: AppBar(
-            title: const Text("💧 ترشيد استهلاك المياه", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white)),
+            title: Text(isAr ? "💧 ترشيد استهلاك المياه" : "💧 Save Water", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white)),
             centerTitle: true,
             backgroundColor: Colors.blue.shade700,
             elevation: 0,
@@ -427,40 +433,40 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
           body: ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              const Text(
-                "هذه المهام تساعد في تقليل هدر المياه يومياً. وعيك هو أساس استدامة الحياة!",
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 17, color: Colors.black, fontWeight: FontWeight.w900),
+              Text(
+                isAr ? "هذه المهام تساعد في تقليل هدر المياه يومياً. وعيك هو أساس استدامة الحياة!" : "These tasks help reduce water waste daily. Your awareness is key to sustainability!",
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, color: Colors.black, fontWeight: FontWeight.w900),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 25),
               _buildTaskCard(
                 taskId: "short_shower_timing",
-                title: "تقليل وقت الاستحمام",
-                description: "قللت مدة الاستحمام بمقدار دقيقتين اليوم لترشيد استهلاك المياه والطاقة.",
+                title: isAr ? "تقليل وقت الاستحمام" : "Shorter Shower",
+                description: isAr ? "قللت مدة الاستحمام بمقدار دقيقتين اليوم لترشيد استهلاك المياه والطاقة." : "Reduced shower time by two minutes today to save water and energy.",
                 points: 20,
                 icon: Icons.timer_outlined,
                 needsPhoto: false, 
               ),
               _buildTaskCard(
                 taskId: "brush_with_cup",
-                title: "استخدام كوب لتنظيف الأسنان",
-                description: "استخدمت كوباً بدلاً من ترك صنبور الماء مفتوحاً أثناء تنظيف أسناني اليوم.",
+                title: isAr ? "استخدام كوب لتنظيف الأسنان" : "Use a Cup for Brushing",
+                description: isAr ? "استخدمت كوباً بدلاً من ترك صنبور الماء مفتوحاً أثناء تنظيف أسناني اليوم." : "Used a cup instead of leaving the tap running while brushing my teeth.",
                 points: 10,
                 icon: Icons.opacity,
                 needsPhoto: false, // للخصوصية
               ),
               _buildTaskCard(
                 taskId: "car_wash_bucket",
-                title: "غسل السيارة بالدلو",
-                description: "استخدمت الدلو لغسل السيارة بدلاً من الخرطوم لترشيد استهلاك المياه.",
+                title: isAr ? "غسل السيارة بالدلو" : "Wash Car with a Bucket",
+                description: isAr ? "استخدمت الدلو لغسل السيارة بدلاً من الخرطوم لترشيد استهلاك المياه." : "Used a bucket to wash the car instead of a hose to save water.",
                 points: 25,
                 icon: Icons.car_repair,
                 needsPhoto: true,
               ),
               _buildTaskCard(
                 taskId: "check_leaks",
-                title: "فحص تسريبات المياه",
-                description: "تأكدت اليوم من سلامة جميع الحنفيات في منزلي وعدم وجود أي تسريب.",
+                title: isAr ? "فحص تسريبات المياه" : "Check for Water Leaks",
+                description: isAr ? "تأكدت اليوم من سلامة جميع الحنفيات في منزلي وعدم وجود أي تسريب." : "Checked all faucets in my home today to ensure there are no leaks.",
                 points: 10,
                 icon: Icons.plumbing,
                 needsPhoto: true,

@@ -341,8 +341,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       decoration: BoxDecoration(color: const Color(0xFFF5F5F5),
                           borderRadius: BorderRadius.circular(14)),
                       child: Row(children: [
-                        // [FIX #6] CachedNetworkImage
-                        _productImage(p['image'] as String, size: 40),
+                        // [FIX #6] CachedNetworkImage + Local Mapping
+                        _productImage(p['image'] as String, p['name'] as String, size: 40),
                         const SizedBox(width: 12),
                         Expanded(child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,22 +385,63 @@ class _EcoStorePageState extends State<EcoStorePage> {
     );
   }
 
-  // ── [FIX #6] Widget موحد للصور (asset أو network) ──
-  Widget _productImage(String src, {double size = 50}) {
+  // ── [FIX #6] Widget موحد للصور (asset أو network مع دعم الماشينج المحلي) ──
+  String? _getLocalAssetPath(String name) {
+    final Map<String, String> mapping = {
+      'نبات العنكبوت': 'assets/images/products/spider_plant.png',
+      'الصبارات والعصاريات': 'assets/images/products/cacti_succulents.png',
+      'بذور دوار الشمس': 'assets/images/products/sunflower_seeds.png',
+      'بذور الزعتر': 'assets/images/products/thyme_seeds.png',
+      'بذور الخزامى': 'assets/images/products/lavender_seeds.png',
+      'مجموعات المايكروغرينز': 'assets/images/products/microgreens_kit.png',
+      'طقم أدوات مائدة خشبي': 'assets/images/products/wooden_tableware_set.png',
+      'وعاء نبات عضوي': 'assets/images/products/organic_plant_pot.png',
+      'فرشاة بامبو': 'assets/images/products/bamboo_brush.png',
+      'أغطية شمع العسل': 'assets/images/products/beeswax_caps.png',
+      'كفر جوال بلاستيك حيوي': 'assets/images/products/bioplastic_phone_case.png',
+      'كوب هاسكي': 'assets/images/products/huskee_cup.png',
+      'سلة سماد مطبخ': 'assets/images/products/kitchen_compost_bin.png',
+      'أضواء LED': 'assets/images/products/led_lights.png',
+      'شفاطات معدنية': 'assets/images/products/meta_straws.png',
+      'سلة خوص طبيعية': 'assets/images/products/natural_wicker_basket.png',
+      'حقيبة بلاستيك محيطات': 'assets/images/products/ocean_plastic_bag.png',
+      'سخان مياه حراري': 'assets/images/products/thermal_water_rain.png',
+      'أحذية رياضية معاد تدويرها': 'assets/images/products/recycled_sneakers.png',
+      'مرشة ماء': 'assets/images/products/watering_can.png',
+      'تربة كوكو كوير': 'assets/images/products/coco_coir_soil.png',
+      'بذور الثوم': 'assets/images/products/thyme_seeds.png', // Generic fallback
+    };
+    
+    // محاولة المطابقة المباشرة أو الاحتواء
+    if (mapping.containsKey(name)) return mapping[name];
+    for (var key in mapping.keys) {
+      if (name.contains(key)) return mapping[key];
+    }
+    return null;
+  }
+
+  Widget _productImage(String src, String name, {double size = 50}) {
+    final localPath = _getLocalAssetPath(name);
+    if (localPath != null) {
+      return Image.asset(localPath, width: size, height: size, fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _fallbackIcon(size));
+    }
+
     final isUrl = src.startsWith('http');
     if (isUrl) {
       return CachedNetworkImage(
         imageUrl: src, width: size, height: size, fit: BoxFit.contain,
         placeholder: (_, __) => SizedBox(width: size, height: size,
             child: const Center(child: CircularProgressIndicator(strokeWidth: 2))),
-        errorWidget: (_, __, ___) => Icon(Icons.eco,
-            size: size * 0.8, color: const Color(0xFF386641)),
+        errorWidget: (_, __, ___) => _fallbackIcon(size),
       );
     }
     return Image.asset(src, width: size, height: size, fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => Icon(Icons.eco,
-            size: size * 0.8, color: const Color(0xFF386641)));
+        errorBuilder: (_, __, ___) => _fallbackIcon(size));
   }
+
+  Widget _fallbackIcon(double size) => Icon(Icons.eco,
+      size: size * 0.8, color: const Color(0xFF386641));
 
   // ── [FIX #8] Checkout Sheet مع dispose للـ controllers ──
   void _showCheckout(List<Map<String, dynamic>> products, int pts) {
@@ -795,11 +836,11 @@ class _EcoStorePageState extends State<EcoStorePage> {
               ),
             ),
           ),
-          // [FIX #6] استخدام _productImage الموحد
+          // [FIX #6] استخدام _productImage الموحد مع الماشينج المحلي
           Expanded(
             child: Opacity(
               opacity: outOfStock ? 0.4 : 1,
-              child: _productImage(p['image'] as String, size: 120), // صورة أكبر وأوضح
+              child: _productImage(p['image'] as String, p['name'] as String, size: 120), // صورة أكبر وأوضح
             )
           ),
           const SizedBox(height: 12),

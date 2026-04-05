@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'before_after_page.dart';
 
 class BeforeAfterHistoryPage extends StatelessWidget {
@@ -9,17 +10,18 @@ class BeforeAfterHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final bool isAr = AppLocalizations.of(context)!.localeName == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: const Text("سجل مبادراتي ✨", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(isAr ? "سجل مبادراتي ✨" : "Initiatives History ✨", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: user == null
-          ? const Center(child: Text("الرجاء تسجيل الدخول"))
+          ? Center(child: Text(isAr ? "الرجاء تسجيل الدخول" : "Please login"))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('users')
@@ -35,7 +37,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                       children: [
                         Icon(Icons.photo_library, size: 80, color: Colors.grey.shade300),
                         const SizedBox(height: 15),
-                        const Text("لم تنشر أي مبادرة (قبل وبعد) حتى الآن.", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
+                        Text(isAr ? "لم تنشر أي مبادرة (قبل وبعد) حتى الآن." : "No before & after initiatives published yet.", style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontSize: 16)),
                       ],
                     )
                   );
@@ -62,7 +64,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                     final docId = docs[index].id;
                     final beforeUrl = data['before'] ?? '';
                     final afterUrl = data['after'] ?? '';
-                    final desc = data['description'] ?? 'بدون وصف';
+                    final desc = data['description'] ?? (isAr ? 'بدون وصف' : 'No description');
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 20),
@@ -86,13 +88,13 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                                       Navigator.push(context, MaterialPageRoute(builder: (_) => BeforeAfterPage(editId: docId, editData: data)));
                                     } else if(val == 'delete') {
                                       FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').doc(docId).delete();
-                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم مسح المبادرة!", style: TextStyle(fontFamily: 'Cairo'))));
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "تم مسح المبادرة!" : "Initiative deleted!", style: const TextStyle(fontFamily: 'Cairo'))));
                                     }
                                   },
                                   icon: const Icon(Icons.more_vert, color: Colors.grey),
                                   itemBuilder: (_) => [
-                                    const PopupMenuItem(value: 'edit', child: Text("تعديل عبر إعادة الرفع ✏️", style: TextStyle(fontFamily: 'Cairo'))),
-                                    const PopupMenuItem(value: 'delete', child: Text("حذف الحدث 🗑️", style: TextStyle(fontFamily: 'Cairo', color: Colors.red))),
+                                    PopupMenuItem(value: 'edit', child: Text(isAr ? "تعديل عبر إعادة الرفع ✏️" : "Edit by Re-uploading ✏️", style: const TextStyle(fontFamily: 'Cairo'))),
+                                    PopupMenuItem(value: 'delete', child: Text(isAr ? "حذف الحدث 🗑️" : "Delete Initiative 🗑️", style: const TextStyle(fontFamily: 'Cairo', color: Colors.red))),
                                   ],
                                )
                             ],
@@ -103,7 +105,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                               Expanded(
                                 child: Column(
                                   children: [
-                                    const Text("قبل", style: TextStyle(fontFamily: 'Cairo', color: Colors.grey)),
+                                    Text(isAr ? "قبل" : "Before", style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey)),
                                     const SizedBox(height: 5),
                                     ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(beforeUrl, height: 120, fit: BoxFit.contain, errorBuilder: (c,e,s) => Container(height: 100, color: Colors.grey.shade200))),
                                   ],
@@ -113,7 +115,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
                               Expanded(
                                 child: Column(
                                   children: [
-                                    const Text("بعد", style: TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.bold)),
+                                    Text(isAr ? "بعد" : "After", style: const TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.bold)),
                                     const SizedBox(height: 5),
                                     ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(afterUrl, height: 120, fit: BoxFit.contain, errorBuilder: (c,e,s) => Container(height: 100, color: Colors.grey.shade200))),
                                   ],

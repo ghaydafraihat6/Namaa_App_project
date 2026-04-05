@@ -77,7 +77,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             child: ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                   SnackBar(
+                  SnackBar(
                     content: Text(l10n.notif_settings_saved),
                     backgroundColor: Color(0xFF386641),
                     behavior: SnackBarBehavior.floating,
@@ -162,4 +162,4 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ]),
       );
-}
+}

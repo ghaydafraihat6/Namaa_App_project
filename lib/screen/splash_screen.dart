@@ -72,14 +72,14 @@ class _SplashScreenState extends State<SplashScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Container(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(30),
                           decoration: BoxDecoration(
                             color: const Color(0xFFEBF4DD),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Image.asset(
                             'assets/images/logo_namaa.png',
-                            width: 240, 
+                            width: 280, 
                             fit: BoxFit.contain,
                           ),
                         ),

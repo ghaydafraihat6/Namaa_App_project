@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:namaa_project_app/admin/task_approvals_page.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
@@ -437,7 +438,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
     final user = FirebaseAuth.instance.currentUser;
     final name  = _nameCtrl.text;
     final email = _displayEmail.isNotEmpty ? _displayEmail : (user?.email ?? '');

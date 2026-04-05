@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class MyImpactGalleryPage extends StatefulWidget {
   const MyImpactGalleryPage({super.key});
@@ -150,11 +151,14 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
+
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('📸 معرض إنجازاتي',
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(isAr ? '📸 معرض إنجازاتي' : '📸 My Impact Gallery',
+            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
         elevation: 0,
@@ -163,7 +167,7 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFF386641)))
           : _allItems.isEmpty
-          ? _buildEmptyState()
+          ? _buildEmptyState(isAr)
           : GridView.builder(
         padding: const EdgeInsets.all(12),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -174,23 +178,23 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
         ),
         itemCount: _allItems.length,
         itemBuilder: (context, index) {
-          return _buildGalleryItem(context, _allItems[index]);
+          return _buildGalleryItem(context, _allItems[index], isAr);
         },
       ),
     );
   }
 
-  Widget _buildGalleryItem(BuildContext context, Map<String, dynamic> data) {
+  Widget _buildGalleryItem(BuildContext context, Map<String, dynamic> data, bool isAr) {
     final String url = data['_url'] ?? '';
     final String date = data['date'] ?? (data['_time'] != null ? "${data['_time'].year}-${data['_time'].month}-${data['_time'].day}" : "");
     final int pts = data['_pts'] ?? 0;
     final String type = data['_type'] ?? 'task';
     final String status = data['status'] ?? 'completed';
 
-    String typeLabel = "مهمة";
-    if (type == 'recycle') typeLabel = "تدوير ♻️";
-    if (type == 'initiative') typeLabel = "مبادرة 📸";
-    if (type == 'experiment') typeLabel = "تجربة 🧪";
+    String typeLabel = isAr ? "مهمة" : "Task";
+    if (type == 'recycle') typeLabel = isAr ? "تدوير ♻️" : "Recycle ♻️";
+    if (type == 'initiative') typeLabel = isAr ? "مبادرة 📸" : "Initiative 📸";
+    if (type == 'experiment') typeLabel = isAr ? "تجربة 🧪" : "Experiment 🧪";
 
     return GestureDetector(
       onTap: () => _showFullImage(context, url),
@@ -247,7 +251,7 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
                 children: [
                   Text(date, style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text('🌟 +$pts نقطة',
+                  Text(isAr ? '🌟 +$pts نقطة' : '🌟 +$pts pts',
                       style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 15,
@@ -286,17 +290,17 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isAr) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text('📸', style: TextStyle(fontSize: 60)),
           const SizedBox(height: 16),
-          const Text('لا توجد صور بعد!',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.grey)),
-          const Text('ابدأ بتنفيذ المهام البيئية وصور أثرك.',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.grey)),
+          Text(isAr ? 'لا توجد صور بعد!' : 'No photos yet!',
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.grey)),
+          Text(isAr ? 'ابدأ بتنفيذ المهام البيئية وصور أثرك.' : 'Start completing eco tasks and snap your impact.',
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.grey)),
         ],
       ),
     );

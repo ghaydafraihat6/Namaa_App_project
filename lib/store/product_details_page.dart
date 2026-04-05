@@ -104,15 +104,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             color: const Color(0xFFF9F9F9),
             padding: const EdgeInsets.all(32),
             child: InteractiveViewer(
-              child: Image.asset(
-                p['image'] as String,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => Text(
-                  p['emoji'] as String,
-                  style: const TextStyle(fontSize: 100),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              child: _productImage(p['image'] as String, p['name'] as String, size: 250),
             ),
           ),
 
@@ -343,12 +335,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Expanded(
-                                child: Image.asset(
-                                  item['image'] as String,
-                                  errorBuilder: (_, __, ___) => Text(
-                                      item['emoji'] as String,
-                                      style: const TextStyle(fontSize: 40)),
-                                ),
+                                child: _productImage(item['image'] as String, item['name'] as String, size: 80),
                               ),
                               const SizedBox(height: 8),
                               Text(item['name'] as String,
@@ -492,4 +479,60 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       ),
     );
   }
+
+  // ── [FIX #6] Widget موحد للصور مع دعم الماشينج المحلي ──
+  String? _getLocalAssetPath(String name) {
+    final Map<String, String> mapping = {
+      'نبات العنكبوت': 'assets/images/products/spider_plant.png',
+      'الصبارات والعصاريات': 'assets/images/products/cacti_succulents.png',
+      'بذور دوار الشمس': 'assets/images/products/sunflower_seeds.png',
+      'بذور الزعتر': 'assets/images/products/thyme_seeds.png',
+      'بذور الخزامى': 'assets/images/products/lavender_seeds.png',
+      'مجموعات المايكروغرينز': 'assets/images/products/microgreens_kit.png',
+      'طقم أدوات مائدة خشبي': 'assets/images/products/wooden_tableware_set.png',
+      'وعاء نبات عضوي': 'assets/images/products/organic_plant_pot.png',
+      'فرشاة بامبو': 'assets/images/products/bamboo_brush.png',
+      'أغطية شمع العسل': 'assets/images/products/beeswax_caps.png',
+      'كفر جوال بلاستيك حيوي': 'assets/images/products/bioplastic_phone_case.png',
+      'كوب هاسكي': 'assets/images/products/huskee_cup.png',
+      'سلة سماد مطبخ': 'assets/images/products/kitchen_compost_bin.png',
+      'أضواء LED': 'assets/images/products/led_lights.png',
+      'شفاطات معدنية': 'assets/images/products/meta_straws.png',
+      'سلة خوص طبيعية': 'assets/images/products/natural_wicker_basket.png',
+      'حقيبة بلاستيك محيطات': 'assets/images/products/ocean_plastic_bag.png',
+      'سخان مياه حراري': 'assets/images/products/thermal_water_rain.png',
+      'أحذية رياضية معاد تدويرها': 'assets/images/products/recycled_sneakers.png',
+      'مرشة ماء': 'assets/images/products/watering_can.png',
+      'تربة كوكو كوير': 'assets/images/products/coco_coir_soil.png',
+      'بذور الثوم': 'assets/images/products/thyme_seeds.png',
+    };
+    if (mapping.containsKey(name)) return mapping[name];
+    for (var key in mapping.keys) {
+      if (name.contains(key)) return mapping[key];
+    }
+    return null;
+  }
+
+  Widget _productImage(String src, String name, {double size = 50}) {
+    final localPath = _getLocalAssetPath(name);
+    if (localPath != null) {
+      return Image.asset(localPath, width: size, height: size, fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _fallbackEmoji());
+    }
+
+    // إذا لم يكن رابط URL، نحاول تحميله كأست (كود قديم) مع fallback
+    if (!src.startsWith('http')) {
+      return Image.asset(src, width: size, height: size, fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => _fallbackEmoji());
+    }
+
+    return Image.network(src, width: size, height: size, fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => _fallbackEmoji());
+  }
+
+  Widget _fallbackEmoji() => Text(
+    widget.product['emoji'] as String? ?? '🌿',
+    style: const TextStyle(fontSize: 40),
+    textAlign: TextAlign.center,
+  );
 }
