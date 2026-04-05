@@ -67,19 +67,20 @@ class _SplashScreenState extends State<SplashScreen> {
                     children: [
                       Card(
                         elevation: 10,
-                        shadowColor: Colors.black.withOpacity(0.2), // ✅ withOpacity
+                        shadowColor: Colors.black.withOpacity(0.2),
+                        clipBehavior: Clip.none, // منع القص
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Container(
-                          padding: const EdgeInsets.all(30),
+                          padding: const EdgeInsets.all(50), // زيادة الحظوة
                           decoration: BoxDecoration(
                             color: const Color(0xFFEBF4DD),
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Image.asset(
                             'assets/images/logo_namaa.png',
-                            width: 280, 
+                            width: 320, // عرض أكبر
                             fit: BoxFit.contain,
                           ),
                         ),
