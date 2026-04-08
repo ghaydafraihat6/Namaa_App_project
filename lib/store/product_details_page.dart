@@ -1,6 +1,7 @@
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'store_localizer.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -147,7 +148,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        p['name'] as String,
+                        StoreLocalizer.productName(context, p['name'] as String),
                         style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 24,
@@ -212,7 +213,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         fontWeight: FontWeight.w800)),
                 const SizedBox(height: 8),
                 Text(
-                  p['desc'] as String,
+                  StoreLocalizer.productDesc(context, p['desc'] as String),
                   style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 14,
@@ -235,7 +236,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            isAr ? 'بشرائك لهذا المنتج، أنت تساهم في تقليل ${p['plastic']} من النفايات البلاستيكية في البيئة!' : 'By buying this product, you contribute to reducing ${p['plastic']} of plastic waste in the environment!',
+                            isAr ? 'بشرائك لهذا المنتج، أنت تساهم في تقليل ${StoreLocalizer.plasticWeight(context, p['plastic'] as String)} من النفايات البلاستيكية في البيئة!' : 'By buying this product, you contribute to reducing ${StoreLocalizer.plasticWeight(context, p['plastic'] as String)} of plastic waste in the environment!',
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 13,
@@ -343,7 +344,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 child: _productImage(item['image'] as String, item['name'] as String, size: 80),
                               ),
                               const SizedBox(height: 8),
-                              Text(item['name'] as String,
+                              Text(StoreLocalizer.productName(context, item['name'] as String),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
@@ -451,7 +452,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                          isAr ? 'تم إضافة $quantity ${p['name']} إلى السلة 🛒' : 'Added $quantity ${p['name']} to cart 🛒',
+                          isAr ? 'تم إضافة $quantity ${p['name']} إلى السلة 🛒' : 'Added $quantity ${StoreLocalizer.productName(context, p['name'])} to cart 🛒',
                           style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontWeight: FontWeight.w700)),

@@ -135,12 +135,12 @@ class RecycleHistoryPage extends StatelessWidget {
                                             Navigator.push(context, MaterialPageRoute(builder: (_) => RecycleSubmissionPage(editId: docs[index].id, editData: data)));
                                           } else if (val == 'delete') {
                                             FirebaseFirestore.instance.collection('recycle_requests').doc(docs[index].id).delete();
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("تم مسح الطلب!", style: TextStyle(fontFamily: 'Cairo'))));
+                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "تم مسح الطلب!" : "Request deleted!", style: const TextStyle(fontFamily: 'Cairo'))));
                                           }
                                         },
                                         itemBuilder: (context) => [
-                                          const PopupMenuItem(value: 'edit', child: Text("تعديل الطلب ✏️", style: TextStyle(fontFamily: 'Cairo'))),
-                                          const PopupMenuItem(value: 'delete', child: Text("حذف الطلب 🗑️", style: TextStyle(fontFamily: 'Cairo', color: Colors.red))),
+                                          PopupMenuItem(value: 'edit', child: Text(isAr ? "تعديل الطلب ✏️" : "Edit Request ✏️", style: const TextStyle(fontFamily: 'Cairo'))),
+                                          PopupMenuItem(value: 'delete', child: Text(isAr ? "حذف الطلب 🗑️" : "Delete Request 🗑️", style: const TextStyle(fontFamily: 'Cairo', color: Colors.red))),
                                         ],
                                       )
                                   ],
@@ -153,7 +153,7 @@ class RecycleHistoryPage extends StatelessWidget {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(color: isPending ? Colors.orange.shade50 : Colors.green.shade50, borderRadius: BorderRadius.circular(8)),
-                                      child: Text(isPending ? "قيد التسليم ⏳" : "مكتمل ✅", style: TextStyle(color: isPending ? Colors.orange.shade800 : Colors.green.shade800, fontSize: 13, fontWeight: FontWeight.w900, fontFamily: 'Cairo')),
+                                      child: Text(isPending ? (isAr ? "قيد التسليم ⏳" : "Pending ⏳") : (isAr ? "مكتمل ✅" : "Completed ✅"), style: TextStyle(color: isPending ? Colors.orange.shade800 : Colors.green.shade800, fontSize: 13, fontWeight: FontWeight.w900, fontFamily: 'Cairo')),
                                     ),
                                     const Spacer(),
                                     Text("+$points ⭐", style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w900, fontFamily: 'Cairo', fontSize: 16)),

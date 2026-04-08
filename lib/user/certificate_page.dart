@@ -45,46 +45,54 @@ class _CertificatePageState extends State<CertificatePage> {
   }
 
   /// العناوين العشوائية المميزة (تثبيت الاختيار لكل شهادة)
-  String _certNumberLabel(int treeNumber, String docId) {
+  String _certNumberLabel(int treeNumber, String docId, bool isArabic) {
     final random = Random(docId.hashCode);
-    final styles = [
-      'الشهادة رقم #$treeNumber ✨',
-      'إنجاز رقم $treeNumber 🎉',
-      'المستوى البيئي $treeNumber 🏆',
-      'المرحلة الخضراء $treeNumber 🌿',
-      'بصمة العطاء #$treeNumber 🌍'
-    ];
+    final styles = isArabic
+        ? [
+            'الشهادة رقم #$treeNumber ✨',
+            'إنجاز رقم $treeNumber 🎉',
+            'المستوى البيئي $treeNumber 🏆',
+            'المرحلة الخضراء $treeNumber 🌿',
+            'بصمة العطاء #$treeNumber 🌍'
+          ]
+        : [
+            'Certificate #$treeNumber ✨',
+            'Achievement #$treeNumber 🎉',
+            'Eco Level $treeNumber 🏆',
+            'Green Stage $treeNumber 🌿',
+            'Giving Mark #$treeNumber 🌍'
+          ];
     return styles[random.nextInt(styles.length)];
   }
 
   /// عنوان الشهادة بناءً على رقمها
-  String _certTitle(int treeNumber) {
-    if (treeNumber == 1) return 'بطل الأردن الأخضر 🌲';
-    if (treeNumber == 2) return 'حارس الطبيعة الذهبي 🎖️';
-    if (treeNumber == 3) return 'فارس الاستدامة المخلص ⚔️';
-    if (treeNumber == 4) return 'أسطورة نماء الخالدة 💎';
-    return 'سفير البيئة الملكي 👑';
+  String _certTitle(int treeNumber, bool isArabic) {
+    if (treeNumber == 1) return isArabic ? 'بطل الأردن الأخضر 🌲' : 'Green Jordan Hero 🌲';
+    if (treeNumber == 2) return isArabic ? 'حارس الطبيعة الذهبي 🎖️' : 'Golden Nature Guardian 🎖️';
+    if (treeNumber == 3) return isArabic ? 'فارس الاستدامة المخلص ⚔️' : 'Loyal Knight of Sustainability ⚔️';
+    if (treeNumber == 4) return isArabic ? 'أسطورة نماء الخالدة 💎' : 'Immortal Legend of Namaa 💎';
+    return isArabic ? 'سفير البيئة الملكي 👑' : 'Royal Eco Ambassador 👑';
   }
 
   /// النص الداخل للشهادة بناءً على رقمها
-  String _certBody(int treeNumber, String location, String docId) {
+  String _certBody(int treeNumber, String location, String docId, bool isArabic) {
     final random = Random(docId.hashCode);
 
     // إضافة الوصف المخصص للمكان للحصول على محتوى مختلف تماماً لكل موقع 
-    String locationDescription = "لدعم البيئة والاستدامة 🌍";
+    String locationDescription = isArabic ? "لدعم البيئة والاستدامة 🌍" : "to support the environment and sustainability 🌍";
     if (location.contains("عجلون") || location.toLowerCase().contains("ajloun")) {
-      locationDescription = "لحماية التنوع الحيوي في غابات عجلون 🌲";
+      locationDescription = isArabic ? "لحماية التنوع الحيوي في غابات عجلون 🌲" : "to protect biodiversity in Ajloun Forests 🌲";
     } else if (location.contains("دبين") || location.toLowerCase().contains("dibeen")) {
-      locationDescription = "لدعم الحياة البرية في غابات دبين 🌿";
+      locationDescription = isArabic ? "لدعم الحياة البرية في غابات دبين 🌿" : "to support wildlife in Dibeen Forests 🌿";
     } else if (location.contains("برقش") || location.toLowerCase().contains("berqesh")) {
-      locationDescription = "للحفاظ على الطبيعة في غابة برقش 🌳";
+      locationDescription = isArabic ? "للحفاظ على الطبيعة في غابة برقش 🌳" : "to preserve nature in Berqesh Forest 🌳";
     } else if (location.contains("اليوبيل") || location.toLowerCase().contains("jubilee")) {
-      locationDescription = "لتعزيز الاستدامة في غابات اليوبيل 🌱";
+      locationDescription = isArabic ? "لتعزيز الاستدامة في غابات اليوبيل 🌱" : "to foster sustainability in Jubilee Forests 🌱";
     } else {
-      locationDescription = "تعزيزاً للبيئة الخضراء في $location 🌍";
+      locationDescription = isArabic ? "تعزيزاً للبيئة الخضراء في $location 🌍" : "enhancing the green environment in $location 🌍";
     }
 
-    final messages = {
+    final messages = isArabic ? {
       1: [
         'بداية رائعة 🌱\nخطوتك الأولى نحو بيئة أفضل\n$locationDescription',
         'إنجازك الأول يستحق الفخر 👏\nشكراً لمساهمتك $locationDescription',
@@ -105,13 +113,37 @@ class _CertificatePageState extends State<CertificatePage> {
         'القمة 👑\nأنت من أعمدة الاستدامة\n$locationDescription',
         'إنجاز عظيم 🌟\nبصمتك خالدة $locationDescription',
       ]
+    } : {
+      1: [
+        'A wonderful start 🌱\nYour first step towards a better environment\n$locationDescription',
+        'Your first achievement is a pride 👏\nThank you for contributing $locationDescription',
+      ],
+      2: [
+        'Distinguished continuity 🌳\nA clear impact and beautiful contribution\n$locationDescription',
+        'Your eco-spirit evolves 💚\nNature thanks you $locationDescription',
+      ],
+      3: [
+        'Great achievement 🌿\nYou became part of the change\n$locationDescription',
+        'Your persistence is inspiring 🔥\nYour impact is clear $locationDescription',
+      ],
+      4: [
+        'Legendary level 🏆\nA strong footprint\n$locationDescription',
+        'Rare achievement 💎\nYou make a real difference $locationDescription',
+      ],
+      5: [
+        'The summit 👑\nYou are a pillar of sustainability\n$locationDescription',
+        'Great achievement 🌟\nYour mark is immortal $locationDescription',
+      ]
     };
 
     final list = messages[treeNumber] ??
-        [
+        (isArabic ? [
           'رحلة مستمرة 🌍\nإنجاز جديد $locationDescription',
           'تقدم رائع 💪\nأثر مستمر $locationDescription'
-        ];
+        ] : [
+          'A continuing journey 🌍\nA new achievement $locationDescription',
+          'Great progress 💪\nA lasting impact $locationDescription'
+        ]);
 
     return list[random.nextInt(list.length)];
   }
@@ -194,7 +226,7 @@ class _CertificatePageState extends State<CertificatePage> {
   }
 
   /// التقاط صورة للشهادة ومشاركتها
-  Future<void> _shareCertificate(int index, String title) async {
+  Future<void> _shareCertificate(int index, String title, bool isArabic) async {
     try {
       final boundaryKey = _boundaryKeys[index];
       if (boundaryKey == null || boundaryKey.currentContext == null) return;
@@ -210,13 +242,15 @@ class _CertificatePageState extends State<CertificatePage> {
 
       await Share.shareXFiles(
         [XFile(file.path)],
-        text: 'لقد حصلت على شهادة $title من تطبيق نماء! 🌱💪 #بيئة #نماء',
+        text: isArabic
+            ? 'لقد حصلت على شهادة $title من تطبيق نماء! 🌱💪 #بيئة #نماء'
+            : 'I earned the $title certificate from Namaa App! 🌱💪 #environment #namaa',
       );
     } catch (e) {
       debugPrint("Sharing Error: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('فشل تجهيز المشاركة، حاول مرة أخرى')),
+          SnackBar(content: Text(isArabic ? 'فشل تجهيز المشاركة، حاول مرة أخرى' : 'Failed to prepare sharing, try again')),
         );
       }
     }
@@ -249,9 +283,9 @@ class _CertificatePageState extends State<CertificatePage> {
                 child: CircularProgressIndicator(color: Color(0xFF386641)));
           }
           if (snapshot.hasError) {
-            return const Center(
-              child: Text('حدث خطأ أثناء تحميل الشهادات',
-                  style: TextStyle(fontFamily: 'Cairo', color: Colors.red)),
+            return Center(
+              child: Text(isArabic ? 'حدث خطأ أثناء تحميل الشهادات' : 'Error loading certificates',
+                  style: const TextStyle(fontFamily: 'Cairo', color: Colors.red)),
             );
           }
 
@@ -292,17 +326,17 @@ class _CertificatePageState extends State<CertificatePage> {
                   children: [
                     const Text('🌱', style: TextStyle(fontSize: 80)),
                     const SizedBox(height: 20),
-                    const Text('لا توجد شهادات بعد',
-                        style: TextStyle(
+                    Text(isArabic ? 'لا توجد شهادات بعد' : 'No certificates yet',
+                        style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
                             color: Color(0xFF386641))),
                     const SizedBox(height: 12),
-                    const Text(
-                      'أكمل 500 نقطة بيئية للحصول\nعلى شهادتك الأولى 🏅',
+                    Text(
+                      isArabic ? 'أكمل 500 نقطة بيئية للحصول\nعلى شهادتك الأولى 🏅' : 'Earn 500 eco-points to get\nyour first certificate 🏅',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontFamily: 'Cairo', fontSize: 14, color: Colors.grey, height: 1.7),
                     ),
                   ],
@@ -324,7 +358,7 @@ class _CertificatePageState extends State<CertificatePage> {
                         color: Color(0xFFFFD700), size: 18),
                     const SizedBox(width: 6),
                     Text(
-                      'لديك ${docs.length} شهادة إنجاز 🎉',
+                      isArabic ? 'لديك ${docs.length} شهادة إنجاز 🎉' : 'You have ${docs.length} achievement certificates 🎉',
                       style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 14,
@@ -357,9 +391,9 @@ class _CertificatePageState extends State<CertificatePage> {
 
                     final tNumber = data['treeNumber'] ?? data['certificateNumber'] ?? (docs.length - index);
                     final accent = _certAccent(tNumber);
-                    final title = _certTitle(tNumber);
-                    final body = _certBody(tNumber, location, docId);
-                    final label = _certNumberLabel(tNumber, docId);
+                    final title = _certTitle(tNumber, isArabic);
+                    final body = _certBody(tNumber, location, docId, isArabic);
+                    final label = _certNumberLabel(tNumber, docId, isArabic);
 
                     _boundaryKeys.putIfAbsent(index, () => GlobalKey());
 
@@ -434,12 +468,12 @@ class _CertificatePageState extends State<CertificatePage> {
 
                               // عنوان الشهادة
                               Text(
-                                'شهادة تقدير',
-                                style: TextStyle(
+                                isArabic ? 'شهادة تقدير' : 'Certificate of Appreciation',
+                                style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 20, // كبر الخط
                                     fontWeight: FontWeight.w800, // غمق الخط
-                                    color: const Color(0xFF424242), // لون غامق وواضح
+                                    color: Color(0xFF424242), // لون غامق وواضح
                                     letterSpacing: 4),
                               ),
 
@@ -489,7 +523,7 @@ class _CertificatePageState extends State<CertificatePage> {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: Text(
-                                  _certBody(tNumber, location, docId),
+                                  body,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontFamily: 'Cairo',
@@ -531,11 +565,11 @@ class _CertificatePageState extends State<CertificatePage> {
 
                               // إحصائيات
                               Row(children: [
-                                _statBox('500+', 'نقطة', '⭐', accent),
+                                _statBox('500+', isArabic ? 'نقطة' : 'Points', '⭐', accent),
                                 const SizedBox(width: 8),
-                                _statBox('#$tNumber', 'رقم الشجرة', '🌲', accent),
+                                _statBox('#$tNumber', isArabic ? 'رقم الشجرة' : 'Tree No.', '🌲', accent),
                                 const SizedBox(width: 8),
-                                _statBox('إنجاز', 'مستوى', '🏆', accent),
+                                _statBox(isArabic ? 'إنجاز' : 'Achieved', isArabic ? 'مستوى' : 'Level', '🏆', accent),
                               ]),
 
                               const SizedBox(height: 18),
@@ -552,8 +586,8 @@ class _CertificatePageState extends State<CertificatePage> {
                                   Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const Text('التاريخ',
-                                            style: TextStyle(
+                                        Text(isArabic ? 'التاريخ' : 'Date',
+                                            style: const TextStyle(
                                                 fontFamily: 'Cairo',
                                                 fontSize: 15,
                                                 color: Colors.grey)),
@@ -569,8 +603,8 @@ class _CertificatePageState extends State<CertificatePage> {
                                   Column(
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        const Text('تطبيق نماء',
-                                            style: TextStyle(
+                                        Text(isArabic ? 'تطبيق نماء' : 'Namaa App',
+                                            style: const TextStyle(
                                                 fontFamily: 'Cairo',
                                                 fontSize: 15,
                                                 color: Colors.grey)),
@@ -596,7 +630,7 @@ class _CertificatePageState extends State<CertificatePage> {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton.icon(
-                            onPressed: () => _shareCertificate(index, _certTitle(tNumber)),
+                            onPressed: () => _shareCertificate(index, _certTitle(tNumber, isArabic), isArabic),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: accent,
                               shape: RoundedRectangleBorder(
@@ -604,7 +638,7 @@ class _CertificatePageState extends State<CertificatePage> {
                             ),
                             icon: const Icon(Icons.share, color: Colors.white),
                             label: Text(
-                              'مشاركة الشهادة #$tNumber',
+                              isArabic ? 'مشاركة الشهادة #$tNumber' : 'Share Certificate #$tNumber',
                               style: const TextStyle(
                                   fontFamily: 'Cairo',
                                   fontSize: 14,
@@ -668,7 +702,7 @@ class _CertificatePageState extends State<CertificatePage> {
                               : Colors.grey.shade300,
                         ),
                         Text(
-                          'الشهادة رقم $currentTreeNumber من أصل ${docs.length}',
+                          isArabic ? 'الشهادة رقم $currentTreeNumber من أصل ${docs.length}' : 'Certificate $currentTreeNumber of ${docs.length}',
                           style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 15,

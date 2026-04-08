@@ -29,6 +29,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = l10n.arabic == "العربية";
 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -162,11 +163,11 @@ class ProfilePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(children: [
-                  _statCard('$pts', 'نقطة'),
+                  _statCard('$pts', isArabic ? 'نقطة' : 'Points'),
                   const SizedBox(width: 10),
-                  _statCard('47', 'مهمة منجزة'),
+                  _statCard('47', isArabic ? 'مهمة منجزة' : 'Tasks Done'),
                   const SizedBox(width: 10),
-                  _statCard('🔥 12', 'يوم متواصل'),
+                  _statCard('🔥 12', isArabic ? 'يوم متواصل' : 'Day Streak'),
                 ]),
               ),
 
@@ -297,7 +298,7 @@ class ProfilePage extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF1B2E1F)))),
-            const Icon(Icons.chevron_left,
+            Icon((Directionality.of(context) == TextDirection.rtl) ? Icons.chevron_left : Icons.chevron_right,
                 color: Colors.grey, size: 20),
           ]),
         ),

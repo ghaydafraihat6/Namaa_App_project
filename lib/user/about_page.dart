@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -6,6 +7,9 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = l10n.arabic == "العربية";
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       body: CustomScrollView(
@@ -79,8 +83,8 @@ class AboutPage extends StatelessWidget {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          "نـمـاء",
-                          style: TextStyle(
+                          isArabic ? "نـمـاء" : "Namaa",
+                          style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 42,
                             fontWeight: FontWeight.w900,
@@ -88,10 +92,10 @@ class AboutPage extends StatelessWidget {
                             letterSpacing: 2,
                           ),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
-                          "بصمتك الخضراء تبدأ من هنا",
-                          style: TextStyle(
+                          isArabic ? "بصمتك الخضراء تبدأ من هنا" : "Your green footprint starts here",
+                          style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 24,
                             color: Colors.white,
@@ -116,11 +120,13 @@ class AboutPage extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   // ── من نحن ──
-                  _buildSectionTitle("🌿 من نحن"),
+                  _buildSectionTitle(isArabic ? "🌿 من نحن" : "🌿 Who We Are"),
                   const SizedBox(height: 12),
                   _buildCard(
-                    child: const Text(
-                      "نماء هو تطبيق بيئي تفاعلي يهدف إلى تحفيز الأفراد على اتخاذ خطوات يومية نحو حياة أكثر استدامة. نؤمن بأن كل فعل إيجابي صغير، مهما كان بسيطاً، يمكن أن يُحدث فرقاً حقيقياً في عالمنا.",
+                    child: Text(
+                      isArabic
+                          ? "نماء هو تطبيق بيئي تفاعلي يهدف إلى تحفيز الأفراد على اتخاذ خطوات يومية نحو حياة أكثر استدامة. نؤمن بأن كل فعل إيجابي صغير، مهما كان بسيطاً، يمكن أن يُحدث فرقاً حقيقياً في عالمنا."
+                          : "Namaa is an interactive eco-friendly app aimed at motivating individuals to take daily steps toward a more sustainable life. We believe that every small positive action, however simple, can make a real difference in our world.",
                       style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 18,
@@ -135,78 +141,77 @@ class AboutPage extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // ── رسالتنا ──
-                  _buildSectionTitle("🎯 رسالتنا"),
+                  _buildSectionTitle(isArabic ? "🎯 رسالتنا" : "🎯 Our Mission"),
                   const SizedBox(height: 12),
-                  _buildMissionCard(),
+                  _buildMissionCard(isArabic),
 
                   const SizedBox(height: 24),
 
                   // ── ماذا يقدم نماء ──
-                  _buildSectionTitle("✨ ماذا يقدم نماء؟"),
+                  _buildSectionTitle(isArabic ? "✨ ماذا يقدم نماء؟" : "✨ What does Namaa offer?"),
                   const SizedBox(height: 12),
                   _buildFeatureItem(
                     icon: Icons.recycling,
                     color: const Color(0xFF52B788),
-                    title: "مهام بيئية يومية",
-                    subtitle:
-                        "إعادة تدوير، توفير الماء والكهرباء، المشي بدل السيارة",
+                    title: isArabic ? "مهام بيئية يومية" : "Daily eco-tasks",
+                    subtitle: isArabic ? "إعادة تدوير، توفير الماء والكهرباء، المشي بدل السيارة" : "Recycling, saving water and electricity, walking instead of driving",
                   ),
                   _buildFeatureItem(
                     icon: Icons.park,
-                    color: Color(0xFF386641),
-                    title: "شجرة تنمو معك",
-                    subtitle: "شجرتك الرقمية تكبر كلما أنجزت مهاماً بيئية أكثر",
+                    color: const Color(0xFF386641),
+                    title: isArabic ? "شجرة تنمو معك" : "A tree that grows with you",
+                    subtitle: isArabic ? "شجرتك الرقمية تكبر كلما أنجزت مهاماً بيئية أكثر" : "Your digital tree grows as you complete more eco-tasks",
                   ),
                   _buildFeatureItem(
                     icon: Icons.emoji_events,
-                    color: Color(0xFFF4A261),
-                    title: "شارات وإنجازات",
-                    subtitle: "اجمع الشارات واثبت أنك بطل البيئة الحقيقي",
+                    color: const Color(0xFFF4A261),
+                    title: isArabic ? "شارات وإنجازات" : "Badges and Achievements",
+                    subtitle: isArabic ? "اجمع الشارات واثبت أنك بطل البيئة الحقيقي" : "Collect badges and prove you're a true eco-hero",
                   ),
                   _buildFeatureItem(
                     icon: Icons.shopping_bag_outlined,
-                    color: Color(0xFF2196F3),
-                    title: "متجر بيئي",
-                    subtitle: "استبدل نقاطك بخصومات على منتجات صديقة للبيئة",
+                    color: const Color(0xFF2196F3),
+                    title: isArabic ? "متجر بيئي" : "Eco Store",
+                    subtitle: isArabic ? "استبدل نقاطك بخصومات على منتجات صديقة للبيئة" : "Exchange your points for discounts on eco-friendly products",
                   ),
                   _buildFeatureItem(
                     icon: Icons.leaderboard,
-                    color: Color(0xFFE63946),
-                    title: "لوحة الصدارة",
-                    subtitle: "تنافس مع أصدقائك ومن حولك لتكون الأكثر تأثيراً",
+                    color: const Color(0xFFE63946),
+                    title: isArabic ? "لوحة الصدارة" : "Leaderboard",
+                    subtitle: isArabic ? "تنافس مع أصدقائك ومن حولك لتكون الأكثر تأثيراً" : "Compete with friends and others to be the most impactful",
                   ),
                   _buildFeatureItem(
                     icon: Icons.science,
-                    color: Color(0xFF9B5DE5),
-                    title: "تجارب بيئية",
-                    subtitle: "اكتشف كيف تُحدث فرقاً من خلال تجارب علمية ممتعة",
+                    color: const Color(0xFF9B5DE5),
+                    title: isArabic ? "تجارب بيئية" : "Eco Experiments",
+                    subtitle: isArabic ? "اكتشف كيف تُحدث فرقاً من خلال تجارب علمية ممتعة" : "Discover how to make a difference through fun scientific experiments",
                   ),
 
                   SizedBox(height: 24),
 
                   // ── فريق العمل ──
-                  _buildSectionTitle("👥 فريق نماء"),
-                  SizedBox(height: 12),
-                  _buildTeamSection(),
+                  _buildSectionTitle(isArabic ? "👥 فريق نماء" : "👥 Namaa Team"),
+                  const SizedBox(height: 12),
+                  _buildTeamSection(isArabic),
 
                   SizedBox(height: 24),
 
                   // ── إحصائيات ──
-                  _buildSectionTitle("📊 نماء بالأرقام"),
-                  SizedBox(height: 12),
-                  _buildStatsRow(),
+                  _buildSectionTitle(isArabic ? "📊 نماء بالأرقام" : "📊 Namaa in Numbers"),
+                  const SizedBox(height: 12),
+                  _buildStatsRow(isArabic),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // ── تواصل معنا ──
-                  _buildSectionTitle("📬 تواصل معنا"),
-                  SizedBox(height: 12),
+                  _buildSectionTitle(isArabic ? "📬 تواصل معنا" : "📬 Contact Us"),
+                  const SizedBox(height: 12),
                   _buildContactCard(),
 
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
                   // ── Footer ──
-                  _buildFooter(),
+                  _buildFooter(isArabic),
 
                   SizedBox(height: 30),
                 ],
@@ -264,7 +269,7 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMissionCard() {
+  Widget _buildMissionCard(bool isArabic) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -283,11 +288,13 @@ class AboutPage extends StatelessWidget {
           ),
         ],
       ),
-      child: const Column(
+      child: Column(
         children: [
           Text(
-            "\"نؤمن بأن حماية البيئة مسؤولية الجميع، وأن التغيير الحقيقي يبدأ بخطوة صغيرة واحدة كل يوم\"",
-            style: TextStyle(
+            isArabic 
+              ? "\"نؤمن بأن حماية البيئة مسؤولية الجميع، وأن التغيير الحقيقي يبدأ بخطوة صغيرة واحدة كل يوم\""
+              : "\"We believe that protecting the environment is everyone's responsibility, and real change starts with one small step every day\"",
+            style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 17,
               height: 1.8,
@@ -297,10 +304,10 @@ class AboutPage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
-            "— فريق نماء 🌱",
-            style: TextStyle(
+            isArabic ? "— فريق نماء 🌱" : "— Namaa Team 🌱",
+            style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 15,
               color: Colors.white,
@@ -376,11 +383,11 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamSection() {
+  Widget _buildTeamSection(bool isArabic) {
     final List<Map<String, String>> team = [
-      {"name": "غيداء", "role": "مطور التطبيق", "emoji": "👩‍💻"},
-      {"name": "فريق نماء", "role": "التصميم والمحتوى", "emoji": "🎨"},
-      {"name": "المجتمع", "role": "شركاء التغيير", "emoji": "🌍"},
+      {"name": isArabic ? "غيداء" : "Ghayda", "role": isArabic ? "مطور التطبيق" : "App Developer", "emoji": "👩‍💻"},
+      {"name": isArabic ? "فريق نماء" : "Namaa Team", "role": isArabic ? "التصميم والمحتوى" : "Design & Content", "emoji": "🎨"},
+      {"name": isArabic ? "المجتمع" : "Community", "role": isArabic ? "شركاء التغيير" : "Partners of Change", "emoji": "🌍"},
     ];
 
     return Row(
@@ -436,12 +443,12 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(bool isArabic) {
     final List<Map<String, String>> stats = [
-      {"value": "١٠+", "label": "مهام يومية"},
-      {"value": "٥", "label": "مستويات"},
-      {"value": "٢٠+", "label": "شارة"},
-      {"value": "١٠٠%", "label": "مجاني"},
+      {"value": "10+", "label": isArabic ? "مهام يومية" : "Daily Tasks"},
+      {"value": "5", "label": isArabic ? "مستويات" : "Levels"},
+      {"value": "20+", "label": isArabic ? "شارة" : "Badges"},
+      {"value": "100%", "label": isArabic ? "مجاني" : "Free"},
     ];
 
     return Row(
@@ -536,39 +543,39 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(bool isArabic) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFF1B4332),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "🌱 نماء",
-            style: TextStyle(
+            isArabic ? "🌱 نماء" : "🌱 Namaa",
+            style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 24,
               fontWeight: FontWeight.w900,
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
-            "معاً نبني مستقبلاً أخضر أفضل",
-            style: TextStyle(
+            isArabic ? "معاً نبني مستقبلاً أخضر أفضل" : "Together we build a better green future",
+            style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 15,
               fontWeight: FontWeight.w900,
               color: Colors.white70,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
-            "الإصدار 1.0.0 • 2026",
-            style: TextStyle(
+            isArabic ? "الإصدار 1.0.0 • 2026" : "Version 1.0.0 • 2026",
+            style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 13,
               fontWeight: FontWeight.w900,

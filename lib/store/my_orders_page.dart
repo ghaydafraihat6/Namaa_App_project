@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'order_status.dart';
+import 'store_localizer.dart';
 
 class MyOrdersPage extends StatelessWidget {
   final String userId;
@@ -67,11 +68,12 @@ class _EmptyOrders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
     return Center(
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         const Text('📦', style: TextStyle(fontSize: 60)),
         const SizedBox(height: 16),
-        Text(l10n.cert_no_certs, // Using existing key if applicable, or just hardcoded for now if I missed it, wait, I added cert_no_certs but maybe not for orders. Let's use recycle_no_requests? No.
+        Text(isAr ? 'لا توجد طلبات سابقة بعد 📦' : 'No previous orders yet 📦',
             style: const TextStyle(
                 fontFamily: 'Cairo', fontSize: 16, color: Colors.grey)),
       ]),
@@ -202,12 +204,12 @@ class _OrderCard extends StatelessWidget {
                   _productImage(m['image'] as String? ?? ''),
                   const SizedBox(width: 10),
                   Expanded(
-                      child: Text('${m['name']} × ${m['quantity']}',
+                      child: Text('${StoreLocalizer.productName(context, m['name'] as String)} × ${m['quantity']}',
                           style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 12,
                               color: Color(0xFF1B2E1F)))),
-                  Text('$subtotal د.أ',
+                  Text(isAr ? '$subtotal د.أ' : '$subtotal JOD',
                       style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 12,
@@ -252,7 +254,7 @@ class _OrderCard extends StatelessWidget {
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.w700,
                       fontSize: 14)),
-              Text('$total د.أ',
+              Text(isAr ? '$total د.أ' : '$total JOD',
                   style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.bold,

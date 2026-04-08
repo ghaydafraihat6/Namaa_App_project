@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'order_status.dart';
-import 'seed_store_products.dart';
+import 'store_localizer.dart';
 
 class AdminOrdersPage extends StatelessWidget {
   const AdminOrdersPage({super.key});
@@ -41,10 +42,12 @@ class AdminOrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('🛠️ إدارة الطلبات',
+        title: Text(isAr ? '🛠️ إدارة الطلبات' : '🛠️ Order Management',
             style: TextStyle(
                 fontFamily: 'Cairo',
                 fontWeight: FontWeight.w800,
@@ -62,12 +65,12 @@ class AdminOrdersPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           if (snap.hasError)
             return Center(
-                child: Text('عذراً، حدث خطأ: ${snap.error}',
+                child: Text(isAr ? 'عذراً، حدث خطأ: ${snap.error}' : 'Sorry, error: ${snap.error}',
                     style: const TextStyle(fontFamily: 'Cairo'),
                     textAlign: TextAlign.center));
           if (!snap.hasData || snap.data!.docs.isEmpty)
-            return const Center(
-                child: Text('لا يوجد طلبات',
+            return Center(
+                child: Text(isAr ? 'لا يوجد طلبات' : 'No orders found',
                     style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 16,
@@ -117,7 +120,7 @@ class AdminOrdersPage extends StatelessWidget {
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(order['userName'] ?? 'مجهول',
+                                  Text(order['userName'] ?? (isAr ? 'مجهول' : 'Unknown'),
                                       style: const TextStyle(
                                           fontFamily: 'Cairo',
                                           fontSize: 15,
@@ -168,8 +171,8 @@ class AdminOrdersPage extends StatelessWidget {
                                       fontFamily: 'Cairo',
                                       fontSize: 12,
                                       color: Colors.grey)),
-                              if (discountPercent > 0)
-                                Text('🎁 خصم $discountPercent%',
+                                if (discountPercent > 0)
+                                  Text(isAr ? '🎁 خصم $discountPercent%' : '🎁 $discountPercent% Discount',
                                     style: const TextStyle(
                                         fontFamily: 'Cairo',
                                         fontSize: 12,
@@ -190,12 +193,12 @@ class AdminOrdersPage extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                          '${m['name']} × ${m['quantity']}',
+                                          '${StoreLocalizer.productName(context, m['name'] as String)} × ${m['quantity']}',
                                           style: const TextStyle(
                                               fontFamily: 'Cairo',
                                               fontSize: 12)),
                                     ),
-                                    Text('$subtotal د.أ',
+                                    Text(isAr ? '$subtotal د.أ' : '$subtotal JOD',
                                         style: const TextStyle(
                                             fontFamily: 'Cairo',
                                             fontSize: 12,
@@ -210,11 +213,11 @@ class AdminOrdersPage extends StatelessWidget {
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text('الإجمالي:',
+                                    Text(isAr ? 'الإجمالي:' : 'Total:',
                                         style: TextStyle(
                                             fontFamily: 'Cairo',
                                             fontWeight: FontWeight.w700)),
-                                    Text('$total د.أ',
+                                    Text(isAr ? '$total د.أ' : '$total JOD',
                                         style: const TextStyle(
                                             fontFamily: 'Cairo',
                                             fontWeight: FontWeight.w900,

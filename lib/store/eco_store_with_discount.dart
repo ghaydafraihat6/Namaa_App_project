@@ -5,16 +5,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'my_orders_page.dart';
 import 'product_details_page.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
+import 'store_localizer.dart';
 
 // ── الفئات ──
 const _categories = [
-  {'id': 'all', 'label': 'الكل', 'icon': '🌿'},
-  {'id': 'plants', 'label': 'أشتال ونباتات', 'icon': '🌱'},
-  {'id': 'pots', 'label': 'قواري وأصص', 'icon': '🪴'},
-  {'id': 'seeds', 'label': 'بذور', 'icon': '🌰'},
-  {'id': 'tools', 'label': 'معدات زراعية', 'icon': '🔧'},
-  {'id': 'recycled', 'label': 'منتجات معاد تدويرها', 'icon': '♻️'},
-  {'id': 'other', 'label': 'أخرى', 'icon': '🛍️'},
+  {'id': 'all', 'label': 'الكل', 'en': 'All', 'icon': '🌿'},
+  {'id': 'plants', 'label': 'أشتال ونباتات', 'en': 'Plants & Seedlings', 'icon': '🌱'},
+  {'id': 'pots', 'label': 'قواري وأصص', 'en': 'Pots', 'icon': '🪴'},
+  {'id': 'seeds', 'label': 'بذور', 'en': 'Seeds', 'icon': '🌰'},
+  {'id': 'tools', 'label': 'معدات زراعية', 'en': 'Farming Tools', 'icon': '🔧'},
+  {'id': 'recycled', 'label': 'منتجات معاد تدويرها', 'en': 'Recycled', 'icon': '♻️'},
+  {'id': 'other', 'label': 'أخرى', 'en': 'Other', 'icon': '🛍️'},
 ];
 
 // ── دالة الخصم ──
@@ -37,7 +38,10 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
   User get _user {
     final u = FirebaseAuth.instance.currentUser;
-    if (u == null) throw Exception('المستخدم غير مسجل الدخول');
+    if (u == null) {
+      final isAr = Localizations.localeOf(context).languageCode == 'ar';
+      throw Exception(isAr ? 'المستخدم غير مسجل الدخول' : 'User not logged in');
+    }
     return u;
   }
 
@@ -182,13 +186,14 @@ class _EcoStorePageState extends State<EcoStorePage> {
     required String phone,
     required String address,
   }) async {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
     final d = calcDiscount(points);
 
     final validEntries =
     _cart.entries.where((e) => products.any((p) => p['id'] == e.key)).toList();
 
     if (validEntries.isEmpty) {
-      throw Exception('لا توجد منتجات صالحة في السلة');
+      throw Exception(isAr ? 'لا توجد منتجات صالحة في السلة' : 'No valid products in cart');
     }
 
     final items = validEntries.map((e) {
@@ -219,10 +224,11 @@ class _EcoStorePageState extends State<EcoStorePage> {
       'items': items,
       'total': _total(products, points),
       'discountPercent': (d * 100).toInt(),
-      'status': 'قيد المعالجة',
+      'status': 'pending', // Use enum-like string that OrderStatus can parse
+      'statusLabel': isAr ? 'قيد المعالجة' : 'Processing',
       'createdAt': FieldValue.serverTimestamp(),
       'includesSmartCapsuleGift': includesGift,
-      'giftName': includesGift ? 'الكبسولة الذكية الزراعية' : null,
+      'giftName': includesGift ? (isAr ? 'الكبسولة الذكية الزراعية' : 'Agriculture Smart Capsule') : null,
     });
 
     for (final e in validEntries) {
@@ -240,11 +246,11 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
     await NotificationService.send(
       title: includesGift
-          ? '🎁 تم تأكيد طلبك ومعه هدية!'
-          : '🛍️ تم تأكيد طلبك!',
+          ? (isAr ? '🎁 تم تأكيد طلبك ومعه هدية!' : '🎁 Order confirmed with a gift!')
+          : (isAr ? '🛍️ تم تأكيد طلبك!' : '🛍️ Order confirmed!'),
       body: includesGift
-          ? 'شكراً $name! حصلت على هدية: الكبسولة الذكية الزراعية 🌱'
-          : 'شكراً $name! طلبك قيد المعالجة وسيتم التواصل معك قريباً 🌿',
+          ? (isAr ? 'شكراً $name! حصلت على هدية: الكبسولة الذكية الزراعية 🌱' : 'Thanks $name! Received: Smart Capsule 🌱')
+          : (isAr ? 'شكراً $name! طلبك قيد المعالجة وسيتم التواصل معك قريباً 🌿' : 'Thanks $name! Your order is being processed 🌿'),
       type: 'store',
     );
 
@@ -273,7 +279,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
   );
 
-  Widget _totalRow(double total) => Container(
+  Widget _totalRow(double total) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    return Container(
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
       color: const Color(0xFFEBF4DD),
@@ -282,8 +290,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'الإجمالي:',
+        Text(
+          isAr ? 'الإجمالي:' : 'Total:',
           style: TextStyle(
             fontFamily: 'Cairo',
             fontSize: 15,
@@ -291,7 +299,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           ),
         ),
         Text(
-          '${total.toStringAsFixed(2)} د.أ',
+          isAr ? '${total.toStringAsFixed(2)} د.أ' : '${total.toStringAsFixed(2)} JOD',
           style: const TextStyle(
             fontFamily: 'Cairo',
             fontSize: 18,
@@ -302,6 +310,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
       ],
     ),
   );
+}
 
   Widget _greenBtn(String label, VoidCallback onTap) => SizedBox(
     width: double.infinity,
@@ -418,8 +427,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
       );
 
   void _showCart(List<Map<String, dynamic>> allProducts, int pts) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
     if (_cart.isEmpty) {
-      _snack('السلة فارغة!');
+      _snack(isAr ? 'السلة فارغة!' : 'Cart is empty!');
       return;
     }
 
@@ -453,8 +463,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 children: [
                   _sheetHandle(),
                   const SizedBox(height: 14),
-                  const Text(
-                    '🛒 سلة المشتريات',
+                  Text(
+                    isAr ? '🛒 سلة المشتريات' : '🛒 Shopping Cart',
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 18,
@@ -496,7 +506,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      p['name'] as String,
+                                      StoreLocalizer.productName(context, p['name'] as String),
                                       style: const TextStyle(
                                         fontFamily: 'Cairo',
                                         fontSize: 13,
@@ -504,7 +514,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                                       ),
                                     ),
                                     Text(
-                                      '${price.toStringAsFixed(2)} × ${e.value} = ${(price * e.value).toStringAsFixed(2)} د.أ',
+                                      isAr ? '${price.toStringAsFixed(2)} × ${e.value} = ${(price * e.value).toStringAsFixed(2)} د.أ' : '${price.toStringAsFixed(2)} × ${e.value} = ${(price * e.value).toStringAsFixed(2)} JOD',
                                       style: const TextStyle(
                                         fontFamily: 'Cairo',
                                         fontSize: 11,
@@ -550,7 +560,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   ),
                   _totalRow(_total(allProducts, pts)),
                   const SizedBox(height: 12),
-                  _greenBtn('إتمام الشراء →', () {
+                  _greenBtn(isAr ? 'إتمام الشراء →' : 'Checkout →', () {
                     Navigator.pop(context);
                     _showCheckout(allProducts, pts);
                   }),
@@ -647,6 +657,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
       Icon(Icons.eco, size: size * 0.8, color: const Color(0xFF386641));
 
   void _showCheckout(List<Map<String, dynamic>> products, int pts) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
     final nameCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
     final addressCtrl = TextEditingController();
@@ -672,8 +683,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
               children: [
                 _sheetHandle(),
                 const SizedBox(height: 14),
-                const Text(
-                  '📦 تأكيد الطلب',
+                Text(
+                  isAr ? '📦 تأكيد الطلب' : '📦 Confirm Order',
                   style: TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 18,
@@ -682,36 +693,36 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 ),
                 const SizedBox(height: 20),
                 _field(
-                  'الاسم الكامل',
+                  isAr ? 'الاسم الكامل' : 'Full Name',
                   '👤',
                   nameCtrl,
                   v: (v) =>
-                  (v?.trim().length ?? 0) < 3 ? 'أدخل اسمك الكامل' : null,
+                  (v?.trim().length ?? 0) < 3 ? isAr ? 'أدخل اسمك الكامل' : 'Enter your full name' : null,
                 ),
                 const SizedBox(height: 12),
                 _field(
-                  'رقم الهاتف',
+                  isAr ? 'رقم الهاتف' : 'Phone Number',
                   '📱',
                   phoneCtrl,
                   type: TextInputType.phone,
                   v: (v) => RegExp(r'^07[0-9]{8}$').hasMatch(v?.trim() ?? '')
                       ? null
-                      : 'مثال: 0791234567',
+                      : isAr ? 'مثال: 0791234567' : 'Example: 0791234567',
                 ),
                 const SizedBox(height: 12),
                 _field(
-                  'العنوان التفصيلي',
+                  isAr ? 'العنوان التفصيلي' : 'Detailed Address',
                   '📍',
                   addressCtrl,
                   maxLines: 3,
                   v: (v) => (v?.trim().length ?? 0) < 10
-                      ? 'أدخل عنواناً تفصيلياً'
+                      ? isAr ? 'أدخل عنواناً تفصيلياً' : 'Enter a detailed address'
                       : null,
                 ),
                 const SizedBox(height: 16),
                 _totalRow(_total(products, pts)),
                 const SizedBox(height: 16),
-                _greenBtn('تأكيد الطلب ✅', () async {
+                _greenBtn(isAr ? 'تأكيد الطلب ✅' : 'Confirm Order ✅', () async {
                   if (!formKey.currentState!.validate()) return;
 
                   final savedName = nameCtrl.text.trim();
@@ -730,7 +741,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       _showSuccess(savedName, gotGift: gotGift);
                     }
                   } catch (e) {
-                    _snack('حدث خطأ: $e', color: Colors.red);
+                    _snack(isAr ? 'حدث خطأ: $e' : 'Error: $e', color: Colors.red);
                   }
                 }),
                 const SizedBox(height: 20),
@@ -742,7 +753,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
     );
   }
 
-  void _showSuccess(String name, {bool gotGift = false}) => showDialog(
+  void _showSuccess(String name, {bool gotGift = false}) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    showDialog(
     context: context,
     builder: (_) => AlertDialog(
       shape:
@@ -756,7 +769,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           ),
           const SizedBox(height: 12),
           Text(
-            gotGift ? 'تم تأكيد طلبك ومعه هدية!' : 'تم تأكيد طلبك!',
+            gotGift ? (isAr ? 'تم تأكيد طلبك ومعه هدية!' : 'Order confirmed with a gift!') : (isAr ? 'تم تأكيد طلبك!' : 'Order confirmed!'),
             style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 20,
@@ -768,8 +781,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
           const SizedBox(height: 8),
           Text(
             gotGift
-                ? 'شكراً $name!\nحصلت على هدية: الكبسولة الذكية الزراعية 🌱'
-                : 'شكراً $name!\nسيتم التواصل معك قريباً 🌿',
+                ? (isAr ? 'شكراً $name!\nحصلت على هدية: الكبسولة الذكية الزراعية 🌱' : 'Thanks $name!\nReceived gift: Smart Capsule 🌱')
+                : (isAr ? 'شكراً $name!\nسيتم التواصل معك قريباً 🌿' : 'Thanks $name!\nWe will contact you soon 🌿'),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontFamily: 'Cairo',
@@ -794,9 +807,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text(
-                  'عرض الهدية 🌱',
-                  style: TextStyle(
+                child: Text(
+                  isAr ? 'عرض الهدية 🌱' : 'View Gift 🌱',
+                  style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -825,9 +838,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text(
-                'الذهاب إلى طلباتي 📦',
-                style: TextStyle(
+              child: Text(
+                isAr ? 'الذهاب إلى طلباتي 📦' : 'Go to my orders 📦',
+                style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
@@ -839,6 +852,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
       ),
     ),
   );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -847,6 +861,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
       builder: (_, uSnap) {
         final pts = uSnap.data?['points'] as int? ?? 0;
         final d = calcDiscount(pts);
+        final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
         return StreamBuilder<List<Map<String, dynamic>>>(
           stream: _products,
@@ -867,14 +882,14 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
                   // ✅ الهيدر
                   SliverToBoxAdapter(
-                    child: _buildHeader(allProducts, pts, _validCartCount(allProducts)),
+                    child: _buildHeader(isAr, allProducts, pts, _validCartCount(allProducts)),
                   ),
 
                   // ✅ البحث
-                  SliverToBoxAdapter(child: _buildSearch()),
+                  SliverToBoxAdapter(child: _buildSearch(isAr)),
 
                   // ✅ الفئات
-                  SliverToBoxAdapter(child: _buildCategoryFilter()),
+                  SliverToBoxAdapter(child: _buildCategoryFilter(isAr)),
 
                   // 🎁🔥 هذا التعديل (مهم جداً)
                   SliverToBoxAdapter(
@@ -886,9 +901,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                           color: const Color(0xFFEBF4DD),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          "🎁 أول طلب = هدية كبسولة زراعية",
-                          style: TextStyle(
+                        child: Text(
+                          isAr ? "🎁 أول طلب = هدية كبسولة زراعية" : "🎁 First order = Smart Capsule Gift",
+                          style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontWeight: FontWeight.w700,
                             color: Color(0xFF386641),
@@ -901,10 +916,10 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
                   // ✅ الخصم
                   if (d > 0)
-                    SliverToBoxAdapter(child: _discountBanner(pts, d)),
+                    SliverToBoxAdapter(child: _discountBanner(isAr, pts, d)),
 
                   // ✅ زر الطلبات
-                  SliverToBoxAdapter(child: _myOrdersBtn()),
+                  SliverToBoxAdapter(child: _myOrdersBtn(isAr)),
 
                   // ✅ النص
                   SliverToBoxAdapter(
@@ -912,8 +927,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                       child: Text(
                         _searchQuery.isNotEmpty || _selectedCat != 'all'
-                            ? '${filtered.length} منتج'
-                            : 'جميع المنتجات (${filtered.length})',
+                            ? isAr ? '${filtered.length} منتج' : '${filtered.length} Product(s)'
+                            : isAr ? 'جميع المنتجات (${filtered.length})' : 'All Products (${filtered.length})',
                         style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 12,
@@ -925,12 +940,12 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
                   // ✅ المنتجات
                   filtered.isEmpty
-                      ? SliverToBoxAdapter(child: _emptyState())
+                      ? SliverToBoxAdapter(child: _emptyState(isAr))
                       : SliverPadding(
                     padding: const EdgeInsets.all(16),
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                            (_, i) => _productCard(filtered[i], pts, d, allProducts),
+                            (_, i) => _productCard(filtered[i], pts, d, allProducts, isAr),
                         childCount: filtered.length,
                       ),
                       gridDelegate:
@@ -954,6 +969,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
   }
 
   Widget _buildHeader(
+      bool isAr,
       List<Map<String, dynamic>> products,
       int pts,
       int validCount,
@@ -990,9 +1006,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                         ),
                       ),
                       const SizedBox(width: 14),
-                      const Text(
-                        'متجر نماء',
-                        style: TextStyle(
+                      Text(
+                        isAr ? 'متجر نماء' : 'Namaa Store',
+                        style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
@@ -1002,9 +1018,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'طريقك لأسلوب حياة صديق للبيئة 🌿',
-                    style: TextStyle(
+                  Text(
+                    isAr ? 'طريقك لأسلوب حياة صديق للبيئة 🌿' : 'Your path to an eco-friendly lifestyle 🌿',
+                    style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 13,
                       color: Color(0xFFEBF4DD),
@@ -1060,7 +1076,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
         ),
       );
 
-  Widget _buildSearch() => Padding(
+  Widget _buildSearch(bool isAr) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
     child: Container(
       decoration: BoxDecoration(
@@ -1081,7 +1097,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           _cachedFiltered = null;
         }),
         decoration: InputDecoration(
-          hintText: '🔍 ابحث عن منتج...',
+          hintText: isAr ? '🔍 ابحث عن منتج...' : '🔍 Search for a product...',
           hintStyle:
           const TextStyle(fontFamily: 'Cairo', color: Colors.grey),
           border: InputBorder.none,
@@ -1105,7 +1121,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
   );
 
-  Widget _buildCategoryFilter() => SizedBox(
+  Widget _buildCategoryFilter(bool isAr) => SizedBox(
     height: 48,
     child: ListView.separated(
       scrollDirection: Axis.horizontal,
@@ -1136,7 +1152,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               ],
             ),
             child: Text(
-              '${cat['icon']} ${cat['label']}',
+              '${cat['icon']} ${isAr ? cat['label'] : cat['en']}',
               style: TextStyle(
                 fontFamily: 'Cairo',
                 fontSize: 12,
@@ -1151,7 +1167,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
   );
 
-  Widget _discountBanner(int pts, double d) => Container(
+  Widget _discountBanner(bool isAr, int pts, double d) => Container(
     margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
@@ -1165,7 +1181,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
         const Text('🎁', style: TextStyle(fontSize: 26)),
         const SizedBox(width: 10),
         Text(
-          'خصمك ${(d * 100).toInt()}% فعال! | نقاطك: $pts',
+          isAr ? 'خصمك ${(d * 100).toInt()}% فعال! | نقاطك: $pts' : 'Your ${(d * 100).toInt()}% discount is active! | Points: $pts',
           style: const TextStyle(
             fontFamily: 'Cairo',
             fontSize: 13,
@@ -1177,7 +1193,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
   );
 
-  Widget _myOrdersBtn() => Padding(
+  Widget _myOrdersBtn(bool isAr) => Padding(
     padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
     child: GestureDetector(
       onTap: () => Navigator.push(
@@ -1198,12 +1214,12 @@ class _EcoStorePageState extends State<EcoStorePage> {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Text('📦', style: TextStyle(fontSize: 22)),
-            SizedBox(width: 12),
+            const Text('📦', style: TextStyle(fontSize: 22)),
+            const SizedBox(width: 12),
             Text(
-              'طلباتي السابقة',
+              isAr ? 'طلباتي السابقة' : 'My Orders',
               style: TextStyle(
                 fontFamily: 'Cairo',
                 fontSize: 14,
@@ -1219,7 +1235,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
   );
 
-  Widget _emptyState() => Padding(
+  Widget _emptyState(bool isAr) => Padding(
     padding: const EdgeInsets.all(40),
     child: Center(
       child: Column(
@@ -1228,8 +1244,8 @@ class _EcoStorePageState extends State<EcoStorePage> {
           const SizedBox(height: 12),
           Text(
             _searchQuery.isNotEmpty
-                ? 'لا توجد نتائج لـ "$_searchQuery"'
-                : 'لا توجد منتجات في هذه الفئة',
+                ? isAr ? 'لا توجد نتائج لـ \"$_searchQuery\"' : 'No results for \"$_searchQuery\"'
+                : isAr ? 'لا توجد منتجات في هذه الفئة' : 'No products in this category',
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontFamily: 'Cairo',
@@ -1247,6 +1263,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
       int pts,
       double d,
       List<Map<String, dynamic>> allProducts,
+      bool isAr,
       ) {
     final id = p['id'] as String;
     final inCart = _cart.containsKey(id);
@@ -1319,7 +1336,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
             ),
             const SizedBox(height: 12),
             Text(
-              p['name'] as String,
+              StoreLocalizer.productName(context, p['name'] as String),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -1333,7 +1350,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
             const SizedBox(height: 6),
             if (d > 0) ...[
               Text(
-                '${p['price']} د.أ',
+                isAr ? '${p['price']} د.أ' : '${p['price']} JOD',
                 style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 11,
@@ -1342,7 +1359,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 ),
               ),
               Text(
-                '${price.toStringAsFixed(2)} د.أ',
+                isAr ? '${price.toStringAsFixed(2)} د.أ' : '${price.toStringAsFixed(2)} JOD',
                 style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 16,
@@ -1352,7 +1369,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               ),
             ] else
               Text(
-                '${p['price']} د.أ',
+                isAr ? '${p['price']} د.أ' : '${p['price']} JOD',
                 style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 14,
@@ -1362,7 +1379,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               ),
             if (!outOfStock && stock <= 5)
               Text(
-                '⚠️ متبقي $stock فقط',
+                isAr ? '⚠️ متبقي $stock فقط' : '⚠️ Only $stock left',
                 style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 9,
@@ -1378,9 +1395,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'نفد المخزون',
+                  isAr ? 'نفد المخزون' : 'Out of Stock',
                   style: TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 11,
@@ -1403,9 +1420,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'أضف للسلة',
-                  style: TextStyle(
+                child: Text(
+                  isAr ? 'أضف للسلة' : 'Add to Cart',
+                  style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
