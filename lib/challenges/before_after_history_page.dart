@@ -9,8 +9,9 @@ class BeforeAfterHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
-    final bool isAr = AppLocalizations.of(context)!.localeName == 'ar';
+    final bool isAr = l10n.localeName == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
@@ -21,7 +22,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: user == null
-          ? Center(child: Text(isAr ? "الرجاء تسجيل الدخول" : "Please login"))
+          ? Center(child: Text(isAr ? l10n.challenges_login_first : "Please login"))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('users')

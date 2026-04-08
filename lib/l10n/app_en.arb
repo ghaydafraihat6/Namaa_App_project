@@ -283,13 +283,37 @@
   "notif_weekly_report_sub": "Weekly summary of your eco activity",
   "notif_time_now": "Now",
   "notif_time_mins": "{mins} mins ago",
-  "@notif_time_mins": { "placeholders": { "mins": { "type": "int" } } },
+  "@notif_time_mins": {
+    "placeholders": {
+      "mins": {
+        "type": "int"
+      }
+    }
+  },
   "notif_time_hours": "{hours} hours ago",
-  "@notif_time_hours": { "placeholders": { "hours": { "type": "int" } } },
+  "@notif_time_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "notif_time_days": "{days} days ago",
-  "@notif_time_days": { "placeholders": { "days": { "type": "int" } } },
+  "@notif_time_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "notif_time_weeks": "{weeks} weeks ago",
-  "@notif_time_weeks": { "placeholders": { "weeks": { "type": "int" } } },
+  "@notif_time_weeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
   "notif_delete_forever": "All notifications will be deleted permanently",
   "settings_version": "Namaa v1.0.0",
   "cert_share_failed": "Failed to prepare sharing, try again",
@@ -315,7 +339,13 @@
   "invite_code_label": "Your Invitation Code",
   "invite_copied": "Code copied! ✅",
   "invite_share_text": "Join me on Namaa to save the environment! Use my code: {code} to get a starter bonus 🌱✨",
-  "@invite_share_text": { "placeholders": { "code": { "type": "String" } } },
+  "@invite_share_text": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
   "invite_share_btn": "Share Code",
   "tree_no_data": "No Data Found",
   "global_error": "An error occurred: ",
@@ -394,5 +424,109 @@
       }
     }
   },
-  "admin_eco_task": "Eco Task"
+  "admin_eco_task": "Eco Task",
+  "loc_ajloun": "Ajloun Forest Reserve 🌲",
+  "loc_dibeen": "Dibeen Ecological Forests 🌿",
+  "loc_berqesh": "Berqsh Nature Forest 🌳",
+  "loc_wasfi": "Wasfi Al-Tal Forest 🌳",
+  "loc_jubilee": "National Jubilee Forests 🌲",
+  "loc_malka": "Malka Nature Forest 🌿",
+  "loc_koura": "Al-Koura District Forests 🌳",
+  "loc_faisal": "Prince Faisal Forest 🌲",
+  "loc_ishteafina": "Beautiful Ishtafina Forests 🌿",
+  "loc_ghumdan": "Ghumdan National Park 🌳",
+  "recycle_dashboard_title": "Recycle Center ♻️",
+  "recycle_history_title": "My Requests History 🗂️",
+  "recycle_welcome": "Welcome to Namaa! 🌱",
+  "recycle_how_to_contribute": "How would you like to contribute to saving the environment today?",
+  "recycle_no_requests": "You haven't submitted any recycle requests yet.",
+  "recycle_please_login": "Please login first",
+  "recycle_plastic": "Plastic",
+  "recycle_glass": "Glass",
+  "recycle_paper": "Paper",
+  "recycle_metal": "Metal",
+  "recycle_electronics": "Electronics",
+  "recycle_batteries": "Batteries",
+  "store_order_confirmed": "Confirmed",
+  "store_order_processing": "Processing",
+  "store_order_shipping": "Shipping",
+  "store_order_delivered": "Delivered",
+  "store_order_cancelled": "Cancelled",
+  "store_my_orders": "📦 My Orders",
+  "smart_capsule_title": "Agriculture Smart Capsule 🌱",
+  "smart_capsule_gift": "Your gift from Namaa",
+  "smart_capsule_what_is_it": "What is the Smart Capsule?",
+  "smart_capsule_what_is_it_desc": "It is a small agricultural capsule containing seeds and basic nutrients, designed to make the home planting experience fun and practical.",
+  "smart_capsule_why_special": "Why is it a special gift?",
+  "smart_capsule_why_special_desc": "Because it links buying from the Namaa store with an environmental impact and a real farming experience, which enhances the idea of sustainability and gives the user added value.",
+  "smart_capsule_how_to_use": "How does the user benefit?",
+  "smart_capsule_how_to_use_desc": "They can easily plant it at home or in a small garden, and track the plant's growth as an experience connected to the app's environmental message.",
+  "smart_capsule_future_dev": "Future Development Proposal",
+  "smart_capsule_future_dev_desc": "The capsule can later be linked within the app to a plant growth tracking page, providing watering reminders and smart planting tips.",
+  "challenges_initiatives_history": "My Initiatives History ✨",
+  "challenges_no_initiatives": "You haven't published any (Before & After) initiative yet.",
+  "challenges_login_first": "Please login",
+  "help_q_collect_points": "How do I collect points?",
+  "help_a_collect_points": "You collect points by completing daily tasks and weekly challenges. Each task has a specific number of points.",
+  "help_q_discount_coupon": "How do I use a discount coupon?",
+  "help_a_discount_coupon": "When you reach 300 points, you automatically get a 20% discount coupon in the Eco Store, valid for 7 days.",
+  "help_q_tree_growth": "How does my tree grow?",
+  "help_a_tree_growth": "Your tree grows with every point you collect. The more points you gain, the bigger and greener your tree becomes!",
+  "help_q_invite_friends": "How do I invite friends?",
+  "help_a_invite_friends": "From the 'My Account' page, click on 'Invite Friend' and share your invitation code.",
+  "help_q_is_free": "Is the app free?",
+  "help_a_is_free": "Yes! The Namaa app is 100% free and requires no subscription.",
+  "help_q_contact_support": "How do I contact support?",
+  "help_a_contact_support": "You can contact us via email: namaa.support@gmail.com",
+  "help_support_title": "Support",
+  "admin_review_tasks_title": "Admin - Review Tasks",
+  "admin_no_tasks_to_review": "No tasks to review",
+  "acc_password_req": "Password must be at least 8 characters long,\\ninclude: uppercase, lowercase, number, and special character",
+  "acc_password_mismatch": "Passwords do not match",
+  "acc_fill_passwords": "Please fill all password fields",
+  "user_profile_user": "User",
+  "review_name_1": "Mohammed Al-Khalid",
+  "review_name_2": "Dana Saad",
+  "review_name_3": "Sara Ahmed",
+  "review_date_1": "2 days ago",
+  "review_date_2": "1 week ago",
+  "review_date_3": "1 month ago",
+  "review_text_1": "Very excellent product and perfectly matches the description! Highly recommended.",
+  "review_text_2": "Excellent quality, but the packaging could be better.",
+  "review_text_3": "Loved it! A great step towards saving the environment. Thanks Namaa.",
+  "store_check_db_title": "🔍 Checking Namaa store DB...",
+  "store_check_db_count": "📊 Number of products in Firestore: {count}",
+  "store_check_db_error": "❌ Error checking: {error}",
+  "store_check_db_warning": "⚠️ Warning: No products found!",
+  "store_check_db_list": "📋 List of first 5 products:",
+  "acc_error_prefix": "An error occurred: {error}",
+  "store_error_prefix": "Sorry, an error occurred: {error}",
+  "@store_check_db_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@store_check_db_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@acc_error_prefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@store_error_prefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

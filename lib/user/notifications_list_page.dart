@@ -52,15 +52,56 @@ class NotificationsListPage extends StatelessWidget {
     }
   }
 
-  // تحويل الوقت لنص عربي
-  String _timeAgo(Timestamp? ts) {
-    if (ts == null) return 'الآن';
+  // تحويل الوقت باستخدام l10n
+  String _timeAgo(Timestamp? ts, AppLocalizations l10n) {
+    if (ts == null) return l10n.notif_time_now;
     final diff = DateTime.now().difference(ts.toDate());
-    if (diff.inMinutes < 1) return 'الآن';
-    if (diff.inMinutes < 60) return 'قبل ${diff.inMinutes} دقيقة';
-    if (diff.inHours < 24) return 'قبل ${diff.inHours} ساعة';
-    if (diff.inDays < 7) return 'قبل ${diff.inDays} يوم';
-    return 'قبل ${(diff.inDays / 7).floor()} أسبوع';
+    if (diff.inMinutes < 1) return l10n.notif_time_now;
+    if (diff.inMinutes < 60) return l10n.notif_time_mins(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.notif_time_hours(diff.inHours);
+    if (diff.inDays < 7) return l10n.notif_time_days(diff.inDays);
+    return l10n.notif_time_weeks((diff.inDays / 7).floor());
+  }
+
+  // ترجمة النصوص القادمة من قاعدة البيانات للغة الانجليزية
+  String _translateText(String text, AppLocalizations l10n) {
+    if (l10n.localeName == 'ar') return text;
+
+    String translated = text;
+
+    // Titles
+    translated = translated.replaceAll('طلب تدوير جديد', 'New Recycle Request');
+    translated = translated.replaceAll('مهمة توفير مكتملة', 'Saving Task Completed');
+    translated = translated.replaceAll('مهمة بيئية مكتملة', 'Eco Task Completed');
+    translated = translated.replaceAll('تمت الموافقة على مهمتك', 'Task Approved');
+    translated = translated.replaceAll('تحدي الدراجة', 'Bike Challenge');
+    translated = translated.replaceAll('يوم جديد، نقاط جديدة!', 'New Day, New Points!');
+    translated = translated.replaceAll('مبادرة بيئية جديدة', 'New Eco Initiative');
+    
+    // Bodies
+    translated = translated.replaceAll('رائع! حصلت على', 'Awesome! You earned');
+    translated = translated.replaceAll('أحسنت! حصلت على', 'Great job! You earned');
+    translated = translated.replaceAll('تم إرسال طلب تدوير', 'Recycling request sent for');
+    translated = translated.replaceAll('أحسنت! تمت الموافقة على', 'Great! Approved task:');
+    
+    translated = translated.replaceAll('نقطة لمهمة', 'points for task:');
+    translated = translated.replaceAll('نقطة من إتمام هذه المهمة', 'points for completing this task');
+    translated = translated.replaceAll('نقطة من مهمة', 'points from task:');
+    translated = translated.replaceAll('وحصلت على', 'and earned');
+    translated = translated.replaceAll('نقطة', 'points');
+
+    // Specific Tasks
+    translated = translated.replaceAll('استخدام كوب لتنظيف الأسنان', 'Using a cup to brush teeth');
+    translated = translated.replaceAll('تقليل وقت الاستحمام', 'Reducing shower time');
+    translated = translated.replaceAll('استخدام الدراجة', 'Riding a bicycle');
+    translated = translated.replaceAll('التدوير (تحقق فوري)', 'Recycling (Instant verify)');
+    translated = translated.replaceAll('فصل القوابس الكهربائية', 'Unplugging electronics');
+    translated = translated.replaceAll('استخدام السلالم', 'Taking the stairs');
+    translated = translated.replaceAll('بطاريات', 'batteries');
+    translated = translated.replaceAll('بلاستيك', 'plastic');
+    translated = translated.replaceAll('ورق', 'paper');
+    
+    return translated;
   }
 
   @override
@@ -101,10 +142,10 @@ class NotificationsListPage extends StatelessWidget {
                             fontFamily: 'Cairo',
                             fontWeight: FontWeight.bold,
                             fontSize: 16)),
-                    content: const Text(
-                        'سيتم حذف جميع الإشعارات نهائياً',
+                    content: Text(
+                        l10n.notif_delete_forever,
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Cairo', fontSize: 14)),
+                        style: const TextStyle(fontFamily: 'Cairo', fontSize: 14)),
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.pop(ctx, false),
@@ -268,7 +309,7 @@ class NotificationsListPage extends StatelessWidget {
                                             ),
                                           Expanded(
                                             child: Text(
-                                              data['title'] ?? '',
+                                              _translateText(data['title'] ?? '', l10n),
                                               style: TextStyle(
                                                 fontFamily: 'Cairo',
                                                 fontSize: 15,
@@ -284,7 +325,7 @@ class NotificationsListPage extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      _timeAgo(ts),
+                                      _timeAgo(ts, l10n),
                                       style: TextStyle(
                                         fontFamily: 'Cairo',
                                         fontSize: 11,
@@ -295,7 +336,7 @@ class NotificationsListPage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  data['body'] ?? '',
+                                  _translateText(data['body'] ?? '', l10n),
                                   style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 13,

@@ -1,0 +1,69 @@
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_history_page.dart: سجل طلباتي 🗂️
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_submission_page.dart: بلاستيك
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_submission_page.dart: بطاريات
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: دانه سعد
+c:/Projects_Flutter/Namaa_Project_App/lib\store\order_status.dart: تم التأكيد
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: الكبسولة الذكية الزراعية 🌱
+c:/Projects_Flutter/Namaa_Project_App/lib\store\check_firestore_status.dart: 🔍 فحص قاعدة بيانات منتجات نماء...
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: هديتك من نماء
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: هي كبسولة زراعية صغيرة تحتوي على بذور ومغذيات أولية، ومصممة لتسهيل تجربة الزراعة المنزلية بطريقة ممتعة وعملية.
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_dashboard.dart: مركز إعادة التدوير ♻️
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: كيف أجمع النقاط؟
+c:/Projects_Flutter/Namaa_Project_App/lib\admin\admin_tasks_page.dart: Admin - مراجعة المهام
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: كيف أستخدم كوبون الخصم؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: أحببته! خطوة رائعة للمحافظة على البيئة شكراً نماء.
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: يمكنك التواصل معنا عبر البريد الإلكتروني: namaa.support@gmail.com
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: اقتراح تطوير مستقبلي
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: شجرتك تنمو مع كل نقاط تجمعها. كلما زادت نقاطك كلما أصبحت شجرتك أكبر وأكثر خضرة!
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: كيف تنمو شجرتي؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\my_orders_page.dart: 📦 طلباتي
+c:/Projects_Flutter/Namaa_Project_App/lib\store\my_orders_page.dart: عذراً، حدث خطأ: ${snap.error}
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: لأنها تربط بين الشراء من متجر نماء وبين أثر بيئي وتجربة زراعية حقيقية، وهذا يعزز فكرة الاستدامة ويعطي المستخدم قيمة إضافية.
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_history_page.dart: الرجاء تسجيل الدخول أولاً
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_submission_page.dart: ورق
+c:/Projects_Flutter/Namaa_Project_App/lib\store\order_status.dart: قيد المعالجة
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: منتج رائع جداً ومطابق للمواصفات! أنصح به للجميع.
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: تجمع النقاط بإكمال المهام اليومية والتحديات الأسبوعية. كل مهمة لها عدد محدد من النقاط.
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: نعم! تطبيق نماء مجاني 100% ولا يحتاج اشتراك.
+c:/Projects_Flutter/Namaa_Project_App/lib\challenges\before_after_history_page.dart: لم تنشر أي مبادرة (قبل وبعد) حتى الآن.
+c:/Projects_Flutter/Namaa_Project_App/lib\store\order_status.dart: ملغي
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: لماذا تعتبر هدية مميزة؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: الكبسولة الذكية الزراعية
+c:/Projects_Flutter/Namaa_Project_App/lib\user\account_settings_page.dart: كلمتا المرور غير متطابقتين
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: جودة ممتازة، لكن التغليف كان يمكن أن يكون أفضل.
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_submission_page.dart: إلكترونيات
+c:/Projects_Flutter/Namaa_Project_App/lib\admin\admin_tasks_page.dart: لا توجد مهام للمراجعة
+c:/Projects_Flutter/Namaa_Project_App/lib\screen\create_account_screen.dart: هذا الاسم مستخدم مسبقاً
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: محمد الخالد
+c:/Projects_Flutter/Namaa_Project_App/lib\store\check_firestore_status.dart: ⚠️ تحذير: لا توجد منتجات حالياً!
+c:/Projects_Flutter/Namaa_Project_App/lib\user\user_profile_page.dart: مستخدم
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: منذ يومين
+c:/Projects_Flutter/Namaa_Project_App/lib\user\account_settings_page.dart: حدث خطأ: $e
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: سارة أحمد
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_submission_page.dart: معادن
+c:/Projects_Flutter/Namaa_Project_App/lib\user\account_settings_page.dart: كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل\nوتشمل: حرف كبير، صغير، رقم، ورمز خاص
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_dashboard.dart: أهلاً بك في نماء! 🌱
+c:/Projects_Flutter/Namaa_Project_App/lib\challenges\before_after_history_page.dart: سجل مبادراتي ✨
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_submission_page.dart: زجاج
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_history_page.dart: لم تقم بإرسال أي طلبات إعادة تدوير بعد.
+c:/Projects_Flutter/Namaa_Project_App/lib\store\order_status.dart: قيد التوصيل
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: كيف أدعو أصدقائي؟
+c:/Projects_Flutter/Namaa_Project_App/lib\recycle\recycle_dashboard.dart: كيف تود المساهمة في حماية البيئة اليوم؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\check_firestore_status.dart: 📊 عدد المنتجات في Firestore: ${snapshot.docs.length}
+c:/Projects_Flutter/Namaa_Project_App/lib\challenges\before_after_history_page.dart: الرجاء تسجيل الدخول
+c:/Projects_Flutter/Namaa_Project_App/lib\store\order_status.dart: تم التسليم
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: من صفحة حسابي اضغط على "دعوة صديق" وشارك رمز الدعوة الخاص بك.
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: يمكنه زراعتها بسهولة في المنزل أو الحديقة الصغيرة، ومتابعة نمو النبات كتجربة مرتبطة برسالة التطبيق البيئية.
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: عند وصولك لـ 300 نقطة تحصل تلقائياً على كوبون خصم 20% في المتجر البيئي لمدة 7 أيام.
+c:/Projects_Flutter/Namaa_Project_App/lib\store\check_firestore_status.dart: ❌ خطأ أثناء الفحص: $e
+c:/Projects_Flutter/Namaa_Project_App/lib\user\account_settings_page.dart: ✅ تم حفظ التغييرات بنجاح
+c:/Projects_Flutter/Namaa_Project_App/lib\user\account_settings_page.dart: يرجى ملء جميع حقول كلمة المرور
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: كيف يستفيد منها المستخدم؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\check_firestore_status.dart: 📋 قائمة بأسماء أول 5 منتجات:
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: هل التطبيق مجاني؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: ما هي الكبسولة الذكية؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: منذ شهر
+c:/Projects_Flutter/Namaa_Project_App/lib\screen\create_account_screen.dart: العربية
+c:/Projects_Flutter/Namaa_Project_App/lib\user\help_center_page.dart: كيف أتواصل مع الدعم؟
+c:/Projects_Flutter/Namaa_Project_App/lib\store\smart_capsule_page.dart: يمكن لاحقاً ربط الكبسولة داخل التطبيق بصفحة متابعة نمو النبات، وتذكير بالسقاية، ونصائح زراعية ذكية.
+c:/Projects_Flutter/Namaa_Project_App/lib\store\product_details_page.dart: منذ أسبوع

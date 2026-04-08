@@ -1,3 +1,4 @@
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'recycle_submission_page.dart';
 import 'recycle_tasks_page.dart';
@@ -8,13 +9,14 @@ class RecycleDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const Color primaryGreen = Color(0xFF386641);
     final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: Text(isAr ? "مركز إعادة التدوير ♻️" : "Recycle Center ♻️",
+        title: Text(isAr ? l10n.recycle_dashboard_title : "Recycle Center ♻️",
             style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
@@ -26,9 +28,9 @@ class RecycleDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isAr ? "أهلاً بك في نماء! 🌱" : "Welcome to Namaa! 🌱",
+            Text(isAr ? l10n.recycle_welcome : "Welcome to Namaa! 🌱",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: primaryGreen, fontFamily: 'Cairo')),
-            Text(isAr ? "كيف تود المساهمة في حماية البيئة اليوم؟" : "How would you like to help the environment today?",
+            Text(isAr ? l10n.recycle_how_to_contribute : "How would you like to help the environment today?",
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
             const SizedBox(height: 30),
 

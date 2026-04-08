@@ -258,7 +258,7 @@ const List<Map<String, dynamic>> _products = [
   },
   {
     'name': 'نبات العنكبوت',
-    // 'image': 'assets/images/products/spider_plant.png',
+    'image': 'assets/images/products/spider_plant.png',
     'category': 'plants',
     'price': 7.0,
     'stock': 45,

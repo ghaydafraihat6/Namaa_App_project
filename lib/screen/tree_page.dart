@@ -120,7 +120,9 @@ class _TreePageState extends State<TreePage>
         'treeNumber': treesCount,
         'treeCompletedAt': FieldValue.serverTimestamp(),
       });
-      if (mounted) _showTreeCompletedDialog(data, treesCount);
+      if (mounted) {
+        _showTreeCompletedDialog(data, treesCount, plantedLocation);
+      }
     } else if (points >= 300 && data['hasDiscount'] != true) {
       _isProcessingReward = true;
       final expiryDate = DateTime.now().add(const Duration(days: 7));
@@ -138,7 +140,7 @@ class _TreePageState extends State<TreePage>
     }
   }
 
-  void _showTreeCompletedDialog(Map<String, dynamic> data, int treeNumber) {
+  void _showTreeCompletedDialog(Map<String, dynamic> data, int treeNumber,String plantedLocation,) {
     final name = data['fullName'] ?? data['name'] ?? 'User';
     final l10n = AppLocalizations.of(context)!;
 
@@ -195,7 +197,7 @@ class _TreePageState extends State<TreePage>
                       MaterialPageRoute(
                           builder: (_) => CertificatePage(
                             userName: name,
-                            treeNumber: treeNumber,
+                            treeNumber: treeNumber, location: plantedLocation,
                           )));
                 },
                 style: ElevatedButton.styleFrom(
@@ -565,7 +567,7 @@ class _TreePageState extends State<TreePage>
           context,
           MaterialPageRoute(
           builder: (_) =>
-          CertificatePage(userName: userName, treeNumber: treesCompleted))),
+          CertificatePage(userName: userName, treeNumber: treesCompleted, location: '',))),
           child: Container(
           padding: const EdgeInsets.symmetric(
           horizontal: 12, vertical: 8),

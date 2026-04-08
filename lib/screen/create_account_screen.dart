@@ -89,7 +89,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             .get();
 
         if (usernameQuery.docs.isNotEmpty) {
-          if (mounted) _showSnackBar(l10n.arabic == "العربية" ? "هذا الاسم مستخدم مسبقاً" : "This name is already in use", Colors.red);
+          if (mounted) _showSnackBar(l10n.emailInUse, Colors.red);
           setState(() => _isLoading = false);
           return;
         }
@@ -382,7 +382,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                                 fontWeight: FontWeight.w900)),
                         GestureDetector(
                           onTap: () => Navigator.pop(context),
-                          child: Text(l10n.login,
+                          child: Text(l10n.login_button,
                               style: const TextStyle(
                                   fontFamily: 'Cairo',
                                   color: Color(0xFF386641),

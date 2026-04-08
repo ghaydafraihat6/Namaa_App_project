@@ -132,7 +132,7 @@ class AdminOrdersPage extends StatelessWidget {
                                 ]),
                           ),
                           DropdownButton<String>(
-                            value: status.label,
+                            value: status.key,
                             underline: const SizedBox(),
                             isDense: true,
                             style: TextStyle(
@@ -142,8 +142,8 @@ class AdminOrdersPage extends StatelessWidget {
                                 color: status.color),
                             items: OrderStatus.values
                                 .map((s) => DropdownMenuItem(
-                              value: s.label,
-                              child: Text(s.label,
+                              value: s.key,
+                              child: Text(s.getLabel(context),
                                   style: TextStyle(
                                       fontFamily: 'Cairo',
                                       fontSize: 12,

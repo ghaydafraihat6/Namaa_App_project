@@ -918,4 +918,254 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get admin_eco_task => 'مهمة بيئية';
+
+  @override
+  String get loc_ajloun => 'محمية غابات عجلون 🌲';
+
+  @override
+  String get loc_dibeen => 'غابات دبين الايكولوجية 🌿';
+
+  @override
+  String get loc_berqesh => 'غابة برقش الطبيعية 🌳';
+
+  @override
+  String get loc_wasfi => 'غابة وصفي التل 🌳';
+
+  @override
+  String get loc_jubilee => 'غابات اليوبيل الوطني 🌲';
+
+  @override
+  String get loc_malka => 'غابة ملكا الطبيعية 🌿';
+
+  @override
+  String get loc_koura => 'غابات لواء الكورة 🌳';
+
+  @override
+  String get loc_faisal => 'غابة الأمير فيصل 🌲';
+
+  @override
+  String get loc_ishteafina => 'غابات اشتفينا الجميلة 🌿';
+
+  @override
+  String get loc_ghumdan => 'متنزه غمدان الوطني 🌳';
+
+  @override
+  String get recycle_dashboard_title => 'مركز إعادة التدوير ♻️';
+
+  @override
+  String get recycle_history_title => 'سجل طلباتي 🗂️';
+
+  @override
+  String get recycle_welcome => 'أهلاً بك في نماء! 🌱';
+
+  @override
+  String get recycle_how_to_contribute =>
+      'كيف تود المساهمة في حماية البيئة اليوم؟';
+
+  @override
+  String get recycle_no_requests => 'لم تقم بإرسال أي طلبات إعادة تدوير بعد.';
+
+  @override
+  String get recycle_please_login => 'الرجاء تسجيل الدخول أولاً';
+
+  @override
+  String get recycle_plastic => 'بلاستيك';
+
+  @override
+  String get recycle_glass => 'زجاج';
+
+  @override
+  String get recycle_paper => 'ورق';
+
+  @override
+  String get recycle_metal => 'معادن';
+
+  @override
+  String get recycle_electronics => 'إلكترونيات';
+
+  @override
+  String get recycle_batteries => 'بطاريات';
+
+  @override
+  String get store_order_confirmed => 'تم التأكيد';
+
+  @override
+  String get store_order_processing => 'قيد المعالجة';
+
+  @override
+  String get store_order_shipping => 'قيد التوصيل';
+
+  @override
+  String get store_order_delivered => 'تم التسليم';
+
+  @override
+  String get store_order_cancelled => 'ملغي';
+
+  @override
+  String get store_my_orders => '📦 طلباتي';
+
+  @override
+  String get smart_capsule_title => 'الكبسولة الذكية الزراعية 🌱';
+
+  @override
+  String get smart_capsule_gift => 'هديتك من نماء';
+
+  @override
+  String get smart_capsule_what_is_it => 'ما هي الكبسولة الذكية؟';
+
+  @override
+  String get smart_capsule_what_is_it_desc =>
+      'هي كبسولة زراعية صغيرة تحتوي على بذور ومغذيات أولية، ومصممة لتسهيل تجربة الزراعة المنزلية بطريقة ممتعة وعملية.';
+
+  @override
+  String get smart_capsule_why_special => 'لماذا تعتبر هدية مميزة؟';
+
+  @override
+  String get smart_capsule_why_special_desc =>
+      'لأنها تربط بين الشراء من متجر نماء وبين أثر بيئي وتجربة زراعية حقيقية، وهذا يعزز فكرة الاستدامة ويعطي المستخدم قيمة إضافية.';
+
+  @override
+  String get smart_capsule_how_to_use => 'كيف يستفيد منها المستخدم؟';
+
+  @override
+  String get smart_capsule_how_to_use_desc =>
+      'يمكنه زراعتها بسهولة في المنزل أو الحديقة الصغيرة، ومتابعة نمو النبات كتجربة مرتبطة برسالة التطبيق البيئية.';
+
+  @override
+  String get smart_capsule_future_dev => 'اقتراح تطوير مستقبلي';
+
+  @override
+  String get smart_capsule_future_dev_desc =>
+      'يمكن لاحقاً ربط الكبسولة داخل التطبيق بصفحة متابعة نمو النبات، وتذكير بالسقاية، ونصائح زراعية ذكية.';
+
+  @override
+  String get challenges_initiatives_history => 'سجل مبادراتي ✨';
+
+  @override
+  String get challenges_no_initiatives =>
+      'لم تنشر أي مبادرة (قبل وبعد) حتى الآن.';
+
+  @override
+  String get challenges_login_first => 'الرجاء تسجيل الدخول';
+
+  @override
+  String get help_q_collect_points => 'كيف أجمع النقاط؟';
+
+  @override
+  String get help_a_collect_points =>
+      'تجمع النقاط بإكمال المهام اليومية والتحديات الأسبوعية. كل مهمة لها عدد محدد من النقاط.';
+
+  @override
+  String get help_q_discount_coupon => 'كيف أستخدم كوبون الخصم؟';
+
+  @override
+  String get help_a_discount_coupon =>
+      'عند وصولك لـ 300 نقطة تحصل تلقائياً على كوبون خصم 20% في المتجر البيئي لمدة 7 أيام.';
+
+  @override
+  String get help_q_tree_growth => 'كيف تنمو شجرتي؟';
+
+  @override
+  String get help_a_tree_growth =>
+      'شجرتك تنمو مع كل نقاط تجمعها. كلما زادت نقاطك كلما أصبحت شجرتك أكبر وأكثر خضرة!';
+
+  @override
+  String get help_q_invite_friends => 'كيف أدعو أصدقائي؟';
+
+  @override
+  String get help_a_invite_friends =>
+      'من صفحة حسابي اضغط على \"دعوة صديق\" وشارك رمز الدعوة الخاص بك.';
+
+  @override
+  String get help_q_is_free => 'هل التطبيق مجاني؟';
+
+  @override
+  String get help_a_is_free => 'نعم! تطبيق نماء مجاني 100% ولا يحتاج اشتراك.';
+
+  @override
+  String get help_q_contact_support => 'كيف أتواصل مع الدعم؟';
+
+  @override
+  String get help_a_contact_support =>
+      'يمكنك التواصل معنا عبر البريد الإلكتروني: namaa.support@gmail.com';
+
+  @override
+  String get help_support_title => 'الدعم';
+
+  @override
+  String get admin_review_tasks_title => 'Admin - مراجعة المهام';
+
+  @override
+  String get admin_no_tasks_to_review => 'لا توجد مهام للمراجعة';
+
+  @override
+  String get acc_password_req =>
+      'كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل\\nوتشمل: حرف كبير، صغير، رقم، ورمز خاص';
+
+  @override
+  String get acc_password_mismatch => 'كلمتا المرور غير متطابقتين';
+
+  @override
+  String get acc_fill_passwords => 'يرجى ملء جميع حقول كلمة المرور';
+
+  @override
+  String get user_profile_user => 'مستخدم';
+
+  @override
+  String get review_name_1 => 'محمد الخالد';
+
+  @override
+  String get review_name_2 => 'دانه سعد';
+
+  @override
+  String get review_name_3 => 'سارة أحمد';
+
+  @override
+  String get review_date_1 => 'منذ يومين';
+
+  @override
+  String get review_date_2 => 'منذ أسبوع';
+
+  @override
+  String get review_date_3 => 'منذ شهر';
+
+  @override
+  String get review_text_1 =>
+      'منتج رائع جداً ومطابق للمواصفات! أنصح به للجميع.';
+
+  @override
+  String get review_text_2 => 'جودة ممتازة، لكن التغليف كان يمكن أن يكون أفضل.';
+
+  @override
+  String get review_text_3 =>
+      'أحببته! خطوة رائعة للمحافظة على البيئة شكراً نماء.';
+
+  @override
+  String get store_check_db_title => '🔍 فحص قاعدة بيانات منتجات نماء...';
+
+  @override
+  String store_check_db_count(int count) {
+    return '📊 عدد المنتجات في Firestore: $count';
+  }
+
+  @override
+  String store_check_db_error(String error) {
+    return '❌ خطأ أثناء الفحص: $error';
+  }
+
+  @override
+  String get store_check_db_warning => '⚠️ تحذير: لا توجد منتجات حالياً!';
+
+  @override
+  String get store_check_db_list => '📋 قائمة بأسماء أول 5 منتجات:';
+
+  @override
+  String acc_error_prefix(String error) {
+    return 'حدث خطأ: $error';
+  }
+
+  @override
+  String store_error_prefix(String error) {
+    return 'عذراً، حدث خطأ: $error';
+  }
 }

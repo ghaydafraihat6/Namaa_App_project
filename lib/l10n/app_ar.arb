@@ -1,4 +1,4 @@
-{
+                                                                                                                                                                                               {
   "@@locale": "ar",
   "appName": "نماء",
   "welcome": "أهلاً بعودتك!",
@@ -269,13 +269,37 @@
   "notif_weekly_report_sub": "ملخص أسبوعي لنشاطك البيئي",
   "notif_time_now": "الآن",
   "notif_time_mins": "قبل {mins} دقيقة",
-  "@notif_time_mins": { "placeholders": { "mins": { "type": "int" } } },
+  "@notif_time_mins": {
+    "placeholders": {
+      "mins": {
+        "type": "int"
+      }
+    }
+  },
   "notif_time_hours": "قبل {hours} ساعة",
-  "@notif_time_hours": { "placeholders": { "hours": { "type": "int" } } },
+  "@notif_time_hours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "notif_time_days": "قبل {days} يوم",
-  "@notif_time_days": { "placeholders": { "days": { "type": "int" } } },
+  "@notif_time_days": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "notif_time_weeks": "قبل {weeks} أسبوع",
-  "@notif_time_weeks": { "placeholders": { "weeks": { "type": "int" } } },
+  "@notif_time_weeks": {
+    "placeholders": {
+      "weeks": {
+        "type": "int"
+      }
+    }
+  },
   "notif_delete_forever": "سيتم حذف جميع الإشعارات نهائياً",
   "settings_version": "نماء v1.0.0",
   "cert_share_failed": "فشل تجهيز المشاركة، حاول مرة أخرى",
@@ -301,7 +325,13 @@
   "invite_code_label": "رمز الدعوة الخاص بك",
   "invite_copied": "تم نسخ الرمز بنجاح! ✅",
   "invite_share_text": "انضم إليّ في تطبيق نماء للحفاظ على البيئة! استخدم رمز الدعوة الخاص بي: {code} لتحصل على مكافأة بداية 🌱✨",
-  "@invite_share_text": { "placeholders": { "code": { "type": "String" } } },
+  "@invite_share_text": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
   "invite_share_btn": "مشاركة الرمز عبر التطبيقات",
   "tree_no_data": "لا توجد بيانات",
   "global_error": "حدث خطأ: ",
@@ -380,5 +410,109 @@
       }
     }
   },
-  "admin_eco_task": "مهمة بيئية"
+  "admin_eco_task": "مهمة بيئية",
+  "loc_ajloun": "محمية غابات عجلون 🌲",
+  "loc_dibeen": "غابات دبين الايكولوجية 🌿",
+  "loc_berqesh": "غابة برقش الطبيعية 🌳",
+  "loc_wasfi": "غابة وصفي التل 🌳",
+  "loc_jubilee": "غابات اليوبيل الوطني 🌲",
+  "loc_malka": "غابة ملكا الطبيعية 🌿",
+  "loc_koura": "غابات لواء الكورة 🌳",
+  "loc_faisal": "غابة الأمير فيصل 🌲",
+  "loc_ishteafina": "غابات اشتفينا الجميلة 🌿",
+  "loc_ghumdan": "متنزه غمدان الوطني 🌳",
+  "recycle_dashboard_title": "مركز إعادة التدوير ♻️",
+  "recycle_history_title": "سجل طلباتي 🗂️",
+  "recycle_welcome": "أهلاً بك في نماء! 🌱",
+  "recycle_how_to_contribute": "كيف تود المساهمة في حماية البيئة اليوم؟",
+  "recycle_no_requests": "لم تقم بإرسال أي طلبات إعادة تدوير بعد.",
+  "recycle_please_login": "الرجاء تسجيل الدخول أولاً",
+  "recycle_plastic": "بلاستيك",
+  "recycle_glass": "زجاج",
+  "recycle_paper": "ورق",
+  "recycle_metal": "معادن",
+  "recycle_electronics": "إلكترونيات",
+  "recycle_batteries": "بطاريات",
+  "store_order_confirmed": "تم التأكيد",
+  "store_order_processing": "قيد المعالجة",
+  "store_order_shipping": "قيد التوصيل",
+  "store_order_delivered": "تم التسليم",
+  "store_order_cancelled": "ملغي",
+  "store_my_orders": "📦 طلباتي",
+  "smart_capsule_title": "الكبسولة الذكية الزراعية 🌱",
+  "smart_capsule_gift": "هديتك من نماء",
+  "smart_capsule_what_is_it": "ما هي الكبسولة الذكية؟",
+  "smart_capsule_what_is_it_desc": "هي كبسولة زراعية صغيرة تحتوي على بذور ومغذيات أولية، ومصممة لتسهيل تجربة الزراعة المنزلية بطريقة ممتعة وعملية.",
+  "smart_capsule_why_special": "لماذا تعتبر هدية مميزة؟",
+  "smart_capsule_why_special_desc": "لأنها تربط بين الشراء من متجر نماء وبين أثر بيئي وتجربة زراعية حقيقية، وهذا يعزز فكرة الاستدامة ويعطي المستخدم قيمة إضافية.",
+  "smart_capsule_how_to_use": "كيف يستفيد منها المستخدم؟",
+  "smart_capsule_how_to_use_desc": "يمكنه زراعتها بسهولة في المنزل أو الحديقة الصغيرة، ومتابعة نمو النبات كتجربة مرتبطة برسالة التطبيق البيئية.",
+  "smart_capsule_future_dev": "اقتراح تطوير مستقبلي",
+  "smart_capsule_future_dev_desc": "يمكن لاحقاً ربط الكبسولة داخل التطبيق بصفحة متابعة نمو النبات، وتذكير بالسقاية، ونصائح زراعية ذكية.",
+  "challenges_initiatives_history": "سجل مبادراتي ✨",
+  "challenges_no_initiatives": "لم تنشر أي مبادرة (قبل وبعد) حتى الآن.",
+  "challenges_login_first": "الرجاء تسجيل الدخول",
+  "help_q_collect_points": "كيف أجمع النقاط؟",
+  "help_a_collect_points": "تجمع النقاط بإكمال المهام اليومية والتحديات الأسبوعية. كل مهمة لها عدد محدد من النقاط.",
+  "help_q_discount_coupon": "كيف أستخدم كوبون الخصم؟",
+  "help_a_discount_coupon": "عند وصولك لـ 300 نقطة تحصل تلقائياً على كوبون خصم 20% في المتجر البيئي لمدة 7 أيام.",
+  "help_q_tree_growth": "كيف تنمو شجرتي؟",
+  "help_a_tree_growth": "شجرتك تنمو مع كل نقاط تجمعها. كلما زادت نقاطك كلما أصبحت شجرتك أكبر وأكثر خضرة!",
+  "help_q_invite_friends": "كيف أدعو أصدقائي؟",
+  "help_a_invite_friends": "من صفحة حسابي اضغط على \"دعوة صديق\" وشارك رمز الدعوة الخاص بك.",
+  "help_q_is_free": "هل التطبيق مجاني؟",
+  "help_a_is_free": "نعم! تطبيق نماء مجاني 100% ولا يحتاج اشتراك.",
+  "help_q_contact_support": "كيف أتواصل مع الدعم؟",
+  "help_a_contact_support": "يمكنك التواصل معنا عبر البريد الإلكتروني: namaa.support@gmail.com",
+  "help_support_title": "الدعم",
+  "admin_review_tasks_title": "Admin - مراجعة المهام",
+  "admin_no_tasks_to_review": "لا توجد مهام للمراجعة",
+  "acc_password_req": "كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل\\nوتشمل: حرف كبير، صغير، رقم، ورمز خاص",
+  "acc_password_mismatch": "كلمتا المرور غير متطابقتين",
+  "acc_fill_passwords": "يرجى ملء جميع حقول كلمة المرور",
+  "user_profile_user": "مستخدم",
+  "review_name_1": "محمد الخالد",
+  "review_name_2": "دانه سعد",
+  "review_name_3": "سارة أحمد",
+  "review_date_1": "منذ يومين",
+  "review_date_2": "منذ أسبوع",
+  "review_date_3": "منذ شهر",
+  "review_text_1": "منتج رائع جداً ومطابق للمواصفات! أنصح به للجميع.",
+  "review_text_2": "جودة ممتازة، لكن التغليف كان يمكن أن يكون أفضل.",
+  "review_text_3": "أحببته! خطوة رائعة للمحافظة على البيئة شكراً نماء.",
+  "store_check_db_title": "🔍 فحص قاعدة بيانات منتجات نماء...",
+  "store_check_db_count": "📊 عدد المنتجات في Firestore: {count}",
+  "store_check_db_error": "❌ خطأ أثناء الفحص: {error}",
+  "store_check_db_warning": "⚠️ تحذير: لا توجد منتجات حالياً!",
+  "store_check_db_list": "📋 قائمة بأسماء أول 5 منتجات:",
+  "acc_error_prefix": "حدث خطأ: {error}",
+  "store_error_prefix": "عذراً، حدث خطأ: {error}",
+  "@store_check_db_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@store_check_db_error": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@acc_error_prefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "@store_error_prefix": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

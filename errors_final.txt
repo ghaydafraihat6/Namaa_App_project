@@ -1,0 +1,8 @@
+error - The argument type 'AppLocalizations?' can't be assigned to the parameter type 'AppLocalizations'.  - lib\recycle\recycle_submission_page.dart:303:45 - argument_type_not_assignable
+error - Undefined name 'l10n' - lib\user\account_settings_page.dart:116:80 - undefined_identifier
+error - Undefined name 'l10n' - lib\user\account_settings_page.dart:125:80 - undefined_identifier
+error - Undefined name 'l10n' - lib\user\account_settings_page.dart:142:21 - undefined_identifier
+error - Undefined name 'l10n' - lib\user\account_settings_page.dart:146:21 - undefined_identifier
+error - Undefined name 'l10n' - lib\user\account_settings_page.dart:151:18 - undefined_identifier
+error - Undefined name 'l10n' - lib\user\account_settings_page.dart:338:21 - undefined_identifier
+error - Undefined name 'isAr' - lib\user\account_settings_page.dart:1001:25 - undefined_identifier

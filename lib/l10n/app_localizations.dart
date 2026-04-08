@@ -1825,6 +1825,462 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Eco Task'**
   String get admin_eco_task;
+
+  /// No description provided for @loc_ajloun.
+  ///
+  /// In en, this message translates to:
+  /// **'Ajloun Forest Reserve 🌲'**
+  String get loc_ajloun;
+
+  /// No description provided for @loc_dibeen.
+  ///
+  /// In en, this message translates to:
+  /// **'Dibeen Ecological Forests 🌿'**
+  String get loc_dibeen;
+
+  /// No description provided for @loc_berqesh.
+  ///
+  /// In en, this message translates to:
+  /// **'Berqsh Nature Forest 🌳'**
+  String get loc_berqesh;
+
+  /// No description provided for @loc_wasfi.
+  ///
+  /// In en, this message translates to:
+  /// **'Wasfi Al-Tal Forest 🌳'**
+  String get loc_wasfi;
+
+  /// No description provided for @loc_jubilee.
+  ///
+  /// In en, this message translates to:
+  /// **'National Jubilee Forests 🌲'**
+  String get loc_jubilee;
+
+  /// No description provided for @loc_malka.
+  ///
+  /// In en, this message translates to:
+  /// **'Malka Nature Forest 🌿'**
+  String get loc_malka;
+
+  /// No description provided for @loc_koura.
+  ///
+  /// In en, this message translates to:
+  /// **'Al-Koura District Forests 🌳'**
+  String get loc_koura;
+
+  /// No description provided for @loc_faisal.
+  ///
+  /// In en, this message translates to:
+  /// **'Prince Faisal Forest 🌲'**
+  String get loc_faisal;
+
+  /// No description provided for @loc_ishteafina.
+  ///
+  /// In en, this message translates to:
+  /// **'Beautiful Ishtafina Forests 🌿'**
+  String get loc_ishteafina;
+
+  /// No description provided for @loc_ghumdan.
+  ///
+  /// In en, this message translates to:
+  /// **'Ghumdan National Park 🌳'**
+  String get loc_ghumdan;
+
+  /// No description provided for @recycle_dashboard_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recycle Center ♻️'**
+  String get recycle_dashboard_title;
+
+  /// No description provided for @recycle_history_title.
+  ///
+  /// In en, this message translates to:
+  /// **'My Requests History 🗂️'**
+  String get recycle_history_title;
+
+  /// No description provided for @recycle_welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Namaa! 🌱'**
+  String get recycle_welcome;
+
+  /// No description provided for @recycle_how_to_contribute.
+  ///
+  /// In en, this message translates to:
+  /// **'How would you like to contribute to saving the environment today?'**
+  String get recycle_how_to_contribute;
+
+  /// No description provided for @recycle_no_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t submitted any recycle requests yet.'**
+  String get recycle_no_requests;
+
+  /// No description provided for @recycle_please_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login first'**
+  String get recycle_please_login;
+
+  /// No description provided for @recycle_plastic.
+  ///
+  /// In en, this message translates to:
+  /// **'Plastic'**
+  String get recycle_plastic;
+
+  /// No description provided for @recycle_glass.
+  ///
+  /// In en, this message translates to:
+  /// **'Glass'**
+  String get recycle_glass;
+
+  /// No description provided for @recycle_paper.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper'**
+  String get recycle_paper;
+
+  /// No description provided for @recycle_metal.
+  ///
+  /// In en, this message translates to:
+  /// **'Metal'**
+  String get recycle_metal;
+
+  /// No description provided for @recycle_electronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get recycle_electronics;
+
+  /// No description provided for @recycle_batteries.
+  ///
+  /// In en, this message translates to:
+  /// **'Batteries'**
+  String get recycle_batteries;
+
+  /// No description provided for @store_order_confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get store_order_confirmed;
+
+  /// No description provided for @store_order_processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get store_order_processing;
+
+  /// No description provided for @store_order_shipping.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping'**
+  String get store_order_shipping;
+
+  /// No description provided for @store_order_delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get store_order_delivered;
+
+  /// No description provided for @store_order_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get store_order_cancelled;
+
+  /// No description provided for @store_my_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'📦 My Orders'**
+  String get store_my_orders;
+
+  /// No description provided for @smart_capsule_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Agriculture Smart Capsule 🌱'**
+  String get smart_capsule_title;
+
+  /// No description provided for @smart_capsule_gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Your gift from Namaa'**
+  String get smart_capsule_gift;
+
+  /// No description provided for @smart_capsule_what_is_it.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the Smart Capsule?'**
+  String get smart_capsule_what_is_it;
+
+  /// No description provided for @smart_capsule_what_is_it_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'It is a small agricultural capsule containing seeds and basic nutrients, designed to make the home planting experience fun and practical.'**
+  String get smart_capsule_what_is_it_desc;
+
+  /// No description provided for @smart_capsule_why_special.
+  ///
+  /// In en, this message translates to:
+  /// **'Why is it a special gift?'**
+  String get smart_capsule_why_special;
+
+  /// No description provided for @smart_capsule_why_special_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Because it links buying from the Namaa store with an environmental impact and a real farming experience, which enhances the idea of sustainability and gives the user added value.'**
+  String get smart_capsule_why_special_desc;
+
+  /// No description provided for @smart_capsule_how_to_use.
+  ///
+  /// In en, this message translates to:
+  /// **'How does the user benefit?'**
+  String get smart_capsule_how_to_use;
+
+  /// No description provided for @smart_capsule_how_to_use_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'They can easily plant it at home or in a small garden, and track the plant\'s growth as an experience connected to the app\'s environmental message.'**
+  String get smart_capsule_how_to_use_desc;
+
+  /// No description provided for @smart_capsule_future_dev.
+  ///
+  /// In en, this message translates to:
+  /// **'Future Development Proposal'**
+  String get smart_capsule_future_dev;
+
+  /// No description provided for @smart_capsule_future_dev_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule can later be linked within the app to a plant growth tracking page, providing watering reminders and smart planting tips.'**
+  String get smart_capsule_future_dev_desc;
+
+  /// No description provided for @challenges_initiatives_history.
+  ///
+  /// In en, this message translates to:
+  /// **'My Initiatives History ✨'**
+  String get challenges_initiatives_history;
+
+  /// No description provided for @challenges_no_initiatives.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t published any (Before & After) initiative yet.'**
+  String get challenges_no_initiatives;
+
+  /// No description provided for @challenges_login_first.
+  ///
+  /// In en, this message translates to:
+  /// **'Please login'**
+  String get challenges_login_first;
+
+  /// No description provided for @help_q_collect_points.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I collect points?'**
+  String get help_q_collect_points;
+
+  /// No description provided for @help_a_collect_points.
+  ///
+  /// In en, this message translates to:
+  /// **'You collect points by completing daily tasks and weekly challenges. Each task has a specific number of points.'**
+  String get help_a_collect_points;
+
+  /// No description provided for @help_q_discount_coupon.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I use a discount coupon?'**
+  String get help_q_discount_coupon;
+
+  /// No description provided for @help_a_discount_coupon.
+  ///
+  /// In en, this message translates to:
+  /// **'When you reach 300 points, you automatically get a 20% discount coupon in the Eco Store, valid for 7 days.'**
+  String get help_a_discount_coupon;
+
+  /// No description provided for @help_q_tree_growth.
+  ///
+  /// In en, this message translates to:
+  /// **'How does my tree grow?'**
+  String get help_q_tree_growth;
+
+  /// No description provided for @help_a_tree_growth.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tree grows with every point you collect. The more points you gain, the bigger and greener your tree becomes!'**
+  String get help_a_tree_growth;
+
+  /// No description provided for @help_q_invite_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I invite friends?'**
+  String get help_q_invite_friends;
+
+  /// No description provided for @help_a_invite_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'From the \'My Account\' page, click on \'Invite Friend\' and share your invitation code.'**
+  String get help_a_invite_friends;
+
+  /// No description provided for @help_q_is_free.
+  ///
+  /// In en, this message translates to:
+  /// **'Is the app free?'**
+  String get help_q_is_free;
+
+  /// No description provided for @help_a_is_free.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes! The Namaa app is 100% free and requires no subscription.'**
+  String get help_a_is_free;
+
+  /// No description provided for @help_q_contact_support.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I contact support?'**
+  String get help_q_contact_support;
+
+  /// No description provided for @help_a_contact_support.
+  ///
+  /// In en, this message translates to:
+  /// **'You can contact us via email: namaa.support@gmail.com'**
+  String get help_a_contact_support;
+
+  /// No description provided for @help_support_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get help_support_title;
+
+  /// No description provided for @admin_review_tasks_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin - Review Tasks'**
+  String get admin_review_tasks_title;
+
+  /// No description provided for @admin_no_tasks_to_review.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks to review'**
+  String get admin_no_tasks_to_review;
+
+  /// No description provided for @acc_password_req.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters long,\\ninclude: uppercase, lowercase, number, and special character'**
+  String get acc_password_req;
+
+  /// No description provided for @acc_password_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get acc_password_mismatch;
+
+  /// No description provided for @acc_fill_passwords.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all password fields'**
+  String get acc_fill_passwords;
+
+  /// No description provided for @user_profile_user.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user_profile_user;
+
+  /// No description provided for @review_name_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Mohammed Al-Khalid'**
+  String get review_name_1;
+
+  /// No description provided for @review_name_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Dana Saad'**
+  String get review_name_2;
+
+  /// No description provided for @review_name_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Sara Ahmed'**
+  String get review_name_3;
+
+  /// No description provided for @review_date_1.
+  ///
+  /// In en, this message translates to:
+  /// **'2 days ago'**
+  String get review_date_1;
+
+  /// No description provided for @review_date_2.
+  ///
+  /// In en, this message translates to:
+  /// **'1 week ago'**
+  String get review_date_2;
+
+  /// No description provided for @review_date_3.
+  ///
+  /// In en, this message translates to:
+  /// **'1 month ago'**
+  String get review_date_3;
+
+  /// No description provided for @review_text_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Very excellent product and perfectly matches the description! Highly recommended.'**
+  String get review_text_1;
+
+  /// No description provided for @review_text_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent quality, but the packaging could be better.'**
+  String get review_text_2;
+
+  /// No description provided for @review_text_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Loved it! A great step towards saving the environment. Thanks Namaa.'**
+  String get review_text_3;
+
+  /// No description provided for @store_check_db_title.
+  ///
+  /// In en, this message translates to:
+  /// **'🔍 Checking Namaa store DB...'**
+  String get store_check_db_title;
+
+  /// No description provided for @store_check_db_count.
+  ///
+  /// In en, this message translates to:
+  /// **'📊 Number of products in Firestore: {count}'**
+  String store_check_db_count(int count);
+
+  /// No description provided for @store_check_db_error.
+  ///
+  /// In en, this message translates to:
+  /// **'❌ Error checking: {error}'**
+  String store_check_db_error(String error);
+
+  /// No description provided for @store_check_db_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Warning: No products found!'**
+  String get store_check_db_warning;
+
+  /// No description provided for @store_check_db_list.
+  ///
+  /// In en, this message translates to:
+  /// **'📋 List of first 5 products:'**
+  String get store_check_db_list;
+
+  /// No description provided for @acc_error_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: {error}'**
+  String acc_error_prefix(String error);
+
+  /// No description provided for @store_error_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, an error occurred: {error}'**
+  String store_error_prefix(String error);
 }
 
 class _AppLocalizationsDelegate

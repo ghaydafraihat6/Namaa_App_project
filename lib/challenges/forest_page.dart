@@ -14,7 +14,7 @@ class ForestPage extends StatelessWidget {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF8), // لون أفتح قليلاً للراحة البصرية
+      backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
         title: Text(
           l10n.forestPage,
@@ -127,10 +127,16 @@ class ForestPage extends StatelessWidget {
                         }
                         final docId = docs[i].id;
                         final treeNumber = data['treeNumber'] ?? data['certificateNumber'] ?? (i + 1);
-                        final location = data['plantedLocation'] ?? _randomLocation(docId);
+                        final rawLocation = data['plantedLocation'] ?? _randomLocation(docId);
+                        final location = _getLocalizedLocation(rawLocation, l10n);
                         return GestureDetector(
-                          onTap: () => _openCertificate(context, userId, name, treeNumber),
-                          child: Container(
+                          onTap: () => _openCertificate(
+                            context,
+                            userId,
+                            name,
+                            treeNumber,
+                            location,
+                          ),                          child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(24),
@@ -188,19 +194,24 @@ class ForestPage extends StatelessWidget {
     );
   }
 
-  void _openCertificate(BuildContext context, String userId, String userName, int treeNumber) {
+  void _openCertificate(
+      BuildContext context,
+      String userId,
+      String userName,
+      int treeNumber,
+      String location,
+      ) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => CertificatePage(
           userName: userName,
           treeNumber: treeNumber,
+          location: location,
         ),
       ),
     );
-  }
-
-  /// اختيار موقع عشوائي بناءً على رقم الوثيقة (للحفاظ على الاتساق مع أماكن زراعة الأشجار)
+  }  /// اختيار موقع عشوائي بناءً على رقم الوثيقة (للحفاظ على الاتساق مع أماكن زراعة الأشجار)
   String _randomLocation(String docId) {
     final random = Random(docId.hashCode);
     final locations = [
@@ -216,5 +227,19 @@ class ForestPage extends StatelessWidget {
       'متنزه غمدان الوطني 🌳',
     ];
     return locations[random.nextInt(locations.length)];
+  }
+
+  String _getLocalizedLocation(String location, AppLocalizations l10n) {
+    if (location.contains('عجلون')) return l10n.loc_ajloun;
+    if (location.contains('دبين')) return l10n.loc_dibeen;
+    if (location.contains('برقش')) return l10n.loc_berqesh;
+    if (location.contains('وصفي')) return l10n.loc_wasfi;
+    if (location.contains('اليوبيل')) return l10n.loc_jubilee;
+    if (location.contains('ملكا')) return l10n.loc_malka;
+    if (location.contains('الكورة')) return l10n.loc_koura;
+    if (location.contains('فيصل')) return l10n.loc_faisal;
+    if (location.contains('اشتفينا')) return l10n.loc_ishteafina;
+    if (location.contains('غمدان')) return l10n.loc_ghumdan;
+    return location;
   }
 }

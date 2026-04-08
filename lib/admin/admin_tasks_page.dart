@@ -1,3 +1,4 @@
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -6,6 +7,7 @@ class AdminTasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Admin - مراجعة المهام"),

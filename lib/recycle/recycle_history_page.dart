@@ -1,3 +1,4 @@
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ class RecycleHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     const Color primaryGreen = Color(0xFF386641);
     final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
@@ -19,7 +21,7 @@ class RecycleHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: Text(isAr ? "سجل طلباتي 🗂️" : "My Requests History 🗂️", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
+        title: Text(isAr ? l10n.recycle_history_title : "My Requests History 🗂️", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),

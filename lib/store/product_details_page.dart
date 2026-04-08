@@ -1,3 +1,4 @@
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -22,30 +23,34 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int quantity = 1;
 
-  final List<Map<String, dynamic>> reviews = [
+  // We will initialize reviews inside build to use l10n
+  List<Map<String, dynamic>> _getReviews(AppLocalizations l10n) => [
     {
-      'name': 'سارة أحمد',
+      'name': l10n.review_name_3,
       'rating': 5.0,
-      'comment': 'منتج رائع جداً ومطابق للمواصفات! أنصح به للجميع.',
-      'date': 'منذ يومين'
+      'comment': l10n.review_text_1,
+      'date': l10n.review_date_1
     },
     {
-      'name': 'محمد الخالد',
+      'name': l10n.review_name_1,
       'rating': 4.0,
-      'comment': 'جودة ممتازة، لكن التغليف كان يمكن أن يكون أفضل.',
-      'date': 'منذ أسبوع'
+      'comment': l10n.review_text_2,
+      'date': l10n.review_date_2
     },
     {
-      'name': 'دانه سعد',
+      'name': l10n.review_name_2,
       'rating': 5.0,
-      'comment': 'أحببته! خطوة رائعة للمحافظة على البيئة شكراً نماء.',
-      'date': 'منذ شهر'
+      'comment': l10n.review_text_3,
+      'date': l10n.review_date_3
     },
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
     final p = widget.product;
+    final reviews = _getReviews(l10n);
 
     // [FIX #1] تغيير cast من int إلى num لتجنب crash من Firestore
     final price = (p['price'] as num).toDouble() * (1 - widget.discount);
@@ -78,15 +83,15 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white.withOpacity(0.15),
+                shape: BoxShape.circle,
               ),
               child: Image.asset('assets/images/logo_namaa.png',
-                  width:50,  height: 45),
+                  width:50,  height: 50),
             ),
             const SizedBox(width: 10),
-            const Text('نماء',
-                style: TextStyle(
+            Text(l10n.arabic == "العربية" ? "نماء" : "Namaa",
+                style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
@@ -126,7 +131,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '${p['emoji']} منتجات صديقة للبيئة',
+                    isAr ? '${p['emoji']} منتجات صديقة للبيئة' : '${p['emoji']} Eco-friendly products',
                     style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 11,
@@ -154,13 +159,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         if (widget.discount > 0)
-                          Text('${p['price']} د.أ',
+                          Text(isAr ? '${p['price']} د.أ' : '${p['price']} JOD',
                               style: const TextStyle(
                                   fontFamily: 'Cairo',
                                   fontSize: 14,
                                   color: Color(0xFF9E9E9E),
                                   decoration: TextDecoration.lineThrough)),
-                        Text('${price.toStringAsFixed(2)} د.أ',
+                        Text(isAr ? '${price.toStringAsFixed(2)} د.أ' : '${price.toStringAsFixed(2)} JOD',
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 24,
@@ -189,8 +194,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 13)),
                     const SizedBox(width: 4),
-                    const Text('(128 تقييم)',
-                        style: TextStyle(
+                    Text(isAr ? '(128 تقييم)' : '(128 reviews)',
+                        style: const TextStyle(
                             color: Color(0xFF616161),
                             fontSize: 12,
                             fontFamily: 'Cairo')),
@@ -200,8 +205,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 const SizedBox(height: 24),
 
                 // ── الوصف ──
-                const Text('وصف المنتج',
-                    style: TextStyle(
+                Text(isAr ? 'وصف المنتج' : 'Product Description',
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 18,
                         fontWeight: FontWeight.w800)),
@@ -230,7 +235,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'بشرائك لهذا المنتج، أنت تساهم في تقليل ${p['plastic']} من النفايات البلاستيكية في البيئة!',
+                            isAr ? 'بشرائك لهذا المنتج، أنت تساهم في تقليل ${p['plastic']} من النفايات البلاستيكية في البيئة!' : 'By buying this product, you contribute to reducing ${p['plastic']} of plastic waste in the environment!',
                             style: const TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 13,
@@ -248,8 +253,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 const SizedBox(height: 16),
 
                 // ── التعليقات ──
-                const Text('تقييمات العملاء',
-                    style: TextStyle(
+                Text(isAr ? 'تقييمات العملاء' : 'Customer Reviews',
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 18,
                         fontWeight: FontWeight.w800)),
@@ -296,8 +301,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 const SizedBox(height: 16),
 
                 // ── منتجات مقترحة ──
-                const Text('منتجات قد تعجبك',
-                    style: TextStyle(
+                Text(isAr ? 'منتجات قد تعجبك' : 'Products you may like',
+                    style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 18,
                         fontWeight: FontWeight.w800)),
@@ -345,7 +350,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                       fontFamily: 'Cairo',
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700)),
-                              Text('${item['price']} د.أ',
+                              Text(isAr ? '${item['price']} د.أ' : '${item['price']} JOD',
                                   style: const TextStyle(
                                       fontFamily: 'Cairo',
                                       fontSize: 13,
@@ -407,9 +412,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         setState(() => quantity++);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('وصلت للحد الأقصى المتاح من المخزون',
-                                style: TextStyle(fontFamily: 'Cairo')),
+                          SnackBar(
+                            content: Text(isAr ? 'وصلت للحد الأقصى المتاح من المخزون' : 'Reached maximum available stock',
+                                style: const TextStyle(fontFamily: 'Cairo')),
                             backgroundColor: Colors.orange,
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -431,9 +436,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   // [FIX #6] تحقق نهائي قبل الإضافة
                   if (quantity > stock) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('الكمية المطلوبة تتجاوز المخزون المتاح',
-                            style: TextStyle(fontFamily: 'Cairo')),
+                      SnackBar(
+                        content: Text(isAr ? 'الكمية المطلوبة تتجاوز المخزون المتاح' : 'Quantity requested exceeds available stock',
+                            style: const TextStyle(fontFamily: 'Cairo')),
                         backgroundColor: Colors.red,
                         behavior: SnackBarBehavior.floating,
                       ),
@@ -446,7 +451,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
-                          'تم إضافة $quantity ${p['name']} إلى السلة 🛒',
+                          isAr ? 'تم إضافة $quantity ${p['name']} إلى السلة 🛒' : 'Added $quantity ${p['name']} to cart 🛒',
                           style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontWeight: FontWeight.w700)),
@@ -464,9 +469,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       borderRadius: BorderRadius.circular(14)),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'إضافة للسلة',
-                  style: TextStyle(
+                child: Text(
+                  isAr ? 'إضافة للسلة' : 'Add to cart',
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 16,
                       fontWeight: FontWeight.w800,

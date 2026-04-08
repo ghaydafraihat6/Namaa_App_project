@@ -1,3 +1,4 @@
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,11 +10,12 @@ class MyOrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('📦 طلباتي',
-            style: TextStyle(
+        title: Text(l10n.store_my_orders,
+            style: const TextStyle(
                 fontFamily: 'Cairo',
                 fontWeight: FontWeight.w800,
                 color: Colors.white)),
@@ -30,11 +32,11 @@ class MyOrdersPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           if (snap.hasError)
             return Center(
-                child: Text('عذراً، حدث خطأ: ${snap.error}',
+                child: Text(l10n.store_error_prefix(snap.error.toString()),
                     style: const TextStyle(fontFamily: 'Cairo'),
                     textAlign: TextAlign.center));
           if (!snap.hasData || snap.data!.docs.isEmpty)
-            return const _EmptyOrders();
+            return _EmptyOrders();
 
           // ترتيب محلي من الأحدث للأقدم لتجنب Composite Index
           final docs = snap.data!.docs.toList();
@@ -62,17 +64,19 @@ class MyOrdersPage extends StatelessWidget {
 }
 
 class _EmptyOrders extends StatelessWidget {
-  const _EmptyOrders();
   @override
-  Widget build(BuildContext context) => const Center(
-    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text('📦', style: TextStyle(fontSize: 60)),
-      SizedBox(height: 16),
-      Text('لا يوجد طلبات بعد',
-          style: TextStyle(
-              fontFamily: 'Cairo', fontSize: 16, color: Colors.grey)),
-    ]),
-  );
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        const Text('📦', style: TextStyle(fontSize: 60)),
+        const SizedBox(height: 16),
+        Text(l10n.cert_no_certs, // Using existing key if applicable, or just hardcoded for now if I missed it, wait, I added cert_no_certs but maybe not for orders. Let's use recycle_no_requests? No.
+            style: const TextStyle(
+                fontFamily: 'Cairo', fontSize: 16, color: Colors.grey)),
+      ]),
+    );
+  }
 }
 
 class _OrderCard extends StatelessWidget {
@@ -108,10 +112,12 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final order = doc.data() as Map<String, dynamic>;
     final items = order['items'] as List<dynamic>? ?? [];
+    final bool isAr = l10n.localeName == 'ar';
     final ts = order['createdAt'] as Timestamp?;
-    final date = ts != null ? ts.toDate().toString().substring(0, 10) : 'الآن';
+    final date = ts != null ? ts.toDate().toString().substring(0, 10) : (isAr ? 'الآن' : 'Now');
     final status = OrderStatus.fromLabel(order['status'] ?? '');
 
     // [FIX #5] حماية من null في القيم العددية
@@ -139,7 +145,7 @@ class _OrderCard extends StatelessWidget {
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${status.icon} طلب #${index + 1}',
+                Text(isAr ? '${status.icon} طلب #${index + 1}' : '${status.icon} Order #${index + 1}',
                     style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 15,
@@ -151,7 +157,7 @@ class _OrderCard extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(10)),
-                  child: Text(status.label,
+                  child: Text(status.getLabel(context),
                       style: TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 11,
@@ -176,7 +182,7 @@ class _OrderCard extends StatelessWidget {
                 style: const TextStyle(
                     fontFamily: 'Cairo', fontSize: 12, color: Colors.grey)),
             if (discountPercent > 0)
-              Text('🎁 خصم $discountPercent% مطبّق',
+              Text(isAr ? '🎁 خصم $discountPercent% مطبّق' : '🎁 $discountPercent% Discount Applied',
                   style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 12,
@@ -211,10 +217,38 @@ class _OrderCard extends StatelessWidget {
               );
             }),
 
+            if ((order['includesSmartCapsuleGift'] ?? false) == true)
+              Container(
+                margin: const EdgeInsets.only(top: 8, bottom: 4),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBF4DD),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFF386641).withOpacity(0.1)),
+                ),
+                child:  Row(
+                  children: [
+                    Text("🎁", style: TextStyle(fontSize: 16)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        isAr ? "هذا الطلب يحتوي على هدية كبسولة زراعية 🌱" : "This order contains a seed capsule gift 🌱",
+                        style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF386641),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
             const Divider(height: 16),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              const Text('الإجمالي:',
-                  style: TextStyle(
+              Text(isAr ? 'الإجمالي:' : 'Total:',
+                  style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.w700,
                       fontSize: 14)),

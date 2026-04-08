@@ -31,12 +31,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _sectionTitle('تنبيهات المهام'),
+          _sectionTitle(l10n.notif_tasks_title),
           _switchCard(
             icon: Icons.task_alt,
             color: const Color(0xFF386641),
-            title: 'تذكير المهام اليومية',
-            subtitle: 'تذكير يومي لإكمال مهامك البيئية',
+            title: l10n.notif_tasks_remind_title,
+            subtitle: l10n.notif_tasks_remind_sub,
             value: _taskReminders,
             onChanged: (v) => setState(() => _taskReminders = v),
           ),
@@ -44,19 +44,19 @@ class _NotificationsPageState extends State<NotificationsPage> {
           _switchCard(
             icon: Icons.emoji_events_outlined,
             color: const Color(0xFFF4A261),
-            title: 'تنبيهات التحديات',
-            subtitle: 'إشعار عند انتهاء التحديات الأسبوعية',
+            title: l10n.notif_challenge_title,
+            subtitle: l10n.notif_challenge_sub,
             value: _challengeAlerts,
             onChanged: (v) => setState(() => _challengeAlerts = v),
           ),
 
           const SizedBox(height: 16),
-          _sectionTitle('تنبيهات النقاط'),
+          _sectionTitle(l10n.notif_points_title),
           _switchCard(
             icon: Icons.stars_outlined,
             color: const Color(0xFF2196F3),
-            title: 'تحديثات النقاط',
-            subtitle: 'إشعار عند اكتساب نقاط جديدة',
+            title: l10n.notif_points_update_title,
+            subtitle: l10n.notif_points_update_sub,
             value: _pointsUpdates,
             onChanged: (v) => setState(() => _pointsUpdates = v),
           ),
@@ -64,8 +64,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
           _switchCard(
             icon: Icons.bar_chart,
             color: const Color(0xFF52B788),
-            title: 'التقرير الأسبوعي',
-            subtitle: 'ملخص أسبوعي لنشاطك البيئي',
+            title: l10n.notif_weekly_report_title,
+            subtitle: l10n.notif_weekly_report_sub,
             value: _weeklyReport,
             onChanged: (v) => setState(() => _weeklyReport = v),
           ),

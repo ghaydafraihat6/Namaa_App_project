@@ -8,15 +8,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class CertificatePage extends StatefulWidget {
   final String userName;
   final int treeNumber;
+  final String location;
 
   const CertificatePage({
     super.key,
     required this.userName,
     required this.treeNumber,
+    required this.location,
   });
 
   @override
@@ -61,38 +64,47 @@ class _CertificatePageState extends State<CertificatePage> {
   String _certBody(int treeNumber, String location, String docId) {
     final random = Random(docId.hashCode);
 
+    // إضافة الوصف المخصص للمكان للحصول على محتوى مختلف تماماً لكل موقع 
+    String locationDescription = "لدعم البيئة والاستدامة 🌍";
+    if (location.contains("عجلون") || location.toLowerCase().contains("ajloun")) {
+      locationDescription = "لحماية التنوع الحيوي في غابات عجلون 🌲";
+    } else if (location.contains("دبين") || location.toLowerCase().contains("dibeen")) {
+      locationDescription = "لدعم الحياة البرية في غابات دبين 🌿";
+    } else if (location.contains("برقش") || location.toLowerCase().contains("berqesh")) {
+      locationDescription = "للحفاظ على الطبيعة في غابة برقش 🌳";
+    } else if (location.contains("اليوبيل") || location.toLowerCase().contains("jubilee")) {
+      locationDescription = "لتعزيز الاستدامة في غابات اليوبيل 🌱";
+    } else {
+      locationDescription = "تعزيزاً للبيئة الخضراء في $location 🌍";
+    }
+
     final messages = {
       1: [
-        'بداية رائعة 🌱\nخطوتك الأولى نحو بيئة أفضل في $location',
-        'إنجازك الأول يستحق الفخر 👏\nشكراً لمساهمتك في تخضير $location',
-        'رحلتك بدأت 🌿\nوأثرك الأخضر وصل إلى $location'
+        'بداية رائعة 🌱\nخطوتك الأولى نحو بيئة أفضل\n$locationDescription',
+        'إنجازك الأول يستحق الفخر 👏\nشكراً لمساهمتك $locationDescription',
       ],
       2: [
-        'استمرارية مميزة 🌳\nأثر واضح في $location',
-        'روحك البيئية تتطور 💚\nمساهمة جميلة في $location',
-        'خطوة ثانية قوية 👏\nالطبيعة في $location تشكرك'
+        'استمرارية مميزة 🌳\nأثر واضح ومساهمة جميلة\n$locationDescription',
+        'روحك البيئية تتطور 💚\nالطبيعة تشكرك $locationDescription',
       ],
       3: [
-        'إنجاز رائع 🌿\nأصبحت جزء من التغيير في $location',
-        'إصرارك ملهم 🔥\nأثرك الأخضر يمتد في $location',
-        'مرحلة متقدمة 💪\nتأثيرك واضح في $location'
+        'إنجاز رائع 🌿\nأصبحت جزء من التغيير\n$locationDescription',
+        'إصرارك ملهم 🔥\nتأثيرك واضح $locationDescription',
       ],
       4: [
-        'مستوى أسطوري 🏆\nبصمة قوية في $location',
-        'إنجاز نادر 💎\nأنت تصنع فرق حقيقي في $location',
-        'قوة وتأثير 🌍\nالطبيعة تزدهر بفضلك في $location'
+        'مستوى أسطوري 🏆\nبصمة قوية\n$locationDescription',
+        'إنجاز نادر 💎\nأنت تصنع فرق حقيقي $locationDescription',
       ],
       5: [
-        'القمة 👑\nأنت من أعمدة الاستدامة في $location',
-        'إنجاز عظيم 🌟\nبصمتك خالدة في $location',
-        'أسطورة بيئية 🏆\nأثرك لا يُنسى في $location'
+        'القمة 👑\nأنت من أعمدة الاستدامة\n$locationDescription',
+        'إنجاز عظيم 🌟\nبصمتك خالدة $locationDescription',
       ]
     };
 
     final list = messages[treeNumber] ??
         [
-          'رحلة مستمرة 🌍\nإنجاز جديد في $location',
-          'تقدم رائع 💪\nأثر مستمر في $location'
+          'رحلة مستمرة 🌍\nإنجاز جديد $locationDescription',
+          'تقدم رائع 💪\nأثر مستمر $locationDescription'
         ];
 
     return list[random.nextInt(list.length)];
@@ -124,10 +136,8 @@ class _CertificatePageState extends State<CertificatePage> {
     }
   }
 
-  /// اختيار موقع عشوائي بناءً على رقم الوثيقة (للحفاظ على الاتساق مع أماكن زراعة الأشجار)
   String _randomLocation(String docId) {
     final random = Random(docId.hashCode);
-
     final locations = [
       'محمية غابات عجلون 🌲',
       'غابات دبين الايكولوجية 🌿',
@@ -140,8 +150,41 @@ class _CertificatePageState extends State<CertificatePage> {
       'غابات اشتفينا الجميلة 🌿',
       'متنزه غمدان الوطني 🌳',
     ];
-
     return locations[random.nextInt(locations.length)];
+  }
+
+  String _getLocalizedLocation(String location, AppLocalizations l10n) {
+    if (location.contains('عجلون')) return l10n.loc_ajloun;
+    if (location.contains('دبين')) return l10n.loc_dibeen;
+    if (location.contains('برقش')) return l10n.loc_berqesh;
+    if (location.contains('وصفي')) return l10n.loc_wasfi;
+    if (location.contains('اليوبيل')) return l10n.loc_jubilee;
+    if (location.contains('ملكا')) return l10n.loc_malka;
+    if (location.contains('الكورة')) return l10n.loc_koura;
+    if (location.contains('فيصل')) return l10n.loc_faisal;
+    if (location.contains('اشتفينا')) return l10n.loc_ishteafina;
+    if (location.contains('غمدان')) return l10n.loc_ghumdan;
+    return location;
+  }
+
+  String _contentByLocation(String location) {
+    if (location.contains("عجلون")) {
+      return "تمت زراعة شجرتك في غابات عجلون لحماية التنوع الحيوي 🌲";
+    }
+
+    if (location.contains("دبين")) {
+      return "تمت زراعة شجرتك في غابات دبين لدعم الحياة البرية 🌿";
+    }
+
+    if (location.contains("برقش")) {
+      return "تمت زراعة شجرتك في غابة برقش للحفاظ على الطبيعة 🌳";
+    }
+
+    if (location.contains("اليوبيل")) {
+      return "تمت زراعة شجرتك في غابات اليوبيل لتعزيز الاستدامة 🌱";
+    }
+
+    return "تمت زراعة شجرتك لدعم البيئة والاستدامة 🌍";
   }
 
   /// التقاط صورة للشهادة ومشاركتها
@@ -176,12 +219,14 @@ class _CertificatePageState extends State<CertificatePage> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = l10n.arabic == "العربية";
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: const Text('🏅 شهاداتي',
-            style: TextStyle(
+        title: Text(l10n.cert_my_certs,
+            style: const TextStyle(
                 fontFamily: 'Cairo', fontWeight: FontWeight.w800, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -219,7 +264,8 @@ class _CertificatePageState extends State<CertificatePage> {
           if (!_hasJumpedToInitial && docs.isNotEmpty && widget.treeNumber > 0) {
             final targetIndex = docs.indexWhere((doc) {
               final d = doc.data() as Map<String, dynamic>;
-              final tNum = d['treeNumber'] ?? d['certificateNumber'];
+              final idx = docs.indexOf(doc);
+              final tNum = d['treeNumber'] ?? d['certificateNumber'] ?? (docs.length - idx);
               return tNum == widget.treeNumber;
             });
 
@@ -296,7 +342,9 @@ class _CertificatePageState extends State<CertificatePage> {
                   itemBuilder: (context, index) {
                     final data = docs[index].data() as Map<String, dynamic>;
                     final docId = docs[index].id;
-                    final location = data['plantedLocation'] ?? _randomLocation(docId);
+
+                    final rawLocation = data['plantedLocation'] ?? _randomLocation(docId);
+                    final location = _getLocalizedLocation(rawLocation, l10n);
 
                     final completedAt = data['treeCompletedAt'];
                     String dateStr = '';
@@ -311,26 +359,28 @@ class _CertificatePageState extends State<CertificatePage> {
                     final body = _certBody(tNumber, location, docId);
                     final label = _certNumberLabel(tNumber, docId);
 
+                    _boundaryKeys.putIfAbsent(index, () => GlobalKey());
+
                     return SingleChildScrollView(
-                      key: ValueKey('cert_${docs[index].id}'), // إجبار التحديث بناءً على معرف الوثيقة
+                      key: ValueKey('cert_${docs[index].id}'),
                       padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                      child: Column(children: [
-                        // ── رقم الشهادة ──
-                        Text(
-                          label,
-                          style: TextStyle(
+                      child: Column(
+                        children: [
+                          Text(
+                            label,
+                            style: TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
-                              color: accent),
-                        ),
-                        const SizedBox(height: 12),
+                              color: accent,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
 
-                        // ── كارد الشهادة ──
-                        RepaintBoundary(
-                          key: ValueKey(docs[index].id), // استخدام المعرف الفريد لضمان التحديث
-                          child: Container(
-                            key: Key('cert_card_${docs[index].id}'), 
+                          RepaintBoundary(
+                            key: _boundaryKeys[index],
+                            child: Container(
+                              key: Key('cert_card_${docs[index].id}'),
                             width: double.infinity,
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
@@ -370,7 +420,7 @@ class _CertificatePageState extends State<CertificatePage> {
 
                               // اسم التطبيق
                               Text(
-                                'تطبيق نماء 🌱',
+                                '${l10n.cert_app_name} ',
                                 style: TextStyle(
                                     fontFamily: 'Cairo',
                                     fontSize: 15,
@@ -381,15 +431,15 @@ class _CertificatePageState extends State<CertificatePage> {
                               const SizedBox(height: 6),
 
                               // عنوان الشهادة
-                                Text(
-                                  'شهادة تقدير',
-                                  style: TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontSize: 20, // كبر الخط
-                                      fontWeight: FontWeight.w800, // غمق الخط
-                                      color: const Color(0xFF424242), // لون غامق وواضح
-                                      letterSpacing: 4),
-                                ),
+                              Text(
+                                'شهادة تقدير',
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 20, // كبر الخط
+                                    fontWeight: FontWeight.w800, // غمق الخط
+                                    color: const Color(0xFF424242), // لون غامق وواضح
+                                    letterSpacing: 4),
+                              ),
 
                               const SizedBox(height: 6),
 
@@ -410,9 +460,9 @@ class _CertificatePageState extends State<CertificatePage> {
 
                               const SizedBox(height: 14),
 
-                              const Text(
-                                'تُمنح هذه الشهادة إلى',
-                                style: TextStyle(
+                              Text(
+                                isArabic ? 'تُمنح هذه الشهادة إلى' : 'This certificate is proudly presented to',
+                                style: const TextStyle(
                                     fontFamily: 'Cairo', fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w500),
                               ),
 
@@ -437,7 +487,7 @@ class _CertificatePageState extends State<CertificatePage> {
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: Text(
-                                  body,
+                                  _certBody(tNumber, location, docId),
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontFamily: 'Cairo',
@@ -477,14 +527,14 @@ class _CertificatePageState extends State<CertificatePage> {
 
                               const SizedBox(height: 18),
 
-                                // إحصائيات
-                                Row(children: [
-                                  _statBox('500+', 'نقطة', '⭐', accent),
-                                  const SizedBox(width: 8),
-                                   _statBox('#$tNumber', 'رقم الشجرة', '🌲', accent),
-                                  const SizedBox(width: 8),
-                                  _statBox('إنجاز', 'مستوى', '🏆', accent),
-                                ]),
+                              // إحصائيات
+                              Row(children: [
+                                _statBox('500+', 'نقطة', '⭐', accent),
+                                const SizedBox(width: 8),
+                                _statBox('#$tNumber', 'رقم الشجرة', '🌲', accent),
+                                const SizedBox(width: 8),
+                                _statBox('إنجاز', 'مستوى', '🏆', accent),
+                              ]),
 
                               const SizedBox(height: 18),
 
@@ -503,7 +553,7 @@ class _CertificatePageState extends State<CertificatePage> {
                                         const Text('التاريخ',
                                             style: TextStyle(
                                                 fontFamily: 'Cairo',
-                                                fontSize: 11,
+                                                fontSize: 15,
                                                 color: Colors.grey)),
                                         Text(
                                           dateStr.isNotEmpty ? dateStr : '—',
@@ -520,7 +570,7 @@ class _CertificatePageState extends State<CertificatePage> {
                                         const Text('تطبيق نماء',
                                             style: TextStyle(
                                                 fontFamily: 'Cairo',
-                                                fontSize: 11,
+                                                fontSize: 15,
                                                 color: Colors.grey)),
                                         Text(
                                           'Namaa App 🌱',
@@ -607,8 +657,8 @@ class _CertificatePageState extends State<CertificatePage> {
                         IconButton(
                           onPressed: _currentPage > 0
                               ? () => _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut)
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut)
                               : null,
                           icon: const Icon(Icons.arrow_back_ios_new_rounded),
                           color: _currentPage > 0
@@ -627,8 +677,8 @@ class _CertificatePageState extends State<CertificatePage> {
                         IconButton(
                           onPressed: _currentPage < docs.length - 1
                               ? () => _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut)
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut)
                               : null,
                           icon: const Icon(Icons.arrow_forward_ios_rounded),
                           color: _currentPage < docs.length - 1
@@ -647,38 +697,38 @@ class _CertificatePageState extends State<CertificatePage> {
   }
 
   Widget _divider(Color accent) => Row(children: [
-        Expanded(
-            child: Container(
-                height: 1, color: accent.withAlpha(50))),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text('🌿', style: TextStyle(fontSize: 16, color: accent)),
-        ),
-        Expanded(
-            child: Container(
-                height: 1, color: accent.withAlpha(50))),
-      ]);
+    Expanded(
+        child: Container(
+            height: 1, color: accent.withAlpha(50))),
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Text('🌿', style: TextStyle(fontSize: 16, color: accent)),
+    ),
+    Expanded(
+        child: Container(
+            height: 1, color: accent.withAlpha(50))),
+  ]);
 
   Widget _statBox(String val, String lbl, String icon, Color accent) => Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: accent.withAlpha(15),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(children: [
-            Text(icon, style: const TextStyle(fontSize: 20)),
-            Text(val,
-                style: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: accent)),
-            Text(lbl,
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold)),
-          ]),
-        ),
-      );
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: accent.withAlpha(15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(children: [
+        Text(icon, style: const TextStyle(fontSize: 20)),
+        Text(val,
+            style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: accent)),
+        Text(lbl,
+            textAlign: TextAlign.center,
+            style:
+            const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold)),
+      ]),
+    ),
+  );
 }

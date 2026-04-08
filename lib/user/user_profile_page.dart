@@ -52,7 +52,7 @@ class ProfilePage extends StatelessWidget {
         final data =
             snapshot.data?.data() as Map<String, dynamic>? ?? {};
         final int pts      = data['points'] ?? 0;
-        final String name  = data['fullName'] ?? data['name'] ?? 'مستخدم';
+        final String name  = data['fullName'] ?? data['name'] ?? l10n.user_profile_user;
         final String email = data['email'] ?? user.email ?? '';
         final int lvl      = _getLevel(pts);
         final String? photoUrl = data['photoUrl'];

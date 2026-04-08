@@ -98,6 +98,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -113,7 +114,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(Localizations.localeOf(context).languageCode == 'ar' ? '✅ تم حفظ التغييرات بنجاح' : '✅ Changes saved successfully'),
+          content: Text(Localizations.localeOf(context).languageCode == 'ar' ? l10n.acc_changes_saved : '✅ Changes saved successfully'),
           backgroundColor: _green,
           behavior: SnackBarBehavior.floating,
         ));
@@ -122,7 +123,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(Localizations.localeOf(context).languageCode == 'ar' ? 'حدث خطأ: $e' : 'Error: $e'),
+          content: Text(Localizations.localeOf(context).languageCode == 'ar' ? l10n.acc_error_prefix(e.toString()) : 'Error: $e'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ));
@@ -133,22 +134,23 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Future<void> _changePassword() async {
+    final l10n = AppLocalizations.of(context)!;
     final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     final current = _currentPassCtrl.text.trim();
     final newPass = _newPassCtrl.text.trim();
     final confirm = _confirmPassCtrl.text.trim();
 
     if (current.isEmpty || newPass.isEmpty || confirm.isEmpty) {
-      _snack(isAr ? 'يرجى ملء جميع حقول كلمة المرور' : 'Please fill all password fields', Colors.orange);
+      _snack(isAr ? l10n.acc_fill_passwords : 'Please fill all password fields', Colors.orange);
       return;
     }
     if (newPass != confirm) {
-      _snack(isAr ? 'كلمتا المرور غير متطابقتين' : 'Passwords do not match', Colors.red);
+      _snack(isAr ? l10n.acc_password_mismatch : 'Passwords do not match', Colors.red);
       return;
     }
     if (!_passwordRegex.hasMatch(newPass)) {
       _snack(
-          isAr ? 'كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل\nوتشمل: حرف كبير، صغير، رقم، ورمز خاص' : 'Password must be at least 8 chars,\nincluding upper, lower, number and symbol',
+          isAr ? l10n.acc_password_req : 'Password must be at least 8 chars,\nincluding upper, lower, number and symbol',
           Colors.orange);
       return;
     }
@@ -255,6 +257,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   }
 
   Future<void> _changeEmail() async {
+    final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.email == null) return;
 
@@ -335,7 +338,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         _snack(isAr ? 'خطأ: ${e.message}' : 'Error: ${e.message}', Colors.red);
       }
     } catch (e) {
-      _snack(isAr ? 'حدث خطأ: $e' : 'Error: $e', Colors.red);
+      _snack(isAr ? l10n.acc_error_prefix(e.toString()) : 'Error: $e', Colors.red);
     }
   }
 
@@ -438,7 +441,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n =         AppLocalizations.of(context)!;
     final bool isAr = l10n.localeName == 'ar';
     final user = FirebaseAuth.instance.currentUser;
     final name  = _nameCtrl.text;
@@ -489,7 +492,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 _avatar(name, email, _photoUrl),
                 const SizedBox(height: 4),
                 Text(
-                  name.isNotEmpty ? name : 'اسمك',
+                  name.isNotEmpty ? name : (isAr ? 'اسمك' : 'Your Name'),
                   style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 20,
@@ -512,7 +515,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
             // ── Admin Dashboard (Visible only via Firebase isAdmin field) ──
             if (_isAdmin) 
-              _adminDashboardCard(),
+              _adminDashboardCard(isAr),
 
             // ── قسم المعلومات الشخصية ──
             _sectionLabel(isAr ? 'المعلومات الشخصية' : 'Personal Information'),
@@ -952,62 +955,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     );
   }
 
-  // ── حقل للعرض فقط ──
-  Widget _readonlyField({
-    required String label,
-    required String value,
-    required IconData icon,
-    Color iconColor = _green,
-  }) =>
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withAlpha(13), blurRadius: 8)
-          ],
-        ),
-        child: Row(children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: iconColor.withAlpha(25),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 11,
-                      color: Colors.grey)),
-              Text(value,
-                  style: const TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1B2E1F))),
-            ]),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-                color: _lightGreen, borderRadius: BorderRadius.circular(8)),
-            child: const Text('لا يمكن تغييره',
-                style: TextStyle(
-                    fontFamily: 'Cairo',
-                    fontSize: 10,
-                    color: _green)),
-          ),
-        ]),
-      );
 
-  Widget _adminDashboardCard() {
+
+  Widget _adminDashboardCard(bool isAr) {
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
@@ -1024,15 +974,15 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('لوحة تحكم المسؤول', style: TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                Text('لديك طلبات مراجعة معلقة!', style: TextStyle(fontFamily: 'Cairo', color: Colors.white.withAlpha(180), fontSize: 12)),
+                Text(isAr ? 'لوحة تحكم المسؤول' : 'Admin Dashboard', style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(isAr ? 'لديك طلبات مراجعة معلقة!' : 'You have pending review requests!', style: TextStyle(fontFamily: 'Cairo', color: Colors.white.withAlpha(180), fontSize: 12)),
               ],
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => const TaskApprovalsPage())),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: _green, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-            child: const Text('دخول', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+            child: Text(isAr ? 'دخول' : 'Enter', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
           ),
         ],
       ),

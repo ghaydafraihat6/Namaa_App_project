@@ -26,13 +26,25 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   final Color darkGreen = const Color(0xFF1B4332);
 
   final List<Map<String, dynamic>> _materials = [
-    {'name': 'بلاستيك', 'emoji': '🧴', 'pts': 20, 'selected': false},
-    {'name': 'معادن', 'emoji': '🔩', 'pts': 30, 'selected': false},
-    {'name': 'ورق', 'emoji': '📦', 'pts': 15, 'selected': false},
-    {'name': 'زجاج', 'emoji': '🪟', 'pts': 20, 'selected': false},
-    {'name': 'إلكترونيات', 'emoji': '💻', 'pts': 50, 'selected': false},
-    {'name': 'بطاريات', 'emoji': '🔋', 'pts': 40, 'selected': false},
+    {'key': 'plastic', 'emoji': '🧴', 'pts': 20, 'selected': false},
+    {'key': 'metal', 'emoji': '🔩', 'pts': 30, 'selected': false},
+    {'key': 'paper', 'emoji': '📦', 'pts': 15, 'selected': false},
+    {'key': 'glass', 'emoji': '🪟', 'pts': 20, 'selected': false},
+    {'key': 'electronics', 'emoji': '💻', 'pts': 50, 'selected': false},
+    {'key': 'batteries', 'emoji': '🔋', 'pts': 40, 'selected': false},
   ];
+
+  String _getName(String key, AppLocalizations l10n) {
+    switch(key) {
+      case 'plastic': return l10n.recycle_plastic;
+      case 'metal': return l10n.recycle_metal;
+      case 'paper': return l10n.recycle_paper;
+      case 'glass': return l10n.recycle_glass;
+      case 'electronics': return l10n.recycle_electronics;
+      case 'batteries': return l10n.recycle_batteries;
+      default: return key;
+    }
+  }
 
   File? _imageFile;
   bool _isProcessing = false;
@@ -53,7 +65,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
       
       final existingMats = List<dynamic>.from(widget.editData!['materials'] ?? []);
       for (var mat in _materials) {
-        if (existingMats.contains(mat['name'])) mat['selected'] = true;
+        if (existingMats.contains(mat['key'])) mat['selected'] = true;
       }
 
       if (widget.editData!['location'] != null) {
@@ -65,17 +77,18 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
     }
   }
 
-  String _getTranslatedMaterial(String arName, BuildContext context) {
-    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
-    if (isAr) return arName;
-    switch (arName) {
-      case 'بلاستيك': return 'Plastic';
-      case 'معادن': return 'Metals';
-      case 'ورق': return 'Paper';
-      case 'زجاج': return 'Glass';
-      case 'إلكترونيات': return 'Electronics';
-      case 'بطاريات': return 'Batteries';
-      default: return arName;
+  String _getTranslatedMaterial(String key, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
+    if (isAr) return _getName(key, l10n);
+    switch (key) {
+      case 'plastic': return 'Plastic';
+      case 'metal': return 'Metals';
+      case 'paper': return 'Paper';
+      case 'glass': return 'Glass';
+      case 'electronics': return 'Electronics';
+      case 'batteries': return 'Batteries';
+      default: return key;
     }
   }
 
@@ -102,30 +115,31 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   }
 
   Future<void> _runAIAnalysis(File file) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isAnalyzing = true);
     try {
       final result = await MaterialClassifier.detect(file);
       if (result.confidence > 0.6) {
         // خريطة لربط الـ labels بالأسماء العربية في القائمة
         final labelMap = {
-          'plastic': 'بلاستيك',
-          'metal': 'معادن',
-          'paper': 'ورق',
-          'glass': 'زجاج',
-          'electronics': 'إلكترونيات',
-          'batteries': 'بطاريات',
+          'plastic': 'plastic',
+          'metal': 'metal',
+          'paper': 'paper',
+          'glass': 'glass',
+          'electronics': 'electronics',
+          'batteries': 'batteries',
         };
 
-        final arabicName = labelMap[result.detected.toLowerCase()];
-        if (arabicName != null) {
+        final materialKey = labelMap[result.detected.toLowerCase()];
+        if (materialKey != null) {
           setState(() {
             for (var m in _materials) {
-              m['selected'] = (m['name'] == arabicName);
+              m['selected'] = (m['key'] == materialKey);
             }
-            _detectedLabel = arabicName;
+            _detectedLabel = materialKey;
           });
-          final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
-          final String translatedName = _getTranslatedMaterial(arabicName, context);
+          final bool isAr = l10n.localeName == 'ar';
+          final String translatedName = _getTranslatedMaterial(materialKey, context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(isAr ? '✨ تم التعرف على المادة: $translatedName (${(result.confidence * 100).toInt()}%)' : '✨ Material recognized: $translatedName (${(result.confidence * 100).toInt()}%)', style: const TextStyle(fontFamily: 'Cairo')),
@@ -187,7 +201,8 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   // تم نقل منطق الرفع لـ StorageService
 
   Future<void> _submitRequest() async {
-    final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
     if (_totalPoints == 0 || (_imageFile == null && _existingImageUrl == null) || _lat == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "أكمل البيانات أولاً" : "Please complete all fields first")));
       return;
@@ -200,7 +215,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
       if (imageUrl != null) {
         final payload = {
           'userId': FirebaseAuth.instance.currentUser?.uid,
-          'materials': _materials.where((m) => m['selected']).map((m) => m['name']).toList(),
+          'materials': _materials.where((m) => m['selected']).map((m) => m['key']).toList(),
           'points': _totalPoints,
           'imageUrl': imageUrl,
           'notes': _notesCtrl.text.trim(),
@@ -226,11 +241,11 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
             // إرسال إشعار
             final matNames = _materials
                 .where((m) => m['selected'] == true)
-                .map((m) => m['name'])
+                .map((m) => _getName(m['key'], l10n))
                 .join(' و ');
             await NotificationService.send(
-              title: '♻️ طلب تدوير جديد!',
-              body: 'تم إرسال طلب تدوير $matNames وحصلت على $_totalPoints نقطة ⭐',
+              title: isAr ? '♻️ طلب تدوير جديد!' : '♻️ New Recycle Request!',
+              body: isAr ? 'تم إرسال طلب تدوير $matNames وحصلت على $_totalPoints نقطة ⭐' : 'Recycle request for $matNames submitted, you earned $_totalPoints pts ⭐',
               type: 'recycle',
             );
           }
@@ -256,7 +271,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   @override
   Widget build(BuildContext context) {
     final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final String title = l10n != null ? l10n.recycle_title : (isAr ? "طلب تجميع مواد ♻️" : "Recycle Request ♻️");
     
     return Scaffold(
@@ -272,7 +287,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
             itemCount: _materials.length,
             itemBuilder: (ctx, i) {
               final m = _materials[i];
-              return GestureDetector(
+          return GestureDetector(
                 onTap: () {
                   setState(() {
                     for (var mat in _materials) {
@@ -285,7 +300,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
                   decoration: BoxDecoration(color: m['selected'] ? primaryGreen : Colors.white, borderRadius: BorderRadius.circular(15), border: Border.all(color: Colors.grey.shade300)),
                   child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                     Text(m['emoji'], style: const TextStyle(fontSize: 24)),
-                    Text(_getTranslatedMaterial(m['name'], context), style: TextStyle(color: m['selected'] ? Colors.white : darkGreen, fontSize: 12, fontFamily: 'Cairo')),
+                    Text(_getName(m['key'], l10n), style: TextStyle(color: m['selected'] ? Colors.white : darkGreen, fontSize: 12, fontFamily: 'Cairo')),
                   ]),
                 ),
               );

@@ -17,6 +17,7 @@ import 'package:namaa_project_app/dashboard/main_wrappe.dart';
 import 'package:namaa_project_app/recycle/recycle_dashboard.dart';
 import 'package:namaa_project_app/recycle/recycle_submission_page.dart';
 import 'package:namaa_project_app/recycle/recycle_tasks_page.dart';
+import 'package:namaa_project_app/store/smart_capsule_page.dart';
 import 'package:namaa_project_app/tasks/my_impact_gallery.dart';
 
 // ── Tasks (المهام القديمة) ──
@@ -56,6 +57,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/home': (context) => MainWrapper(),
   '/dashboard': (context) => const FullAppDashboard(),
   '/admin': (context) => const AdminTasksPage(),
+  '/smart-capsule': (context) => const SmartCapsulePage(),
   // شجر ونقاط
   '/tree': (context) => const TreePage(),
   '/advanced-tree': (context) => const AdvancedTreePage(),
@@ -66,7 +68,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/settings': (context) => const SettingsPage(),
   '/about': (context) => const AboutPage(),
   '/invite': (context) => const InviteFriendPage(),
-  '/certificate': (context) => const CertificatePage(userName: '', treeNumber: 0),
+  '/certificate': (context) => const CertificatePage(userName: '', treeNumber: 0, location: '',),
   NotificationsListPage.routeName: (context) => const NotificationsListPage(),
   AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
 
