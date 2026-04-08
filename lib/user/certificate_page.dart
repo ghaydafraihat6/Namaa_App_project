@@ -27,10 +27,16 @@ class CertificatePage extends StatefulWidget {
 }
 
 class _CertificatePageState extends State<CertificatePage> {
-  final PageController _pageController = PageController();
+  late PageController _pageController;
   int _currentPage = 0;
   final Map<int, GlobalKey> _boundaryKeys = {};
   bool _hasJumpedToInitial = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
 
   @override
   void dispose() {
@@ -271,11 +277,7 @@ class _CertificatePageState extends State<CertificatePage> {
 
             if (targetIndex != -1) {
               _currentPage = targetIndex;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (_pageController.hasClients) {
-                  _pageController.jumpToPage(targetIndex);
-                }
-              });
+              _pageController = PageController(initialPage: targetIndex);
             }
             _hasJumpedToInitial = true;
           }
