@@ -25,8 +25,11 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
-    // رفع المنتجات لتظهر في المتجر
-    seed.seedDatabase();
+    // رفع المنتجات لتظهر في المتجر (await لضمان الانتهاء قبل التقييمات)
+    await seed.seedDatabase();
+
+    // ⭐ إضافة تقييمات تجريبية (تشتغل مرة وحدة فقط بعد رفع المنتجات)
+    await seed.seedReviews();
 
     runApp(
       ChangeNotifierProvider(

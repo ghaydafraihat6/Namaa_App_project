@@ -539,16 +539,12 @@ Future<void> seedDatabase() async {
   try {
     final db = FirebaseFirestore.instance;
 
-    print('🧹 تنظيف المنتجات القديمة...');
-    final oldDocs = await db.collection('products').get();
-    
-    // استخدام الحذف المتسلسل بدلاً من Batch لتفادي خطأ 500 عنصر الأقصى
-    var count = 0;
-    for (final doc in oldDocs.docs) {
-      await doc.reference.delete();
-      count++;
+    // إذا المنتجات موجودة، لا تعيد رفعها (للحفاظ على التقييمات)
+    final existing = await db.collection('products').get();
+    if (existing.docs.isNotEmpty) {
+      print('✅ المنتجات موجودة أصلاً (${existing.docs.length}), تخطي...');
+      return;
     }
-    print('🧹 تم تنظيف $count منتج قديم...');
 
     print('🆕 رفع ${_products.length} منتج...');
     final addBatch = db.batch();
@@ -560,5 +556,157 @@ Future<void> seedDatabase() async {
     print('✅ تم بنجاح! إجمالي المنتجات: ${_products.length}');
   } catch (e) {
     print('❌ حدث خطأ كبير: $e');
+  }
+}
+
+// ── بيانات تقييمات تجريبية ──
+const List<Map<String, dynamic>> _sampleReviews = [
+  {
+    'userName': 'سارة أحمد',
+    'rating': 5.0,
+    'comment': 'منتج ممتاز! جودة عالية وصديق للبيئة فعلاً. أنصح فيه بشدة 🌿',
+  },
+  {
+    'userName': 'محمد خالد',
+    'rating': 4.0,
+    'comment': 'جيد جداً، التغليف كان رائع والمنتج وصل بحالة ممتازة.',
+  },
+  {
+    'userName': 'لينا عمر',
+    'rating': 5.0,
+    'comment': 'أحببته كثيراً! سأطلب منه مرة ثانية بالتأكيد ❤️',
+  },
+  {
+    'userName': 'أحمد يوسف',
+    'rating': 3.0,
+    'comment': 'المنتج لا بأس به، لكن كنت أتوقع حجم أكبر. بشكل عام مقبول.',
+  },
+  {
+    'userName': 'نور الهدى',
+    'rating': 5.0,
+    'comment': 'من أفضل المنتجات البيئية اللي جربتها! شكراً نماء 🌱',
+  },
+  {
+    'userName': 'يزن محمود',
+    'rating': 4.0,
+    'comment': 'سعر مناسب وجودة ممتازة. التوصيل كان سريع كمان.',
+  },
+  {
+    'userName': 'رنا حسين',
+    'rating': 5.0,
+    'comment': 'هدية رائعة لصديقتي! كانت سعيدة جداً فيها 🎁',
+  },
+  {
+    'userName': 'عبدالله سمير',
+    'rating': 4.0,
+    'comment': 'منتج عملي ومفيد، أنصح كل شخص يهتم بالبيئة يجربه.',
+  },
+  {
+    'userName': 'دانا فارس',
+    'rating': 5.0,
+    'comment': 'ماشاء الله جودة فوق الممتاز! والتصميم أنيق وبسيط ✨',
+  },
+  {
+    'userName': 'كريم حسن',
+    'rating': 3.0,
+    'comment': 'المنتج جيد بس التغليف كان ممكن يكون أحسن.',
+  },
+  {
+    'userName': 'هبة ناصر',
+    'rating': 5.0,
+    'comment': 'بديل بيئي ممتاز! قللت استخدام البلاستيك بشكل كبير بسببه ♻️',
+  },
+  {
+    'userName': 'فيصل العلي',
+    'rating': 4.0,
+    'comment': 'طلبت منه 3 مرات وكل مرة الجودة ثابتة. ممتاز!',
+  },
+];
+
+// ── أسماء المنتجات اللي بدنا نضيفلها تقييمات ──
+const List<String> _productsToReview = [
+  'حقيبة قماشية',
+  'فرشاة البامبو',
+  'أغطية شمع النحل',
+  'صناديق الكومبوست للمطبخ',
+  'مطرة مياه حرارية',
+  'أكواب قشور القهوة',
+  'نبات العنكبوت',
+  'طقم مائدة خشبي',
+  'سلة خوص طبيعية',
+  'حذاء زجاجات البلاستيك',
+  'أكياس قابلة للتسميد',
+  'صابون طبيعي يدوي',
+  'دفتر ورق معاد تدويره',
+  'نبات مونستيرا',
+  'بذور الخزامى',
+];
+
+Future<void> seedReviews() async {
+  print('⭐ بدأت عملية إضافة التقييمات...');
+
+  try {
+    final db = FirebaseFirestore.instance;
+
+    // جلب كل المنتجات
+    final productsSnap = await db.collection('products').get();
+    final productDocs = productsSnap.docs;
+
+    int totalAdded = 0;
+
+    for (final productName in _productsToReview) {
+      // البحث عن المنتج بالاسم
+      final matchingDocs = productDocs.where(
+        (d) => (d.data()['name'] as String?) == productName,
+      );
+
+      if (matchingDocs.isEmpty) {
+        print('⚠️ لم يتم العثور على: $productName');
+        continue;
+      }
+
+      final productDoc = matchingDocs.first;
+      final productId = productDoc.id;
+
+      // التحقق إذا فيه تقييمات موجودة أصلاً
+      final existingReviews = await db
+          .collection('products')
+          .doc(productId)
+          .collection('reviews')
+          .limit(1)
+          .get();
+
+      if (existingReviews.docs.isNotEmpty) {
+        print('⏭️ $productName عنده تقييمات أصلاً، تخطي...');
+        continue;
+      }
+
+      // اختيار 3-5 تقييمات عشوائية لكل منتج
+      final shuffled = List<Map<String, dynamic>>.from(_sampleReviews)..shuffle();
+      final reviewCount = 3 + (productName.hashCode.abs() % 3); // 3 إلى 5
+      final selectedReviews = shuffled.take(reviewCount).toList();
+
+      for (int i = 0; i < selectedReviews.length; i++) {
+        final review = selectedReviews[i];
+        await db
+            .collection('products')
+            .doc(productId)
+            .collection('reviews')
+            .add({
+          ...review,
+          'userId': 'seed_user_${i + 1}',
+          'createdAt': Timestamp.fromDate(
+            DateTime.now().subtract(Duration(days: i * 3 + 1)),
+          ),
+        });
+        totalAdded++;
+      }
+
+      print('✅ تم إضافة ${selectedReviews.length} تقييم لـ: $productName');
+    }
+
+    print('🎉 اكتملت العملية! تم إضافة $totalAdded تقييم إجمالاً');
+  } catch (e) {
+    print('❌ خطأ في إضافة التقييمات: $e');
   }
 }

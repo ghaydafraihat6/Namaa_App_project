@@ -87,7 +87,18 @@ class _OrderCard extends StatelessWidget {
   const _OrderCard({required this.doc, required this.index});
 
   // [FIX #3] Widget موحد يدعم asset و network
-  Widget _productImage(String src) {
+  Widget _productImage(String src, String name) {
+    final localPath = StoreLocalizer.getLocalAssetPath(name);
+    if (localPath != null) {
+      return Image.asset(
+        localPath,
+        width: 32,
+        height: 32,
+        errorBuilder: (_, __, ___) =>
+        const Icon(Icons.shopping_bag, size: 28, color: Color(0xFF386641)),
+      );
+    }
+
     final isUrl = src.startsWith('http');
     if (isUrl) {
       return CachedNetworkImage(
@@ -201,7 +212,7 @@ class _OrderCard extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Row(children: [
                   // [FIX #3] استخدام _productImage الموحد
-                  _productImage(m['image'] as String? ?? ''),
+                  _productImage(m['image'] as String? ?? '', m['name'] as String? ?? ''),
                   const SizedBox(width: 10),
                   Expanded(
                       child: Text('${StoreLocalizer.productName(context, m['name'] as String)} × ${m['quantity']}',

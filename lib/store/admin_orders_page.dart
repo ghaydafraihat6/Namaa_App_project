@@ -15,7 +15,18 @@ class AdminOrdersPage extends StatelessWidget {
           .update({'status': status});
 
   // [FIX] Widget موحد يدعم asset و network
-  Widget _productImage(String src) {
+  Widget _productImage(String src, String name) {
+    final localPath = StoreLocalizer.getLocalAssetPath(name);
+    if (localPath != null) {
+      return Image.asset(
+        localPath,
+        width: 32,
+        height: 32,
+        errorBuilder: (_, __, ___) =>
+        const Icon(Icons.shopping_bag, size: 28, color: Color(0xFF386641)),
+      );
+    }
+
     final isUrl = src.startsWith('http');
     if (isUrl) {
       return CachedNetworkImage(
@@ -226,7 +237,7 @@ class AdminOrdersPage extends StatelessWidget {
                                       padding: const EdgeInsets.only(bottom: 4),
                                       child: Row(children: [
                                         // [FIX] صورة المنتج موحدة
-                                        _productImage(m['image'] as String? ?? ''),
+                                        _productImage(m['image'] as String? ?? '', m['name'] as String? ?? ''),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(

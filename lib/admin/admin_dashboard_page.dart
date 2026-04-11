@@ -8,6 +8,9 @@ import 'package:namaa_project_app/providers/locale_provider.dart';
 import 'package:namaa_project_app/store/admin_orders_page.dart';
 import 'package:namaa_project_app/admin/task_approvals_page.dart';
 import 'package:namaa_project_app/admin/admin_users_page.dart';
+import 'package:namaa_project_app/store/admin_reviews_page.dart';
+import 'package:namaa_project_app/admin/admin_products_page.dart';
+import 'package:namaa_project_app/admin/admin_recycle_requests_page.dart';
 
 class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({super.key});
@@ -249,6 +252,64 @@ class AdminDashboardPage extends StatelessWidget {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const AdminUsersPage()),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Card 4: إدارة التقييمات
+                  _AdminToolCard(
+                    icon: Icons.star_outline_rounded,
+                    title: isAr ? 'إدارة التقييمات' : 'Reviews Management',
+                    subtitle: isAr
+                        ? 'عرض وحذف تقييمات المنتجات'
+                        : 'View and delete product reviews',
+                    gradient: const [Color(0xFFFFB347), Color(0xFFFF6B35)],
+                    badgeStream: FirebaseFirestore.instance
+                        .collection('products')
+                        .snapshots(),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AdminReviewsPage()),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Card 5: إدارة المنتجات
+                  _AdminToolCard(
+                    icon: Icons.inventory_2_outlined,
+                    title: isAr ? 'إدارة المنتجات' : 'Product Management',
+                    subtitle: isAr
+                        ? 'إضافة السلع للمتجر البيئي'
+                        : 'Add items to the Eco Store',
+                    gradient: const [Color(0xFF2A9D8F), Color(0xFF21867A)],
+                    badgeStream: FirebaseFirestore.instance
+                        .collection('products')
+                        .snapshots(),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AdminProductsPage()),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Card 6: استلام مواد التدوير
+                  _AdminToolCard(
+                    icon: Icons.recycling_outlined,
+                    title: isAr ? 'طلبات التدوير' : 'Recycle Requests',
+                    subtitle: isAr
+                        ? 'استلام مواد إعادة التدوير من المستخدمين'
+                        : 'Receive recycled materials from users',
+                    gradient: const [Color(0xFF00B4D8), Color(0xFF0077B6)],
+                    badgeStream: FirebaseFirestore.instance
+                        .collection('recycle_requests')
+                        .where('status', isEqualTo: 'pending')
+                        .snapshots(),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AdminRecycleRequestsPage()),
                     ),
                   ),
 
