@@ -50,6 +50,23 @@ class StoreLocalizer {
     'كرات السقاية الزجاجية': 'Watering Globes',
     'طقم مائدة خشبي': 'Wooden Tableware Set',
     'نبات الزاميا': 'ZZ Plant',
+    'أقراص معجون الأسنان': 'Toothpaste Tablets',
+    'ليفة اللوف الطبيعية': 'Natural Luffa / Loofah',
+    'عدة أدوات بستنة صغيرة': 'Small Gardening Tools Set',
+    'مرشة سقاية النباتات': 'Watering Can',
+    'شفاطات معدنية قابلة لإعادة الاستخدام': 'Reusable Metal Straws',
+    'أكياس سيليكون قابلة لإعادة الاستخدام': 'Reusable Silicone Food Bags',
+    'أكياس قابلة للتسميد': 'Compostable Bags',
+    'قطن تنظيف الوجه قابل لإعادة الاستخدام': 'Reusable Makeup Remover Pads',
+    'صابون طبيعي يدوي': 'Natural Handmade Soap',
+    'دفتر ورق معاد تدويره': 'Recycled Paper Notebook',
+    'سماد عضوي للحدائق': 'Organic Gardening Fertilizer',
+    'نبات مونستيرا': 'Monstera Deliciosa',
+    'شتلة شجرة تفاح': 'Apple Tree Sapling',
+    'نبات نعناع في جرة': 'Mint in Glass Jar',
+    'طقم بذور وتربة عضوية': 'Seeds Starter Kit',
+    'قفازات بستنة متينة': 'Durable Gardening Gloves',
+    'ليفة جلي طبيعية': 'Natural Loofah Dish Sponge',
   };
 
   static final Map<String, String> _descMap = {
@@ -112,5 +129,39 @@ class StoreLocalizer {
     'طقم شوك وملاعق من الخشب الطبيعي.': 'Natural wood fork and spoon set.',
     'سيقانه تخزن الماء بكفاءة عالية، صديق للبيئة.':
         'Its stems store water efficiently, eco-friendly.',
+    'بديل لمعجون الأسنان التقليدي: تمضغ حبة وتفرش بالفرشاة مع قليل من الماء. بدون أنبوب بلاستيك وصديقة للبيئة.':
+        'Alternative to traditional toothpaste: chew a tablet, brush with a little water. No plastic tube and eco-friendly.',
+    'تستخدم كإسفنجة استحمام طبيعية، بالإضافة إلى تنظيف الصحون وتقشير البشرة. بديل صديق للبيئة للإسفنج البلاستيكي.':
+        'Used as a natural bath sponge, as well as for dishwashing and skin exfoliation. An eco-friendly alternative to plastic sponges.',
+    'تتكون من مجرفة صغيرة، مجرفة قياس للص، ومشط لتقليب التربة. مثالية للزراعة في الأصص ونقل الشتلات.':
+        'Includes a small trowel, measuring trowel, and cultivator. Ideal for potting plants and transplanting seedlings.',
+    'تُستخدم لسقاية النباتات الداخلية، وتوزيع الماء بشكل خفيف وريّ الشتلات بدون إتلاف التربة.':
+        'Used for watering indoor plants, providing a gentle sprinkle, and watering seedlings without damaging the soil.',
+    'تأتي مع شفاط مستقيم ومنحني وفرشاة تنظيف. بديل بيئي قابل لإعادة الاستخدام وسهل التنظيف لتقليل استهلاك البلاستيك.':
+        'Includes a straight and bent straw with a cleaning brush. An eco-friendly, reusable, and easy-to-clean alternative to plastic.',
+    'تستخدم لحفظ الطعام وتخزين الخضار والفواكه. بديل صديق للبيئة لأكياس النايلون، قابلة للغسل وتدوم طويلاً.':
+        'Used for food storage, including vegetables and fruits. An eco-friendly alternative to plastic bags, washable and durable.',
+    'تُستخدم لجمع بقايا الطعام ونفايات الكومبوست. بديل صديق للبيئة لأكياس البلاستيك، يتحلل طبيعياً دون تلويث.':
+        'Used to collect food scraps and compost waste. An eco-friendly alternative to plastic bags, decomposes naturally without pollution.',
+    'يُستخدم لإزالة المكياج، تنظيف الوجه ووضع التونر. بديل صديق للبيئة للقطن أحادي الاستخدام، قابل للغسل.':
+        'Used for removing makeup, cleansing the face, and applying toner. An eco-friendly alternative to single-use cotton pads, washable and reusable.',
+    'صابون اللافندر والشوفان بمكونات طبيعية، صديق للبيئة وبدون مواد كيميائية قوية. مناسب للبشرة الحساسة.':
+        'Lavender and oat soap with natural ingredients, eco-friendly and without harsh chemicals. Suitable for sensitive skin.',
+    'دفتر مصنوع من ورق معاد تدويره صديق للبيئة مناسب للملاحظات والاستخدام اليومي.':
+        'Notebook made from eco-friendly recycled paper, perfect for notes and daily use.',
+    'سماد عضوي نباتي مغذي ومستدام لجميع أنواع النباتات والمحاصيل المنزلية.':
+        'Nutritious and sustainable plant-based organic fertilizer for all types of plants and home crops.',
+    'نبات منزلي شهير بجمال أوراقه الكبيرة والمميزة، سهل العناية ويضفي لمسة فخامة.':
+        'Popular houseplant known for its large and unique leaves, easy to care for and adds a touch of luxury.',
+    'شتلة شجرة تفاح قوية جاهزة للزراعة في حديقتك أو في أصيص كبير.':
+        'Strong apple tree sapling ready to be planted in your garden or in a large pot.',
+    'نبات نعناع طازج ينمو في جرة زجاجية أنيقة، مثالي للمطبخ ورائحته منعشة.':
+        'Fresh mint plant growing in an elegant glass jar, perfect for the kitchen with a refreshing scent.',
+    'طقم متكامل لبدء رحلة الزراعة، يشمل بذوراً متنوعة وتربة عضوية غنية.':
+        'Complete kit to start your gardening journey, includes various seeds and rich organic soil.',
+    'قفازات بستنة مصممة لحماية اليدين، مريحة وتدوم طويلاً للعمل الشاق.':
+        'Gardening gloves designed to protect hands, comfortable and durable for heavy-duty work.',
+    'ليفة جلي مستخلص من نبات اللوف الطبيعي، بديل بيئي فعال لإسفنج البلاستيك.':
+        'Dishwashing sponge extracted from the natural loofah plant, an effective eco-friendly alternative to plastic sponges.',
   };
 }
