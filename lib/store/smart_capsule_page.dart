@@ -21,6 +21,10 @@ class SmartCapsulePage extends StatelessWidget {
         backgroundColor: const Color(0xFF386641),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),

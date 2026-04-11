@@ -77,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
               .doc(user.uid);
           final docSnapshot = await userDoc.get();
 
+          bool isAdmin = false;
           if (!docSnapshot.exists) {
             await userDoc.set({
               'uid': user.uid,
@@ -86,6 +87,9 @@ class _LoginPageState extends State<LoginPage> {
               'referralCode': user.uid.length >= 8 ? user.uid.substring(0, 8).toUpperCase() : "NAMAA2026",
               'createdAt': FieldValue.serverTimestamp(),
             });
+          } else {
+            final data = docSnapshot.data() as Map<String, dynamic>;
+            isAdmin = data['role'] == 'admin' || data['isAdmin'] == true;
           }
 
           if (_rememberMe) {
@@ -93,7 +97,8 @@ class _LoginPageState extends State<LoginPage> {
           }
 
           if (mounted) {
-            Navigator.pushReplacementNamed(context, '/home');
+            Navigator.pushReplacementNamed(
+                context, isAdmin ? '/admin-dashboard' : '/home');
           }
         }
       } on FirebaseAuthException catch (e) {
@@ -148,6 +153,7 @@ class _LoginPageState extends State<LoginPage> {
         final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
         final docSnapshot = await userDoc.get();
 
+        bool isAdmin = false;
         if (!docSnapshot.exists) {
           await userDoc.set({
             'uid': user.uid,
@@ -157,10 +163,16 @@ class _LoginPageState extends State<LoginPage> {
             'referralCode': user.uid.length >= 8 ? user.uid.substring(0, 8).toUpperCase() : "NAMAA2026",
             'createdAt': FieldValue.serverTimestamp(),
           });
+        } else {
+          final data = docSnapshot.data() as Map<String, dynamic>;
+          isAdmin = data['role'] == 'admin' || data['isAdmin'] == true;
         }
 
         if (_rememberMe) await _setLoggedInStatus(true);
-        if (mounted) Navigator.pushReplacementNamed(context, '/home');
+        if (mounted) {
+          Navigator.pushReplacementNamed(
+              context, isAdmin ? '/admin-dashboard' : '/home');
+        }
       }
     } catch (e) {
       if (mounted) _showErrorSnackBar("Google Sign-In failed.");
@@ -324,11 +336,19 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     const SizedBox(height: 25),
-                    Text(l10n.login_or,
-                        style: const TextStyle(
-                            fontFamily: 'Cairo',
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w900)),
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Text(
+                            l10n.login_or,
+                            style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey, fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                        Expanded(child: Divider(color: Colors.grey.shade300, thickness: 1)),
+                      ],
+                    ),
                     const SizedBox(height: 25),
 
                     _buildGoogleButton(l10n.login_google),
@@ -359,6 +379,36 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 15),
+                    Divider(
+                      color: Colors.grey.withValues(alpha: 0.2), 
+                      thickness: 1, 
+                      indent: 60, 
+                      endIndent: 60,
+                    ),
+                    const SizedBox(height: 15),
+
+                    // رابط دخول الأدمن
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/admin-login'),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.admin_panel_settings, color: Color(0xFFF2811D), size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.localeName == 'ar' ? 'دخول كمسؤول' : 'Admin Login',
+                            style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF386641),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     const SizedBox(height: 40),
                   ],
                 ),

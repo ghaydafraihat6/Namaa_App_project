@@ -5,7 +5,7 @@ import 'package:namaa_project_app/dashboard/main_wrappe.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/widgets/daily_reminder.dart';
 import 'package:namaa_project_app/widgets/co2_stats.dart';
-import 'package:namaa_project_app/store/admin_orders_page.dart'; // مسار صفحة الأدمين
+import 'package:namaa_project_app/admin/admin_dashboard_page.dart';
 import 'package:namaa_project_app/user/notifications_list_page.dart';
 import 'package:namaa_project_app/user/account_settings_page.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
@@ -398,7 +398,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     _gridItem('🚴', isAr ? 'تحدي الدراجة' : 'Bike Challenge', () => Navigator.pushNamed(context, '/bike-challenge')),
                     _gridItem('🖼️', isAr ? 'معرض أثري' : 'Impact Gallery', () => Navigator.pushNamed(context, '/impact-gallery')),
                     _gridItem('🔄', isAr ? 'قبل وبعد' : 'Before & After', () => Navigator.pushNamed(context, '/before-after')),
-                    if (isAdmin) _gridItem('🛠️', isAr ? 'إدارة الطلبات' : 'Order Mgmt', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersPage()))),
+                    if (isAdmin) _gridItem('🛠️', isAr ? 'لوحة الأدمن' : 'Admin Panel', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardPage()))),
                   ],
                 ),
               ),

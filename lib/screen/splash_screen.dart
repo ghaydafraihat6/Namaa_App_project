@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:namaa_project_app/screen/login_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,18 +29,40 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 6)); // محاذاتها مع التعليق لتقليل مدة الانتظار
+    await Future.delayed(const Duration(seconds: 6));
 
     if (!mounted) return;
 
-    final user = FirebaseAuth.instance.currentUser; // ✅ Firebase فقط
+    final user = FirebaseAuth.instance.currentUser;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.pushReplacementNamed(
-        context,
-        user != null ? '/home' : LoginPage.routeName,
-      );
-    });
+    if (user != null) {
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final data = doc.data();
+        final bool isAdmin = data != null && (data['role'] == 'admin' || data['isAdmin'] == true);
+        
+        if (mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(
+              context,
+              isAdmin ? '/admin-dashboard' : '/home',
+            );
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, '/home');
+          });
+        }
+      }
+    } else {
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushReplacementNamed(context, LoginPage.routeName);
+        });
+      }
+    }
   }
 
   @override
@@ -65,27 +88,11 @@ class _SplashScreenState extends State<SplashScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Card(
-                        elevation: 10,
-                        shadowColor: Colors.black.withOpacity(0.2),
-                        clipBehavior: Clip.none, // منع القص
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(50), // زيادة الحظوة
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEBF4DD),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: Image.asset(
-                            'assets/images/logo_namaa.png',
-                            width: 200,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
+                      Image.asset(
+                        'assets/images/logo_namaa.png',
+                        width: 220,
+                        fit: BoxFit.contain,
                       ),
-                      const SizedBox(height: 50),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: RichText(
@@ -106,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 style: TextStyle(color: Color(0xFFF2811D)),
                               ),
                               TextSpan(
-                                text: " الـخـضـراء تـبـدأ مـن هـنـا",
+                                text: "   الـخـضـراء  تـبـدأ  مـن  هـنـا  ....",
                                 style: TextStyle(color: Color(0xFF006400)),
                               ),
                             ],

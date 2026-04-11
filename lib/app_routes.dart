@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:namaa_project_app/admin/admin_tasks_page.dart';
+import 'package:namaa_project_app/admin/admin_dashboard_page.dart';
+import 'package:namaa_project_app/admin/admin_login_page.dart';
 
 // ── Screens ──
 import 'package:namaa_project_app/screen/splash_screen.dart';
@@ -57,6 +59,8 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/home': (context) => MainWrapper(),
   '/dashboard': (context) => const FullAppDashboard(),
   '/admin': (context) => const AdminTasksPage(),
+  '/admin-dashboard': (context) => const AdminDashboardPage(),
+  AdminLoginPage.routeName: (context) => const AdminLoginPage(),
   '/smart-capsule': (context) => const SmartCapsulePage(),
   // شجر ونقاط
   '/tree': (context) => const TreePage(),

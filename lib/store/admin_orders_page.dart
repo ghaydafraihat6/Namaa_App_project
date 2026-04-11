@@ -1,8 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart';
-import 'order_status.dart';
+import 'package:namaa_project_app/store/order_status.dart';
 import 'store_localizer.dart';
 
 class AdminOrdersPage extends StatelessWidget {
@@ -42,196 +42,244 @@ class AdminOrdersPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
-    return Scaffold(
-      backgroundColor: const Color(0xFFF0F5F0),
-      appBar: AppBar(
-        title: Text(isAr ? '🛠️ إدارة الطلبات' : '🛠️ Order Management',
-            style: TextStyle(
-                fontFamily: 'Cairo',
-                fontWeight: FontWeight.w800,
-                color: Colors.white)),
-        backgroundColor: const Color(0xFF386641),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('orders')
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (_, snap) {
-          if (snap.connectionState == ConnectionState.waiting)
-            return const Center(child: CircularProgressIndicator());
-          if (snap.hasError)
-            return Center(
-                child: Text(isAr ? 'عذراً، حدث خطأ: ${snap.error}' : 'Sorry, error: ${snap.error}',
-                    style: const TextStyle(fontFamily: 'Cairo'),
-                    textAlign: TextAlign.center));
-          if (!snap.hasData || snap.data!.docs.isEmpty)
-            return Center(
-                child: Text(isAr ? 'لا يوجد طلبات' : 'No orders found',
-                    style: TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 16,
-                        color: Colors.grey)));
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF0F5F0),
+        appBar: AppBar(
+          title: Text(isAr ? '🛠️ إدارة الطلبات' : '🛠️ Order Management',
+              style: const TextStyle(
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white)),
+          backgroundColor: const Color(0xFF386641),
+          iconTheme: const IconThemeData(color: Colors.white),
+          bottom: TabBar(
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white60,
+            indicatorColor: const Color(0xFFF4A261),
+            indicatorWeight: 4,
+            labelStyle: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 16),
+            tabs: [
+              Tab(text: isAr ? 'طلبات جديدة 📦' : 'Pending 📦'),
+              Tab(text: isAr ? 'مكتملة ✅' : 'Completed ✅'),
+            ],
+          ),
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('orders')
+              .orderBy('createdAt', descending: true)
+              .snapshots(),
+          builder: (_, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snap.hasError) {
+              return Center(
+                  child: Text(isAr ? 'عذراً، حدث خطأ: ${snap.error}' : 'Sorry, error: ${snap.error}',
+                      style: const TextStyle(fontFamily: 'Cairo'),
+                      textAlign: TextAlign.center));
+            }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: snap.data!.docs.length,
-            itemBuilder: (_, i) {
-              final doc   = snap.data!.docs[i];
-              final order = doc.data() as Map<String, dynamic>;
-              final status = OrderStatus.fromLabel(order['status'] ?? '');
-              final items  = order['items'] as List<dynamic>? ?? [];
-              final ts     = order['createdAt'] as Timestamp?;
-              final date   = ts?.toDate().toString().substring(0, 16) ?? '';
+            final docs = snap.data?.docs ?? [];
+            final activeOrders = docs.where((doc) {
+              final data = doc.data() as Map<String, dynamic>?;
+              final String st = data?['status'] ?? '';
+              return st != 'delivered' && st != 'cancelled';
+            }).toList();
+            final completedOrders = docs.where((doc) {
+              final data = doc.data() as Map<String, dynamic>?;
+              final String st = data?['status'] ?? '';
+              return st == 'delivered' || st == 'cancelled';
+            }).toList();
 
-              // [FIX #5] حماية من null في القيم العددية
-              final total =
-                  (order['total'] as num?)?.toStringAsFixed(2) ?? '0.00';
-              final discountPercent =
-                  (order['discountPercent'] as num?)?.toInt() ?? 0;
+            Widget buildOrderList(List<QueryDocumentSnapshot> listDocs, String emptyMessage) {
+              if (listDocs.isEmpty) {
+                return Center(
+                    child: Text(emptyMessage,
+                        style: const TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: 16,
+                            color: Colors.grey)));
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: listDocs.length,
+                itemBuilder: (_, i) {
+                  final doc   = listDocs[i];
+                  final order = doc.data() as Map<String, dynamic>;
+                  final status = OrderStatus.fromLabel(order['status'] ?? '');
+                  final items  = order['items'] as List<dynamic>? ?? [];
+                  final ts     = order['createdAt'] as Timestamp?;
+                  final date   = ts?.toDate().toString().substring(0, 16) ?? '';
 
-              return Container(
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 10)
-                  ],
-                ),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // رأس البطاقة + Dropdown
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                            color: status.bg,
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(18))),
-                        child: Row(children: [
-                          Expanded(
+                  // [FIX #5] حماية من null في القيم العددية
+                  final total =
+                      (order['total'] as num?)?.toStringAsFixed(2) ?? '0.00';
+                  final discountPercent =
+                      (order['discountPercent'] as num?)?.toInt() ?? 0;
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 10)
+                      ],
+                    ),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // رأس البطاقة + Dropdown
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                                color: status.bg,
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(18))),
+                            child: Row(children: [
+                              Expanded(
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("👤 ${order['userName'] ?? (isAr ? 'مجهول' : 'Unknown')}",
+                                          style: const TextStyle(
+                                              fontFamily: 'Cairo',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w900,
+                                              color: Color(0xFF1B2E1F))),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                          '📞 ${order['phone'] ?? ''}  •  🗓️ $date',
+                                          style: const TextStyle(
+                                              fontFamily: 'Cairo',
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xFF4A4A4A))),
+                                    ]),
+                              ),
+                              DropdownButton<String>(
+                                value: status.key,
+                                underline: const SizedBox(),
+                                isDense: true,
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: status.color),
+                                items: OrderStatus.values
+                                    .map((s) => DropdownMenuItem(
+                                  value: s.key,
+                                  child: Text(s.getLabel(context),
+                                      style: TextStyle(
+                                          fontFamily: 'Cairo',
+                                          fontSize: 12,
+                                          color: s.color)),
+                                ))
+                                    .toList(),
+                                onChanged: (val) {
+                                  if (val != null) _updateStatus(doc.id, val);
+                                },
+                              ),
+                            ]),
+                          ),
+
+                          // التفاصيل
+                          Padding(
+                            padding: const EdgeInsets.all(14),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(order['userName'] ?? (isAr ? 'مجهول' : 'Unknown'),
+                                  Text('📍 ${isAr ? 'العنوان' : 'Address'}:',
                                       style: const TextStyle(
                                           fontFamily: 'Cairo',
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w800,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF2D5A3F))),
+                                  Text('${order['address'] ?? ''}',
+                                      style: const TextStyle(
+                                          fontFamily: 'Cairo',
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
                                           color: Color(0xFF1B2E1F))),
-                                  Text(
-                                      '${order['phone'] ?? ''}  •  📅 $date',
-                                      style: const TextStyle(
-                                          fontFamily: 'Cairo',
-                                          fontSize: 11,
-                                          color: Colors.grey)),
-                                ]),
-                          ),
-                          DropdownButton<String>(
-                            value: status.key,
-                            underline: const SizedBox(),
-                            isDense: true,
-                            style: TextStyle(
-                                fontFamily: 'Cairo',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: status.color),
-                            items: OrderStatus.values
-                                .map((s) => DropdownMenuItem(
-                              value: s.key,
-                              child: Text(s.getLabel(context),
-                                  style: TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontSize: 12,
-                                      color: s.color)),
-                            ))
-                                .toList(),
-                            onChanged: (val) {
-                              if (val != null) _updateStatus(doc.id, val);
-                            },
-                          ),
-                        ]),
-                      ),
-
-                      // التفاصيل
-                      Padding(
-                        padding: const EdgeInsets.all(14),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('📍 ${order['address'] ?? ''}',
-                                  style: const TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontSize: 12,
-                                      color: Colors.grey)),
-                                if (discountPercent > 0)
-                                  Text(isAr ? '🎁 خصم $discountPercent%' : '🎁 $discountPercent% Discount',
-                                    style: const TextStyle(
-                                        fontFamily: 'Cairo',
-                                        fontSize: 12,
-                                        color: Color(0xFFE8852A))),
-                              const Divider(height: 16),
-
-                              ...items.map((item) {
-                                final m = item as Map<String, dynamic>;
-                                // [FIX #5] حماية من null في subtotal
-                                final subtotal =
-                                    (m['subtotal'] as num?)?.toStringAsFixed(2)
-                                        ?? '0.00';
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: Row(children: [
-                                    // [FIX] صورة المنتج موحدة
-                                    _productImage(m['image'] as String? ?? ''),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                          '${StoreLocalizer.productName(context, m['name'] as String)} × ${m['quantity']}',
-                                          style: const TextStyle(
-                                              fontFamily: 'Cairo',
-                                              fontSize: 12)),
-                                    ),
-                                    Text(isAr ? '$subtotal د.أ' : '$subtotal JOD',
+                                    if (discountPercent > 0)
+                                      Text(isAr ? '🎁 خصم $discountPercent%' : '🎁 $discountPercent% Discount',
                                         style: const TextStyle(
                                             fontFamily: 'Cairo',
                                             fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Color(0xFF386641))),
-                                  ]),
-                                );
-                              }),
+                                            color: Color(0xFFE8852A))),
+                                  const Divider(height: 16),
 
-                              const Divider(height: 12),
-                              Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(isAr ? 'الإجمالي:' : 'Total:',
-                                        style: TextStyle(
-                                            fontFamily: 'Cairo',
-                                            fontWeight: FontWeight.w700)),
-                                    Text(isAr ? '$total د.أ' : '$total JOD',
-                                        style: const TextStyle(
-                                            fontFamily: 'Cairo',
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 16,
-                                            color: Color(0xFF386641))),
-                                  ]),
-                            ]),
-                      ),
-                    ]),
+                                  ...items.map((item) {
+                                    final m = item as Map<String, dynamic>;
+                                    // [FIX #5] حماية من null في subtotal
+                                    final subtotal =
+                                        (m['subtotal'] as num?)?.toStringAsFixed(2)
+                                            ?? '0.00';
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: Row(children: [
+                                        // [FIX] صورة المنتج موحدة
+                                        _productImage(m['image'] as String? ?? ''),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                              '${StoreLocalizer.productName(context, m['name'] as String)} × ${m['quantity']}',
+                                              style: const TextStyle(
+                                                  fontFamily: 'Cairo',
+                                                  fontSize: 12)),
+                                        ),
+                                        Text(isAr ? '$subtotal د.أ' : '$subtotal JOD',
+                                            style: const TextStyle(
+                                                fontFamily: 'Cairo',
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFF386641))),
+                                      ]),
+                                    );
+                                  }),
+
+                                  const Divider(height: 12),
+                                  Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(isAr ? '💰 الإجمالي الصافي:' : '💰 Net Total:',
+                                            style: const TextStyle(
+                                                fontFamily: 'Cairo',
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w900,
+                                                color: Color(0xFF2D5A3F))),
+                                        Text(isAr ? '$total د.أ' : '$total JOD',
+                                            style: const TextStyle(
+                                                fontFamily: 'Cairo',
+                                                fontWeight: FontWeight.w900,
+                                                fontSize: 20,
+                                                color: Color(0xFF2D5A3F))),
+                                      ]),
+                                ]),
+                          ),
+                        ]),
+                  );
+                },
               );
-            },
+            }
+
+            return TabBarView(
+              children: [
+                buildOrderList(activeOrders, isAr ? 'لا يوجد طلبات قيد المعالجة' : 'No pending orders'),
+                buildOrderList(completedOrders, isAr ? 'لا يوجد طلبات مكتملة' : 'No completed orders'),
+              ],
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 }
