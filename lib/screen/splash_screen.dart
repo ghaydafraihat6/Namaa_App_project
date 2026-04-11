@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3)); // محاذاتها مع التعليق لتقليل مدة الانتظار
+    await Future.delayed(const Duration(seconds: 6)); // محاذاتها مع التعليق لتقليل مدة الانتظار
 
     if (!mounted) return;
 
@@ -80,7 +80,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           ),
                           child: Image.asset(
                             'assets/images/logo_namaa.png',
-                            width: 320, // عرض أكبر
+                            width: 200,
                             fit: BoxFit.contain,
                           ),
                         ),
