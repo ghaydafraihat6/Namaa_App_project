@@ -42,21 +42,31 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
   }
 
   Future<void> _searchFriend(AppLocalizations l10n) async {
-    String input = _codeCtrl.text.trim().toLowerCase();
+    String input = _codeCtrl.text.trim(); // ترك حالة الأحرف كما هي للأسماء
     if (input.isEmpty) return;
 
     setState(() { _loading = true; _friendData = null; });
 
     try {
-      // ✅ التحقق إذا كان المدخل بريداً إلكترونياً أم كود دعوة
-      final bool isEmail = input.contains('@');
-      final String fieldName = isEmail ? 'email' : 'referralCode';
+      final usersRef = FirebaseFirestore.instance.collection('users');
+      QuerySnapshot query;
 
-      final query = await FirebaseFirestore.instance
-          .collection('users')
-          .where(fieldName, isEqualTo: input)
-          .limit(1)
-          .get();
+      if (input.contains('@')) {
+        // بحث بالبريد الإلكتروني
+        query = await usersRef.where('email', isEqualTo: input.toLowerCase()).limit(1).get();
+      } else {
+        // 1. نبحث بكود الدعوة أولاً (الأكواد دائماً بحروف كبيرة)
+        query = await usersRef.where('referralCode', isEqualTo: input.toUpperCase()).limit(1).get();
+        
+        // 2. إذا لم نجد كود، نبحث بالاسم المكتوب (fullName)
+        if (query.docs.isEmpty) {
+          query = await usersRef.where('fullName', isEqualTo: input).limit(1).get();
+        }
+        // 3. إذا لم نجد، نبحث بحقل الاسم العادي (name)
+        if (query.docs.isEmpty) {
+          query = await usersRef.where('name', isEqualTo: input).limit(1).get();
+        }
+      }
 
       if (query.docs.isEmpty) {
         if (mounted) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
+
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
@@ -12,6 +14,32 @@ class _NotificationsPageState extends State<NotificationsPage> {
   bool _challengeAlerts  = true;
   bool _pointsUpdates    = false;
   bool _weeklyReport     = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  /// تحميل الإعدادات المحفوظة من SharedPreferences
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _taskReminders   = prefs.getBool('notif_taskReminders')   ?? true;
+      _challengeAlerts = prefs.getBool('notif_challengeAlerts') ?? true;
+      _pointsUpdates   = prefs.getBool('notif_pointsUpdates')   ?? false;
+      _weeklyReport    = prefs.getBool('notif_weeklyReport')    ?? true;
+    });
+  }
+
+  /// حفظ الإعدادات في SharedPreferences
+  Future<void> _saveSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notif_taskReminders',   _taskReminders);
+    await prefs.setBool('notif_challengeAlerts', _challengeAlerts);
+    await prefs.setBool('notif_pointsUpdates',   _pointsUpdates);
+    await prefs.setBool('notif_weeklyReport',    _weeklyReport);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +103,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.notif_settings_saved),
-                    backgroundColor: Color(0xFF386641),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-                Navigator.pop(context);
+              onPressed: () async {
+                await _saveSettings();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.notif_settings_saved),
+                      backgroundColor: const Color(0xFF386641),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  Navigator.pop(context);
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF386641),

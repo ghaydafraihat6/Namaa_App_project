@@ -15,6 +15,10 @@ class MyOrdersPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(l10n.store_my_orders,
             style: const TextStyle(
                 fontFamily: 'Cairo',

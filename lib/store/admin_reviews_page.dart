@@ -146,6 +146,7 @@ class AdminReviewsPage extends StatelessWidget {
               final productId = product.id;
               final productName = productData['name'] as String? ?? '';
               final productEmoji = productData['emoji'] as String? ?? '🌿';
+              final productImage = productData['image'] as String? ?? '';
 
               return StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -195,8 +196,31 @@ class AdminReviewsPage extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              Text(productEmoji,
-                                  style: const TextStyle(fontSize: 28)),
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.grey.shade200),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: productImage.isNotEmpty
+                                      ? (productImage.startsWith('http')
+                                          ? Image.network(
+                                              productImage,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => Center(child: Text(productEmoji, style: const TextStyle(fontSize: 24))),
+                                            )
+                                          : Image.asset(
+                                              productImage,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => Center(child: Text(productEmoji, style: const TextStyle(fontSize: 24))),
+                                            ))
+                                      : Center(child: Text(productEmoji, style: const TextStyle(fontSize: 24))),
+                                ),
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(

@@ -18,7 +18,8 @@ class SettingsPage extends StatelessWidget {
     await prefs.setBool('isLoggedIn', false);
     await FirebaseAuth.instance.signOut();
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, LoginPage.routeName);
+      Navigator.of(context, rootNavigator: true)
+          .pushReplacementNamed(LoginPage.routeName);
     }
   }
   @override

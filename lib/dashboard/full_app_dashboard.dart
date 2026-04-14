@@ -198,8 +198,8 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                               color: Colors.white)),
                     ),
                     const SizedBox(height: 8),
-                    // يمكنك أيضاً ترجمة الـ Streak إذا أردت
-                    Text(isAr ? '🔥 12 يوم متواصل' : '🔥 12 day streak',
+                    // استخدام الـ Streak الفعلي من قاعدة البيانات (مثل استمرارية تحدي الدراجة)
+                    Text(isAr ? '🔥 ${data['bikeStreak'] ?? 0} يوم متواصل' : '🔥 ${data['bikeStreak'] ?? 0} day streak',
                         style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 14,
@@ -388,11 +388,11 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.3,
                   children: [
-                    _gridItem('🌿', isAr ? 'المهام البيئية' : 'Eco Tasks', () => Navigator.pushNamed(context, '/eco-action')),
-                    _gridItem('💧', isAr ? 'توفير الاستهلاك' : 'Save Resources', () => Navigator.pushNamed(context, '/save-resources')),
                     _gridItem('🌳', l10n.myTree, () => _goTo(2)),
-                    _gridItem('🏆', l10n.leaderboard, () => Navigator.pushNamed(context, '/leaderboard')),
+                    _gridItem('🌿', isAr ? 'المهام البيئية' : 'Eco Tasks', () => Navigator.pushNamed(context, '/eco-action')),
                     _gridItem('🛍️', l10n.store, () => _goTo(3)),
+                    _gridItem('💧', isAr ? 'توفير الاستهلاك' : 'Save Resources', () => Navigator.pushNamed(context, '/save-resources')),
+                    _gridItem('🏆', l10n.leaderboard, () => Navigator.pushNamed(context, '/leaderboard')),
                     _gridItem('🧪', isAr ? 'تجارب بيئية' : 'Eco Labs', () => Navigator.pushNamed(context, '/eco-experiments')),
                     _gridItem('🏅', l10n.badges, () => Navigator.pushNamed(context, '/achievements')),
                     _gridItem('🚴', isAr ? 'تحدي الدراجة' : 'Bike Challenge', () => Navigator.pushNamed(context, '/bike-challenge')),

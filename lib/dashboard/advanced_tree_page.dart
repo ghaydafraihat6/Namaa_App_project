@@ -38,9 +38,15 @@ class AdvancedTreePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         // استخدام نص مترجم من ملفات الـ ARB
-        title: Text("${l10n.myTree} 🌳"),
+        title: Text("${l10n.myTree} 🌳",
+            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.green,
+        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: userDocRef.snapshots(),

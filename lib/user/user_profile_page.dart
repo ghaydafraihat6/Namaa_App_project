@@ -22,7 +22,8 @@ class ProfilePage extends StatelessWidget {
     await prefs.setBool('isLoggedIn', false);
     await FirebaseAuth.instance.signOut();
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, LoginPage.routeName);
+      Navigator.of(context, rootNavigator: true)
+          .pushReplacementNamed(LoginPage.routeName);
     }
   }
 
@@ -165,9 +166,9 @@ class ProfilePage extends StatelessWidget {
                 child: Row(children: [
                   _statCard('$pts', isArabic ? 'نقطة' : 'Points'),
                   const SizedBox(width: 10),
-                  _statCard('47', isArabic ? 'مهمة منجزة' : 'Tasks Done'),
+                  _statCard('${data['completedTasksCount'] ?? 0}', isArabic ? 'مهمة منجزة' : 'Tasks Done'),
                   const SizedBox(width: 10),
-                  _statCard('🔥 12', isArabic ? 'يوم متواصل' : 'Day Streak'),
+                  _statCard('🔥 ${data['bikeStreak'] ?? 0}', isArabic ? 'يوم متواصل' : 'Day Streak'),
                 ]),
               ),
 

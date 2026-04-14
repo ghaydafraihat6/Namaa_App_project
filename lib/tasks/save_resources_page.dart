@@ -109,34 +109,22 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         return;
       }
     } else {
-      // إذا كانت مهمة الاستحمام، نفتح المؤقت، وإلا حوار تأكيد بسيط
-      final bool isAr = l10n.localeName == 'ar';
+      // كل مهمة بدون صورة لها مؤقت خاص بها كإثبات
       if (taskId == "short_shower_timing") {
         await _showShowerTimerDialog(taskId, pts, l10n);
         return;
-      } else {
-        final bool? confirmed = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(isAr ? "تأكيد المهمة ✅" : "Confirm Task ✅", style: const TextStyle(fontFamily: 'Cairo')),
-            content: Text(isAr ? "هل تؤكد قيامك بهذه المهمة؟" : "Do you confirm completing this task?", textAlign: TextAlign.center),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(isAr ? "إلغاء" : "Cancel")),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
-                child: Text(isAr ? "تأكيد" : "Confirm", style: const TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-        );
-        if (confirmed != true) return;
-        setState(() => _isProcessing = true);
+      } else if (taskId == "brush_with_cup") {
+        await _showBrushingTimerDialog(taskId, pts, l10n);
+        return;
       }
     }
 
     try {
       final todayStr = _getTodayDateString();
+      final bool isAr = l10n.localeName == 'ar';
+
+      // المهام بدون صور تتم الموافقة عليها تلقائياً مع إضافة النقاط مباشرة
+      final String taskStatus = needsPhoto ? 'pending' : 'approved';
 
       await FirebaseFirestore.instance.collection('tasks').add({
         'userId': user.uid,
@@ -144,14 +132,34 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         'date': todayStr,
         'pts': pts,
         'imageUrl': photoUrl ?? '',
-        'status': 'pending', 
+        'status': taskStatus,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
+      // إذا المهمة بدون صورة (تلقائية) → نضيف النقاط مباشرة
+      if (!needsPhoto) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'points': FieldValue.increment(pts)});
+
+        // إرسال إشعار بالنقاط
+        await NotificationService.send(
+          title: isAr ? 'مهمة مكتملة ✅' : 'Task Completed ✅',
+          body: isAr
+              ? 'أحسنت! حصلت على $pts نقطة 🎉'
+              : 'Great job! You earned $pts points 🎉',
+          type: 'points',
+        );
+      }
+
       if (mounted) {
-        setState(() => _completedTasks[taskId] = 'pending');
-        final bool isAr = l10n.localeName == 'ar';
-        _showFeedback(isAr ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
+        setState(() => _completedTasks[taskId] = taskStatus);
+        if (needsPhoto) {
+          _showFeedback(isAr ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
+        } else {
+          _showFeedback(isAr ? "تمت المهمة! +$pts نقطة 🎉" : "Task done! +$pts points 🎉", true);
+        }
       }
     } catch (e) {
       _showFeedback(e.toString(), false);
@@ -161,8 +169,11 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
   }
 
   // --- حوار مؤقت الاستحمام (Shower Timer) ---
+  // المستخدم لازم يستنى دقيقتين على الأقل قبل ما يقدر يرسل
   Future<void> _showShowerTimerDialog(String taskId, int pts, AppLocalizations l10n) async {
-    int secondsRemaining = 5 * 60; // 5 دقائق كهدف
+    const int totalSeconds = 5 * 60; // 5 دقائق كهدف
+    const int minRequiredSeconds = 2 * 60; // الحد الأدنى دقيقتين
+    int secondsRemaining = totalSeconds;
     Timer? timer;
 
     await showDialog(
@@ -187,8 +198,11 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
           }
 
           final bool isAr = l10n.localeName == 'ar';
+          final int elapsed = totalSeconds - secondsRemaining;
+          final bool canSubmit = elapsed >= minRequiredSeconds;
+
           return AlertDialog(
-            title: Text(isAr ? "مؤقت الاستحمام 🚿" : "Shower Timer 🚿", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo')),
+            title: Text(isAr ? "مؤقت الاستحمام 🚿" : "Shower Timer 🚿", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -196,8 +210,16 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                 const SizedBox(height: 20),
                 Text(
                   formatTime(secondsRemaining),
-                  style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: canSubmit ? Colors.green : Colors.blue),
                 ),
+                const SizedBox(height: 6),
+                if (timer != null && !canSubmit)
+                  Text(
+                    isAr
+                        ? "⏳ يمكنك الإرسال بعد ${formatTime(minRequiredSeconds - elapsed)}"
+                        : "⏳ Submit available in ${formatTime(minRequiredSeconds - elapsed)}",
+                    style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.orange.shade700, fontWeight: FontWeight.w700),
+                  ),
                 const SizedBox(height: 10),
                 if (timer == null)
                   ElevatedButton(
@@ -207,10 +229,12 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     child: Text(isAr ? "بدء الاستحمام 🚿" : "Start Shower 🚿", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
                   )
+                else if (secondsRemaining > 0 && canSubmit)
+                  Text(isAr ? "أحسنت! يمكنك إرسال الإثبات الآن ✅" : "Great! You can submit now ✅", style: const TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.w700))
                 else if (secondsRemaining > 0)
                   Text(isAr ? "جارٍ التحقق... استحم بسرعة! 🫧" : "Running... Shower fast! 🫧", style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey))
                 else
-                  Text(isAr ? "انتهى الوقت! نأمل أنك وفرت الكثير من الماء. ✅" : "Time's up! Hope you saved water. ✅", style: const TextStyle(fontFamily: 'Cairo', color: Colors.red)),
+                  Text(isAr ? "انتهى الوقت! نأمل أنك وفرت الكثير من الماء ✅" : "Time's up! Hope you saved water ✅", style: const TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.w700)),
               ],
             ),
             actions: [
@@ -223,24 +247,198 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
               ),
               if (timer != null)
                 ElevatedButton(
-                  onPressed: () async {
+                  onPressed: canSubmit ? () async {
                     timer?.cancel();
                     Navigator.pop(ctx);
                     setState(() => _isProcessing = true);
                     try {
                       final todayStr = _getTodayDateString();
+                      final uid = FirebaseAuth.instance.currentUser?.uid;
                       await FirebaseFirestore.instance.collection('tasks').add({
-                        'userId': FirebaseAuth.instance.currentUser?.uid,
+                        'userId': uid,
                         'taskId': taskId,
                         'date': todayStr,
                         'pts': pts,
-                        'imageUrl': 'Shower Timer Completed (${5*60 - secondsRemaining}s)',
-                        'status': 'pending', 
+                        'imageUrl': 'Shower Timer: ${elapsed}s elapsed',
+                        'status': 'approved',
                         'createdAt': FieldValue.serverTimestamp(),
                       });
+                      if (uid != null) {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(uid)
+                            .update({'points': FieldValue.increment(pts)});
+
+                        await NotificationService.send(
+                          title: isAr ? 'مهمة مكتملة ✅' : 'Task Completed ✅',
+                          body: isAr
+                              ? 'أحسنت! حصلت على $pts نقطة 🎉'
+                              : 'Great job! You earned $pts points 🎉',
+                          type: 'points',
+                        );
+                      }
                       if (mounted) {
-                        setState(() => _completedTasks[taskId] = 'pending');
-                        _showFeedback(isAr ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
+                        setState(() => _completedTasks[taskId] = 'approved');
+                        _showFeedback(isAr ? "تمت المهمة! +$pts نقطة 🎉" : "Task done! +$pts points 🎉", true);
+                      }
+                    } catch (e) {
+                      _showFeedback(e.toString(), false);
+                    } finally {
+                      if (mounted) setState(() => _isProcessing = false);
+                    }
+                  } : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: canSubmit ? Colors.blue.shade600 : Colors.grey.shade300,
+                  ),
+                  child: Text(
+                    isAr ? "إرسال إثبات 📤" : "Send Proof 📤",
+                    style: TextStyle(color: canSubmit ? Colors.white : Colors.grey, fontFamily: 'Cairo'),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  // --- حوار مؤقت تنظيف الأسنان (Brushing Timer) ---
+  // مؤقت دقيقتين إلزامي — لازم المستخدم ينتظر الوقت كامل
+  Future<void> _showBrushingTimerDialog(String taskId, int pts, AppLocalizations l10n) async {
+    const int totalSeconds = 2 * 60; // دقيقتين
+    int secondsRemaining = totalSeconds;
+    Timer? timer;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          void startTimer() {
+            timer = Timer.periodic(const Duration(seconds: 1), (t) {
+              if (secondsRemaining > 0) {
+                setDialogState(() => secondsRemaining--);
+              } else {
+                t.cancel();
+              }
+            });
+          }
+
+          String formatTime(int seconds) {
+            int mins = seconds ~/ 60;
+            int secs = seconds % 60;
+            return "${mins.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}";
+          }
+
+          final bool isAr = l10n.localeName == 'ar';
+          final bool timerDone = timer != null && secondsRemaining == 0;
+
+          return AlertDialog(
+            title: Text(isAr ? "مؤقت تنظيف الأسنان 🪥" : "Brushing Timer 🪥", textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  isAr
+                      ? "نظّف أسنانك لمدة دقيقتين باستخدام كوب بدلاً من ترك الصنبور مفتوحاً!\n💧 توفّر حتى 12 لتر ماء!"
+                      : "Brush your teeth for 2 minutes using a cup instead of running water!\n💧 Save up to 12 liters!",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontFamily: 'Cairo'),
+                ),
+                const SizedBox(height: 20),
+                // شريط التقدم الدائري
+                SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: CircularProgressIndicator(
+                          value: timer == null ? 0 : (totalSeconds - secondsRemaining) / totalSeconds,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.grey.shade200,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            timerDone ? Colors.green : Colors.blue,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        formatTime(secondsRemaining),
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: timerDone ? Colors.green : Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (timer == null)
+                  ElevatedButton(
+                    onPressed: () {
+                      setDialogState(() => startTimer());
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                    child: Text(isAr ? "بدء التنظيف 🪥" : "Start Brushing 🪥", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                  )
+                else if (!timerDone)
+                  Text(
+                    isAr ? "استمر بالتنظيف... 🫧" : "Keep brushing... 🫧",
+                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey),
+                  )
+                else
+                  Text(
+                    isAr ? "ممتاز! أسنانك نظيفة ووفرت الماء! 🎉" : "Great! Clean teeth & water saved! 🎉",
+                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.green, fontWeight: FontWeight.w700),
+                  ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  timer?.cancel();
+                  Navigator.pop(ctx);
+                },
+                child: Text(isAr ? "إلغاء" : "Cancel"),
+              ),
+              if (timerDone)
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    setState(() => _isProcessing = true);
+                    try {
+                      final todayStr = _getTodayDateString();
+                      final uid = FirebaseAuth.instance.currentUser?.uid;
+                      await FirebaseFirestore.instance.collection('tasks').add({
+                        'userId': uid,
+                        'taskId': taskId,
+                        'date': todayStr,
+                        'pts': pts,
+                        'imageUrl': 'Brushing Timer: ${totalSeconds}s completed',
+                        'status': 'approved',
+                        'createdAt': FieldValue.serverTimestamp(),
+                      });
+                      if (uid != null) {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(uid)
+                            .update({'points': FieldValue.increment(pts)});
+
+                        await NotificationService.send(
+                          title: isAr ? 'مهمة مكتملة ✅' : 'Task Completed ✅',
+                          body: isAr
+                              ? 'أحسنت! حصلت على $pts نقطة 🎉'
+                              : 'Great job! You earned $pts points 🎉',
+                          type: 'points',
+                        );
+                      }
+                      if (mounted) {
+                        setState(() => _completedTasks[taskId] = 'approved');
+                        _showFeedback(isAr ? "تمت المهمة! +$pts نقطة 🎉" : "Task done! +$pts points 🎉", true);
                       }
                     } catch (e) {
                       _showFeedback(e.toString(), false);
@@ -249,7 +447,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
-                  child: Text(isAr ? "إرسال إثبات 📤" : "Send Proof 📤", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                  child: Text(isAr ? "تم التنظيف ✅" : "Done ✅", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
                 ),
             ],
           );
@@ -257,6 +455,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
       ),
     );
   }
+
 
   Future<ImageSource?> _showSourcePicker(AppLocalizations l10n) {
     return showModalBottomSheet<ImageSource>(
@@ -366,7 +565,13 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                         ),
                       ),
                       Text(
-                        isPending ? (isAr ? "قيد المراجعة ⏳" : "Pending ⏳") : (isCompleted ? (isAr ? "تم الإنجاز ✅" : "Done ✅") : (isAr ? "إثبات 📸 - تكسب $points نقطة" : "Proof 📸 - Earn $points pts")),
+                        isPending
+                            ? (isAr ? "قيد المراجعة ⏳" : "Pending ⏳")
+                            : (isCompleted
+                                ? (isAr ? "تم الإنجاز ✅" : "Done ✅")
+                                : needsPhoto
+                                    ? (isAr ? "إثبات 📸 - تكسب $points نقطة" : "Proof 📸 - Earn $points pts")
+                                    : (isAr ? "تأكيد ✅ - تكسب $points نقطة" : "Confirm ✅ - Earn $points pts")),
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           color: isPending ? Colors.orange.shade900 : (isCompleted ? Colors.green.shade900 : Colors.blue.shade900),
@@ -400,7 +605,11 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                 child: Text(
                   isPending 
                       ? (isAr ? "بانتظار المراجعة... ⏳" : "Pending... ⏳") 
-                      : (isCompleted ? (isAr ? "تمت المهمة بنجاح ✅" : "Task successful ✅") : (isAr ? "إرسال إثبات 📤" : "Send Proof 📤")),
+                      : (isCompleted
+                          ? (isAr ? "تمت المهمة بنجاح ✅" : "Task successful ✅")
+                          : needsPhoto
+                              ? (isAr ? "إرسال إثبات 📤" : "Send Proof 📤")
+                              : (isAr ? "تأكيد المهمة ✅" : "Confirm Task ✅")),
                   style: TextStyle(
                     fontFamily: 'Cairo', 
                     color: isCompleted ? Colors.grey : Colors.white, 

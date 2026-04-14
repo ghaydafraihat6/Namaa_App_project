@@ -1,0 +1,73 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // دالة مساعدة (Function) للتحقق هل المستخدم المسجل حالياً هو مدير (Admin) أم لا
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // دالة للتحقق أن المستخدم مسجل دخول
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // 1️⃣ حماية بيانات المستخدمين (Users)
+    match /users/{userId} {
+      // السماح بقراءة البيانات لأي مستخدم (عشان يقدر يرسل لصديقه أو يشوف لوحة الصدارة)
+      allow read: if isAuth();
+      
+      // لا يُسمح بإنشاء حساب جديد إلا لنفس الـ ID الخاص بالمستخدم
+      allow create: if isAuth() && request.auth.uid == userId;
+
+      // تحديث البيانات (المستخدم العادي يمكنه تحديث بياناته باستثناء الصلاحيات، و الأدمن يمكنه تخطي هذا)
+      allow update: if (isAuth() && request.auth.uid == userId && 
+                       !request.resource.data.diff(resource.data).affectedKeys()
+                        .hasAny(['role', 'isAdmin', 'points'])) // منع المستخدم من تعديل نقاطه أو صلاحياته يدوياً
+                    || isAdmin();
+
+      allow delete: if isAdmin(); // الإدارة فقط هي من تحذف الحسابات
+
+      // بيانات وتاريخ إنجاز التحديات
+      match /completedTasks/{taskId} {
+        allow read: if isAuth();
+        allow write: if isAuth() && request.auth.uid == userId; // المستخدم يكتب لنفسه فقط
+      }
+    }
+
+    // 2️⃣ حماية المنتجات (Products)
+    match /products/{productId} {
+      // الجميع يقدر يتصفح المنتجات
+      allow read: if isAuth();
+      // الأدمن فقط يقدر يضيف، يعدل، أو يحذف منتج
+      allow write: if isAdmin();
+
+      // التقييمات داخل المنتج
+      match /reviews/{reviewId} {
+        allow read: if isAuth();
+        allow create, update: if isAuth(); // المستخدمين يضيفون تقييم
+        allow delete: if isAdmin() || (isAuth() && resource.data.userId == request.auth.uid); // الأدمن بيحذف أو صاحب التقييم
+      }
+    }
+
+    // 3️⃣ حماية طلبات إعادة التدوير (Recycle Requests)
+    match /recycle_requests/{requestId} {
+      // الأدمن يقدر يقرأ كل الطلبات، المستخدم يقدر يقرأ طلباته بس
+      allow read: if isAdmin() || (isAuth() && resource.data.userId == request.auth.uid);
+      
+      // المستخدم العادي يقدر يرفع طلب جديد الخاص فيه
+      allow create: if isAuth() && request.resource.data.userId == request.auth.uid;
+      
+      // الأدمن فقط يقدر يعدل (مثل تغيير حالة الطلب لـ completed)
+      allow update, delete: if isAdmin();
+    }
+    
+    // 4️⃣ حماية الإشعارات (Notifications)
+    match /notifications/{notifId} {
+      allow read: if isAuth();
+      allow write: if isAdmin(); // النظام (والأدمن) هو بيرسل الإشعارات فقط
+    }
+  }
+}
