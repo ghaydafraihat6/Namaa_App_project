@@ -37,14 +37,23 @@ class MainWrapperState extends State<MainWrapper> {
     }
   }
 
-  // ✅ التعديل هنا: وضعنا RecycleDashboard في التبويب الثاني
-  final List<Widget> _screens = [
-    const FullAppDashboard(),       // 0 - الرئيسية
-    const RecycleDashboard(),        // 1 - التدوير (بدلاً من المهام القديمة)
-    const TreePage(),               // 2 - شجرتي
-    EcoStorePage(),                 // 3 - المتجر
-    const ProfilePage(),            // 4 - حسابي
-  ];
+  // ✅ بناء الـ screen عند الطلب فقط لتجنب كراش currentUser!
+  Widget _buildScreen(int index) {
+    switch (index) {
+      case 0:
+        return const FullAppDashboard();
+      case 1:
+        return const RecycleDashboard();
+      case 2:
+        return const TreePage();
+      case 3:
+        return EcoStorePage();
+      case 4:
+        return const ProfilePage();
+      default:
+        return const FullAppDashboard();
+    }
+  }
 
   Widget _buildOffstageNavigator(int index) {
     return Offstage(
@@ -54,7 +63,7 @@ class MainWrapperState extends State<MainWrapper> {
         onGenerateRoute: (routeSettings) {
           if (routeSettings.name == '/' || routeSettings.name == null) {
             return MaterialPageRoute(
-              builder: (context) => _screens[index],
+              builder: (context) => _buildScreen(index),
               settings: routeSettings,
             );
           }
@@ -88,7 +97,7 @@ class MainWrapperState extends State<MainWrapper> {
         child: Scaffold(
           body: Stack(
             children: List.generate(
-              _screens.length,
+              5,
                   (index) => _buildOffstageNavigator(index),
             ),
           ),

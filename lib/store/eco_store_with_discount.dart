@@ -282,35 +282,35 @@ class _EcoStorePageState extends State<EcoStorePage> {
   Widget _totalRow(double total) {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
     return Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: const Color(0xFFEBF4DD),
-      borderRadius: BorderRadius.circular(14),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          isAr ? 'الإجمالي:' : 'Total:',
-          style: TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBF4DD),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            isAr ? 'الإجمالي:' : 'Total:',
+            style: TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        Text(
-          isAr ? '${total.toStringAsFixed(2)} د.أ' : '${total.toStringAsFixed(2)} JOD',
-          style: const TextStyle(
-            fontFamily: 'Cairo',
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: Color(0xFF386641),
+          Text(
+            isAr ? '${total.toStringAsFixed(2)} د.أ' : '${total.toStringAsFixed(2)} JOD',
+            style: const TextStyle(
+              fontFamily: 'Cairo',
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF386641),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _greenBtn(String label, VoidCallback onTap) => SizedBox(
     width: double.infinity,
@@ -561,7 +561,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   _totalRow(_total(allProducts, pts)),
                   const SizedBox(height: 12),
                   _greenBtn(isAr ? 'إتمام الشراء →' : 'Checkout →', () {
-                    Navigator.pop(context);
+                    Navigator.pop(ctx);
                     _showCheckout(allProducts, pts);
                   }),
                 ],
@@ -634,7 +634,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => Padding(
+      builder: (checkoutCtx) => Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
           top: 20,
@@ -670,9 +670,15 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   '📱',
                   phoneCtrl,
                   type: TextInputType.phone,
-                  v: (v) => RegExp(r'^07[0-9]{8}$').hasMatch(v?.trim() ?? '')
-                      ? null
-                      : isAr ? 'مثال: 0791234567' : 'Example: 0791234567',
+                  v: (v) {
+                    final normalized = (v?.trim() ?? '').replaceAllMapped(
+                      RegExp(r'[٠-٩]'),
+                      (m) => String.fromCharCode(m.group(0)!.codeUnitAt(0) - 0x0660 + 0x0030),
+                    );
+                    return RegExp(r'^07[0-9]{8}$').hasMatch(normalized)
+                        ? null
+                        : isAr ? 'مثال: 0791234567' : 'Example: 0791234567';
+                  },
                 ),
                 const SizedBox(height: 12),
                 _field(
@@ -691,18 +697,23 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   if (!formKey.currentState!.validate()) return;
 
                   final savedName = nameCtrl.text.trim();
+                  
+                  final normalizedPhone = (phoneCtrl.text.trim()).replaceAllMapped(
+                    RegExp(r'[٠-٩]'),
+                    (m) => String.fromCharCode(m.group(0)!.codeUnitAt(0) - 0x0660 + 0x0030),
+                  );
 
                   try {
                     final gotGift = await _placeOrder(
                       products: products,
                       points: pts,
                       name: savedName,
-                      phone: phoneCtrl.text.trim(),
+                      phone: normalizedPhone,
                       address: addressCtrl.text.trim(),
                     );
 
                     if (mounted) {
-                      Navigator.pop(context);
+                      Navigator.pop(checkoutCtx);
                       _showSuccess(savedName, gotGift: gotGift);
                     }
                   } catch (e) {
@@ -721,59 +732,90 @@ class _EcoStorePageState extends State<EcoStorePage> {
   void _showSuccess(String name, {bool gotGift = false}) {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
     showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      shape:
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            gotGift ? '🎁' : '🎉',
-            style: const TextStyle(fontSize: 60),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            gotGift ? (isAr ? 'تم تأكيد طلبك ومعه هدية!' : 'Order confirmed with a gift!') : (isAr ? 'تم تأكيد طلبك!' : 'Order confirmed!'),
-            style: const TextStyle(
-              fontFamily: 'Cairo',
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF386641),
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              gotGift ? '🎁' : '🎉',
+              style: const TextStyle(fontSize: 60),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            gotGift
-                ? (isAr ? 'شكراً $name!\nحصلت على هدية: الكبسولة الذكية الزراعية 🌱' : 'Thanks $name!\nReceived gift: Smart Capsule 🌱')
-                : (isAr ? 'شكراً $name!\nسيتم التواصل معك قريباً 🌿' : 'Thanks $name!\nWe will contact you soon 🌿'),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Cairo',
-              fontSize: 14,
-              color: Colors.grey,
-              height: 1.7,
+            const SizedBox(height: 12),
+            Text(
+              gotGift ? (isAr ? 'تم تأكيد طلبك ومعه هدية!' : 'Order confirmed with a gift!') : (isAr ? 'تم تأكيد طلبك!' : 'Order confirmed!'),
+              style: const TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF386641),
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 20),
-          if (gotGift) ...[
+            const SizedBox(height: 8),
+            Text(
+              gotGift
+                  ? (isAr ? 'شكراً $name!\nحصلت على هدية: الكبسولة الذكية الزراعية 🌱' : 'Thanks $name!\nReceived gift: Smart Capsule 🌱')
+                  : (isAr ? 'شكراً $name!\nسيتم التواصل معك قريباً 🌿' : 'Thanks $name!\nWe will contact you soon 🌿'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 14,
+                color: Colors.grey,
+                height: 1.7,
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (gotGift) ...[
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogCtx);
+                    Navigator.pushNamed(context, '/smart-capsule');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF52B788),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    isAr ? 'عرض الهدية 🌱' : 'View Gift 🌱',
+                    style: const TextStyle(
+                      fontFamily: 'Cairo',
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/smart-capsule');
+                  Navigator.pop(dialogCtx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MyOrdersPage(userId: _user.uid),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF52B788),
+                  backgroundColor: const Color(0xFF386641),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 child: Text(
-                  isAr ? 'عرض الهدية 🌱' : 'View Gift 🌱',
+                  isAr ? 'الذهاب إلى طلباتي 📦' : 'Go to my orders 📦',
                   style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontWeight: FontWeight.w700,
@@ -782,41 +824,10 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
           ],
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MyOrdersPage(userId: _user.uid),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF386641),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                isAr ? 'الذهاب إلى طلباتي 📦' : 'Go to my orders 📦',
-                style: const TextStyle(
-                  fontFamily: 'Cairo',
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   @override

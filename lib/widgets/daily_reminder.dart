@@ -27,9 +27,54 @@ class DailyReminderWidget extends StatelessWidget {
       future: _hasCompletedTaskToday(),
       builder: (context, snapshot) {
         final l10n = AppLocalizations.of(context)!;
-        final done = snapshot.data ?? true;
+        
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // عرض شريط تحميل خفيف أو مساحة فارغة أثناء التحقق بدلاً من الإخفاء مباشرة
+          return const SizedBox(height: 80, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
+        }
 
-        if (done) return const SizedBox();
+        if (snapshot.hasError) {
+          return Center(child: Text('خطأ في التحقق من المهام: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
+        }
+
+        final done = snapshot.data ?? false;
+
+        if (done) {
+          // إذا كان قد أنجز مهمة اليوم، تظهر رسالة شكر بدلاً من إخفاء الكرت تماماً (ليعرف المستخدم أنها تعمل)
+          return Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEBF4DD),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Row(
+              children: [
+                const Text('🎉', style: TextStyle(fontSize: 32)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('أنجزت مهامك اليوم!',
+                          style: TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF386641))),
+                       Text('عد غداً لمهام جديدة 🌿',
+                          style: const TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF52B788))),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
 
         return Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),

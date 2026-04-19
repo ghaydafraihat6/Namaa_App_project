@@ -67,23 +67,44 @@ class _AdminProductsPageState extends State<AdminProductsPage> {
             icon: const Icon(Icons.star_half_outlined),
             tooltip: isAr ? 'توليد تقييمات وهمية' : 'Generate Dummy Reviews',
             onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(isAr ? 'توليد تقييمات تجريبية' : 'Generate Dummy Reviews', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                  content: Text(isAr 
+                    ? 'هذا الزر مخصص للاختبار فقط. سيقوم بإضافة 3 تقييمات وهمية لكل منتج في المتجر لغايات تجربة التصميم.\n\nهل ترغب بالاستمرار؟' 
+                    : 'This button is for testing purposes only. It will add 3 dummy reviews to each product to test the UI.\n\nDo you want to continue?', 
+                    style: const TextStyle(fontFamily: 'Cairo', height: 1.5)),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(isAr ? 'إلغاء' : 'Cancel', style: const TextStyle(fontFamily: 'Cairo', color: Colors.grey))),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: primaryGreen),
+                      onPressed: () => Navigator.pop(ctx, true), 
+                      child: Text(isAr ? 'توليد التقييمات' : 'Generate', style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm != true) return;
+
               try {
-                if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? 'جاري التوليد...' : 'Generating...', style: const TextStyle(fontFamily: 'Cairo'))));
+                if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? 'جاري إضافة التقييمات التجريبية...' : 'Adding dummy reviews...', style: const TextStyle(fontFamily: 'Cairo'))));
                 final snap = await FirebaseFirestore.instance.collection('products').get();
                 int count = 0;
                 for (var doc in snap.docs) {
                   for (var i = 1; i <= 3; i++) {
                     await doc.reference.collection('reviews').add({
-                      'userName': isAr ? 'مستخدم $i' : 'User $i',
+                      'userName': isAr ? 'مستخدم تجريبي $i' : 'Test User $i',
                       'rating': 4.0 + (i % 2),
-                      'comment': isAr ? 'منتج رائع جداً أنصح به! 🌿' : 'Great eco-friendly product! 🌿',
+                      'comment': isAr ? 'منتج ممتاز للبيئة، تجربة تقييم رقم $i 🌿' : 'Great eco product, test review #$i 🌿',
                       'userId': 'dummy_user_$i',
                       'createdAt': FieldValue.serverTimestamp(),
                     });
                     count++;
                   }
                 }
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: primaryGreen, content: Text(isAr ? 'تم توليد $count تقييم بنجاح! ✅' : '$count reviews generated successfully! ✅', style: const TextStyle(fontFamily: 'Cairo'))));
+                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: primaryGreen, content: Text(isAr ? 'نجاح! تمت إضافة $count تقييم تجريبي لجميع المنتجات ✅' : 'Success! Added $count dummy reviews to all products ✅', style: const TextStyle(fontFamily: 'Cairo'))));
               } catch (e) {
                 if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Colors.red, content: Text('Error: $e')));
               }
@@ -161,6 +182,16 @@ class _ProductFormSheet extends StatefulWidget {
 class _ProductFormSheetState extends State<_ProductFormSheet> {
   final _formKey = GlobalKey<FormState>();
   
+  String _arabicToEnglishNumbers(String input) {
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    String result = input;
+    for (int i = 0; i < arabic.length; i++) {
+      result = result.replaceAll(arabic[i], english[i]);
+    }
+    return result;
+  }
+
   late TextEditingController _nameCtrl;
   late TextEditingController _descCtrl;
   late TextEditingController _priceCtrl;
@@ -228,8 +259,8 @@ class _ProductFormSheetState extends State<_ProductFormSheet> {
       final payload = {
         'name': _nameCtrl.text.trim(),
         'desc': _descCtrl.text.trim(),
-        'price': double.tryParse(_priceCtrl.text) ?? 0.0,
-        'stock': int.tryParse(_stockCtrl.text) ?? 0,
+        'price': double.tryParse(_arabicToEnglishNumbers(_priceCtrl.text)) ?? 0.0,
+        'stock': int.tryParse(_arabicToEnglishNumbers(_stockCtrl.text)) ?? 0,
         'emoji': _emojiCtrl.text.trim(),
         'plastic': _plasticCtrl.text.trim(),
         'category': _category,

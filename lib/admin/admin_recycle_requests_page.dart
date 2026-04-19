@@ -118,6 +118,7 @@ class AdminRecycleRequestsPage extends StatelessWidget {
             final ts = data['createdAt'] as Timestamp?;
             final date = ts != null ? ts.toDate().toString().substring(0, 16) : '';
             final materials = List<String>.from(data['materials'] ?? []);
+            final userId = data['userId'];
 
             return Card(
               margin: const EdgeInsets.only(bottom: 16),
@@ -164,6 +165,40 @@ class AdminRecycleRequestsPage extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (userId != null && userId.toString().isNotEmpty)
+                                FutureBuilder<DocumentSnapshot>(
+                                  future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+                                  builder: (context, userSnapshot) {
+                                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                                       return Padding(
+                                         padding: const EdgeInsets.only(bottom: 4.0),
+                                         child: Text(isAr ? 'جاري جلب المستخدم...' : 'Loading user...', style: const TextStyle(color: Colors.grey, fontFamily: 'Cairo', fontSize: 12)),
+                                       );
+                                    }
+                                    if (userSnapshot.hasData && userSnapshot.data != null && userSnapshot.data!.exists) {
+                                      final userData = userSnapshot.data!.data() as Map<String, dynamic>;
+                                      final name = userData['fullName'] ?? userData['name'] ?? (isAr ? 'بدون اسم' : 'No Name');
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 4.0),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.person, size: 14, color: Colors.blueGrey),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                name,
+                                                style: const TextStyle(color: Colors.blueGrey, fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 13),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox();
+                                  },
+                                ),
                               Text(isAr ? 'المواد: ${materials.join(', ')}' : 'Materials: ${materials.join(', ')}', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 14)),
                               const SizedBox(height: 4),
                               Text(isAr ? 'النقاط المكتسبة: $points ⭐' : 'Earned Points: $points ⭐', style: TextStyle(fontFamily: 'Cairo', color: primaryGreen, fontWeight: FontWeight.bold)),

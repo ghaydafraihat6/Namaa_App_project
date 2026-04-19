@@ -12,6 +12,16 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   String searchQuery = '';
   final TextEditingController _searchCtrl = TextEditingController();
 
+  String _arabicToEnglishNumbers(String input) {
+    const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    String result = input;
+    for (int i = 0; i < arabic.length; i++) {
+      result = result.replaceAll(arabic[i], english[i]);
+    }
+    return result;
+  }
+
   // ── دوال تحكم الإدارة ──
 
   // 1. تغيير صلاحية الأدمن
@@ -74,7 +84,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  int val = int.tryParse(pointsCtrl.text) ?? 0;
+                  int val = int.tryParse(_arabicToEnglishNumbers(pointsCtrl.text)) ?? 0;
                   if (val <= 0) return;
                   int newPoints = isAdding ? (currentPoints + val) : (currentPoints - val);
                   if (newPoints < 0) newPoints = 0; // منع النقاط بالسالب
