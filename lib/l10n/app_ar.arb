@@ -514,5 +514,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "splash_app_name": "نـمـاء",
+  "splash_tagline_part1": "بَـصـمـتُـك",
+  "splash_tagline_part2": "الـخـضـراء  تـبـدأ  مـن  هـنـا  ....",
+  "splash_colon": "  :  ",
+  "splash_version": "Version 1.0.0"
 }

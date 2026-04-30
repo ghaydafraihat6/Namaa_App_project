@@ -2281,6 +2281,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sorry, an error occurred: {error}'**
   String store_error_prefix(String error);
+
+  /// No description provided for @splash_app_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Namaa'**
+  String get splash_app_name;
+
+  /// No description provided for @splash_tagline_part1.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Green'**
+  String get splash_tagline_part1;
+
+  /// No description provided for @splash_tagline_part2.
+  ///
+  /// In en, this message translates to:
+  /// **'Footprint Starts Here ....'**
+  String get splash_tagline_part2;
+
+  /// No description provided for @splash_colon.
+  ///
+  /// In en, this message translates to:
+  /// **' : '**
+  String get splash_colon;
+
+  /// No description provided for @splash_version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0.0'**
+  String get splash_version;
 }
 
 class _AppLocalizationsDelegate

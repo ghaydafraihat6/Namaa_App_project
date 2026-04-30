@@ -1183,4 +1183,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String store_error_prefix(String error) {
     return 'Sorry, an error occurred: $error';
   }
+
+  @override
+  String get splash_app_name => 'Namaa';
+
+  @override
+  String get splash_tagline_part1 => 'Your Green';
+
+  @override
+  String get splash_tagline_part2 => 'Footprint Starts Here ....';
+
+  @override
+  String get splash_colon => ' : ';
+
+  @override
+  String get splash_version => 'Version 1.0.0';
 }

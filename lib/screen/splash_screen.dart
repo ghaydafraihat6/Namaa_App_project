@@ -3,6 +3,7 @@ import 'package:namaa_project_app/screen/login_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -67,6 +68,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: SafeArea( // ✅ SafeArea
         child: Container(
@@ -97,24 +100,24 @@ class _SplashScreenState extends State<SplashScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: RichText(
                           textAlign: TextAlign.center,
-                          text: const TextSpan(
-                            style: TextStyle(
+                          text: TextSpan(
+                            style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
                             ),
                             children: [
                               TextSpan(
-                                text: "نـمـاء  :  ",
-                                style: TextStyle(color: Color(0xFF006400)),
+                                text: "${loc.splash_app_name}${loc.splash_colon}",
+                                style: const TextStyle(color: Color(0xFF006400)),
                               ),
                               TextSpan(
-                                text: " بَـصـمـتُـك ",
-                                style: TextStyle(color: Color(0xFFF2811D)),
+                                text: " ${loc.splash_tagline_part1} ",
+                                style: const TextStyle(color: Color(0xFFF2811D)),
                               ),
                               TextSpan(
-                                text: "   الـخـضـراء  تـبـدأ  مـن  هـنـا  ....",
-                                style: TextStyle(color: Color(0xFF006400)),
+                                text: "   ${loc.splash_tagline_part2}",
+                                style: const TextStyle(color: Color(0xFF006400)),
                               ),
                             ],
                           ),
@@ -140,9 +143,9 @@ class _SplashScreenState extends State<SplashScreen> {
                   opacity: _opacity,
                   child: Column(
                     children: [
-                      const Text(
-                        "Version 1.0.0",
-                        style: TextStyle(
+                      Text(
+                        loc.splash_version,
+                        style: const TextStyle(
                           fontFamily: 'Cairo',
                           color: Colors.grey,
                           fontWeight: FontWeight.w900,
@@ -170,3 +173,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+

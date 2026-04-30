@@ -1168,4 +1168,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String store_error_prefix(String error) {
     return 'عذراً، حدث خطأ: $error';
   }
+
+  @override
+  String get splash_app_name => 'نـمـاء';
+
+  @override
+  String get splash_tagline_part1 => 'بَـصـمـتُـك';
+
+  @override
+  String get splash_tagline_part2 => 'الـخـضـراء  تـبـدأ  مـن  هـنـا  ....';
+
+  @override
+  String get splash_colon => '  :  ';
+
+  @override
+  String get splash_version => 'Version 1.0.0';
 }

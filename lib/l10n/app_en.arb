@@ -528,5 +528,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "splash_app_name": "Namaa",
+  "splash_tagline_part1": "Your Green",
+  "splash_tagline_part2": "Footprint Starts Here ....",
+  "splash_colon": " : ",
+  "splash_version": "Version 1.0.0"
 }
