@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sensors_plus/sensors_plus.dart'; // مستشعر الحركة
-import 'package:audioplayers/audioplayers.dart'; // الأصوات
+
+
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
 
@@ -15,246 +16,273 @@ class BikeChallengePage extends StatefulWidget {
 }
 
 class _BikeChallengePageState extends State<BikeChallengePage> {
-  final int targetSeconds = 1200;
+  final int targetSeconds = 1200; // 20 min
   int currentSeconds = 0;
-  Timer? timer;
   bool isRunning = false;
-  bool _todayCompleted = false;
-
-  String get _todayStr {
-    final now = DateTime.now();
-    return '${now.year}-${now.month}-${now.day}';
-  }
-
-  // مستشعرات الحركة
+  Timer? _timer;
+  StreamSubscription<AccelerometerEvent>? _accelSubscription;
   double _lastAccel = 0.0;
   int _noMovementSeconds = 0;
+  final String _todayStr = DateTime.now().toIso8601String().substring(0, 10);
+  bool _todayCompleted = false;
 
-  final AudioPlayer _audioPlayer = AudioPlayer();
+
 
   @override
   void initState() {
     super.initState();
     _checkTodayStatus();
-    // مراقبة الحركة لمنع الغش
-    accelerometerEventStream().listen((AccelerometerEvent event) {
-      double accel = event.x.abs() + event.y.abs() + event.z.abs();
-      _lastAccel = accel;
-    });
   }
 
   Future<void> _checkTodayStatus() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-    final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-    final data = doc.data() ?? {};
-    if (mounted) {
-      setState(() => _todayCompleted = data['lastBikeDate'] == _todayStr);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        final data = doc.data() ?? {};
+        if (mounted) {
+          setState(() => _todayCompleted = data['lastBikeDate'] == _todayStr);
+        }
+      }
+    } catch (e) {
+      debugPrint("BikeChallenge: Error checking status: $e");
     }
   }
 
-  @override
-  void dispose() {
-    timer?.cancel();
-    _audioPlayer.dispose();
-    super.dispose();
-  }
+  void _startChallenge() {
+    if (isRunning) return;
+    
+    setState(() {
+      isRunning = true;
+      _noMovementSeconds = 0;
+    });
 
-  void _playSound(String type) async {
-    // تأكد من وجود الملفات في assets/audio/
-    String path = (type == 'start') ? 'audio/start_bike.mp3' : 'audio/success.mp3';
-    await _audioPlayer.play(AssetSource(path));
-  }
 
-  void startTimer() {
-    _playSound('start');
-    timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      if (!mounted) {
-        t.cancel();
-        return;
-      }
 
-      // فحص الحركة: إذا كان التسارع ضعيف جداً (الجهاز ثابت)
-      if (_lastAccel < 10.5) { // 9.8 هو الجاذبية الأرضية، ما فوق ذلك حركة
-        _noMovementSeconds++;
+    // مراقبة حركة الجهاز
+    try {
+      // sensors_plus 6.x uses accelerometerEventStream() method
+      _accelSubscription = accelerometerEventStream().listen((AccelerometerEvent event) {
+        double accel = event.x.abs() + event.y.abs() + event.z.abs();
+        _lastAccel = accel;
+        
+        // إذا كان الجهاز ثابتاً (قريب من الجاذبية 9.8)
+        if (_lastAccel < 10.2) { 
+          _noMovementSeconds++;
+        } else {
+          _noMovementSeconds = 0;
+        }
+
+        // إذا توقف لمدة 30 ثانية
+        if (_noMovementSeconds > 30) {
+          _stopChallenge();
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(AppLocalizations.of(context)!.bike_warning_stopped)),
+            );
+          }
+        }
+      }, onError: (e) {
+        debugPrint("BikeChallenge: Sensor Error: $e");
+      });
+    } catch (e) {
+      debugPrint("BikeChallenge: Error starting sensor: $e");
+    }
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (currentSeconds < targetSeconds) {
+        setState(() => currentSeconds++);
       } else {
-        _noMovementSeconds = 0;
-      }
-
-      // إذا توقف عن الحركة لأكثر من 30 ثانية
-      if (_noMovementSeconds > 30) {
-        stopTimer();
-        _showMovementAlert();
-        return;
-      }
-
-      setState(() => currentSeconds++);
-      if (currentSeconds >= targetSeconds) {
-        stopTimer();
         _onChallengeComplete();
       }
     });
-    setState(() => isRunning = true);
   }
 
-  void stopTimer() {
-    timer?.cancel();
+  void _stopChallenge() {
     setState(() => isRunning = false);
+    _timer?.cancel();
+    _accelSubscription?.cancel();
   }
 
-  void _showMovementAlert() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("⚠️ يبدو أنك توقفت! تحرك لمواصلة التحدي"),
-        backgroundColor: Colors.orange,
-      ),
-    );
-  }
+
 
   Future<void> _onChallengeComplete() async {
-    _playSound('success');
+    _stopChallenge();
+
+
     final user = FirebaseAuth.instance.currentUser;
-    final l10n = AppLocalizations.of(context)!;
     if (user == null) return;
 
-    final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
+    final l10n = AppLocalizations.of(context)!;
 
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final userDoc = FirebaseFirestore.instance.collection('users').doc(user.uid);
         final snapshot = await transaction.get(userDoc);
-        final data = snapshot.data() ?? {};
         
-        // التحقق إذا أكمل التحدي اليوم بالفعل
-        if (data['lastBikeDate'] == _todayStr) return;
+        if (!snapshot.exists) return;
 
-        // حساب الأيام المتتالية
-        final yesterday = DateTime.now().subtract(const Duration(days: 1));
-        final yesterdayStr = '${yesterday.year}-${yesterday.month}-${yesterday.day}';
-        final lastDate = data['lastBikeDate'] ?? '';
-        final newStreak = (lastDate == yesterdayStr) ? (data['bikeStreak'] ?? 0) + 1 : 1;
+        int currentPoints = snapshot.data()?['points'] ?? 0;
+        int currentStreak = snapshot.data()?['bikeStreak'] ?? 0;
+        String lastDate = snapshot.data()?['lastBikeDate'] ?? "";
+
+        // حساب الـ Streak
+        DateTime now = DateTime.now();
+        DateTime yesterday = now.subtract(const Duration(days: 1));
+        String yesterdayStr = yesterday.toIso8601String().substring(0, 10);
+
+        if (lastDate == yesterdayStr) {
+          currentStreak++;
+        } else if (lastDate != _todayStr) {
+          currentStreak = 1;
+        }
 
         transaction.update(userDoc, {
-          'points': FieldValue.increment(40),
+          'points': currentPoints + 40,
+          'bikeStreak': currentStreak,
           'lastBikeDate': _todayStr,
-          'bikeStreak': newStreak,
-          'totalCo2Saved': FieldValue.increment((targetSeconds / 60) * 20),
+          'totalCo2Saved': FieldValue.increment((targetSeconds / 60.0) * 20.0),
         });
       });
 
       if (mounted) {
         setState(() => _todayCompleted = true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("🎉 أحسنت! +40 نقطة | ${l10n.bike_success_snack}"), backgroundColor: const Color(0xFF386641)),
-        );
-        await NotificationService.send(
-          title: '🚴 أكملت تحدي الدراجة!',
-          body: 'رائع! حصلت على 40 نقطة ووفرت ${((targetSeconds / 60) * 20).toStringAsFixed(0)}g من CO₂',
-          type: 'challenge',
+          SnackBar(
+            content: Text("🎉 ${l10n.bike_success_snack}"),
+            backgroundColor: const Color(0xFF386641),
+          ),
         );
       }
+
+      // إرسال إشعار
+      await NotificationService.send(
+        recipientUid: user.uid,
+        title: l10n.bike_challenge_title,
+        body: l10n.bike_success_snack,
+        type: 'challenge',
+      );
+
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("BikeChallenge: Completion Error: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.global_error + e.toString())),
+        );
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _accelSubscription?.cancel();
+
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return Scaffold(body: Center(child: Text(l10n.login)));
-
-    // حساب توفير الكربون لحظياً
-    double co2Saved = (currentSeconds / 60) * 20;
+    
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(l10n.bike_challenge_title)),
+        body: Center(child: Text(l10n.login)),
+      );
+    }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9F8),
+      backgroundColor: const Color(0xFFF1F8E9),
       appBar: AppBar(
-        title: Text(l10n.bike_challenge_title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF386641),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(l10n.bike_challenge_title),
+        elevation: 0,
       ),
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-          var userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          if (snapshot.hasError) {
+            return Center(child: Text(l10n.global_error));
+          }
 
+          final data = snapshot.data?.data() as Map<String, dynamic>? ?? {};
+          
           return SingleChildScrollView(
-              padding: const EdgeInsets.all(25),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                // كارت الـ CO2 والأثر البيئي
-                _buildImpactCard(l10n, co2Saved),
-
-                const SizedBox(height: 30),
-
-                // دائرة التقدم والوقت
-                _buildTimerCircle(progress: (currentSeconds / targetSeconds)),
-
-                const SizedBox(height: 40),
-
-                // أزرار التحكم
-                if (!_todayCompleted)
-                  _buildControlButtons(l10n)
-                else
-                  _buildCompletionStatus(l10n, userData),
-              ],
+                  _buildHeader(l10n, data),
+                  const SizedBox(height: 30),
+                  _buildTimerCircle(),
+                  const SizedBox(height: 40),
+                  if (!_todayCompleted) _buildControlButtons(l10n) else _buildCompletionStatus(l10n, data),
+                ],
+              ),
             ),
           );
-        },
+        }
       ),
     );
   }
 
-  Widget _buildImpactCard(AppLocalizations l10n, double currentCo2) {
+  Widget _buildHeader(AppLocalizations l10n, Map<String, dynamic> data) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF386641), Color(0xFF6A994E)]),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _impactItem('☁️', "${currentCo2.toStringAsFixed(1)}g", l10n.co2Saved),
-          const VerticalDivider(color: Colors.white54),
-          _impactItem('🌱', "0.2", l10n.treesEquivalent),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.dayStreak(data['bikeStreak'] ?? 0), style: const TextStyle(color: Colors.orange, fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(l10n.dailyStreak, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+            ],
+          ),
+          const Icon(Icons.directions_bike, size: 40, color: Color(0xFF386641)),
         ],
       ),
     );
   }
 
-  Widget _impactItem(String icon, String value, String label) {
-    return Column(
-      children: [
-        Text(icon, style: const TextStyle(fontSize: 30)),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-        Text(label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
-      ],
-    );
-  }
+  Widget _buildTimerCircle() {
+    double progress = currentSeconds / targetSeconds;
+    int displayMin = (targetSeconds - currentSeconds) ~/ 60;
+    int displaySec = (targetSeconds - currentSeconds) % 60;
 
-  Widget _buildTimerCircle({required double progress}) {
     return Stack(
       alignment: Alignment.center,
       children: [
         SizedBox(
-          width: 220, height: 220,
+          width: 220,
+          height: 220,
           child: CircularProgressIndicator(
             value: progress,
             strokeWidth: 12,
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: Colors.grey[300],
             color: const Color(0xFF386641),
           ),
         ),
         Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "${(currentSeconds ~/ 60).toString().padLeft(2, '0')}:${(currentSeconds % 60).toString().padLeft(2, '0')}",
-              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+              "${displayMin.toString().padLeft(2, '0')}:${displaySec.toString().padLeft(2, '0')}",
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF1B4332)),
             ),
-              const Text('🚴', style: TextStyle(fontSize: 40)),
+            const Text("باقي من الوقت", style: TextStyle(fontSize: 16, color: Colors.grey)),
           ],
         ),
       ],
@@ -268,7 +296,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
         minimumSize: const Size(200, 60),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
-      onPressed: isRunning ? stopTimer : startTimer,
+      onPressed: isRunning ? _stopChallenge : _startChallenge,
       icon: Text(isRunning ? '⏸️' : '▶️', style: const TextStyle(fontSize: 20)),
       label: Text(isRunning ? l10n.bike_stop : l10n.bike_start, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
     );

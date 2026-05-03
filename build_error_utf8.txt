@@ -1,0 +1,97 @@
+﻿Running Gradle task 'assembleRelease'...                        
+flutter : lib/dashboard/fu
+ll_app_dashboard.dart:105:
+31: Error: The method 
+'welcome_user' isn't 
+defined for the type 
+'AppLocalizations'.
+At line:1 char:1
++ flutter build apk > 
+build_error.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (l  
+  ib/dashboard/f...Loca   
+ lizations'.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+ - 'AppLocalizations' is 
+from 'package:namaa_projec
+t_app/l10n/app_localizatio
+ns.dart' ('lib/l10n/app_lo
+calizations.dart').
+Try correcting the name 
+to the name of an 
+existing method, or 
+defining a method named 
+'welcome_user'.
+                    Text(l
+10n.welcome_user(name), 
+// تأكد من وجود userName: 
+قبل المتغير nameflutter 
+clean
+                          
+    ^^^^^^^^^^^^
+lib/challenges/global_coun
+ter_page.dart:146:38: 
+Error: The getter 
+'refreshCounter' isn't 
+defined for the type 
+'AppLocalizations'.
+ - 'AppLocalizations' is 
+from 'package:namaa_projec
+t_app/l10n/app_localizatio
+ns.dart' ('lib/l10n/app_lo
+calizations.dart').
+Try correcting the name 
+to the name of an 
+existing getter, or 
+defining a getter or 
+field named 
+'refreshCounter'.
+                    
+label: 
+Text(l10n.refreshCounter, 
+style: const 
+TextStyle(fontFamily: 
+'Cairo')), // ✅ مترجم
+                          
+           ^^^^^^^^^^^^^^
+Target 
+kernel_snapshot_program 
+failed: Exception
+
+
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Execution failed for task 
+':app:compileFlutterBuildR
+elease'.
+> Process 'command 'C:\src
+\flutter\bin\flutter.bat''
+ finished with non-zero 
+exit value 1
+
+* Try:
+> Run with --stacktrace 
+option to get the stack 
+trace.
+> Run with --info or 
+--debug option to get 
+more log output.
+> Run with --scan to get 
+full insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 39s
+Running Gradle task 'assembleRelease'...                           40.1s
+Gradle task 
+assembleRelease failed 
+with exit code 1
