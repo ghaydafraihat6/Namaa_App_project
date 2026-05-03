@@ -26,10 +26,21 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     _loadTasksStatus();
   }
 
-  // ✅ دالة لجلب تاريخ اليوم بصيغة نصية (سنة-شهر-يوم)
+  //دالة لجلب تاريخ اليوم بصيغة نصية (سنة-شهر-يوم)
   String _getTodayDateString() {
     final now = DateTime.now();
     return "${now.year}-${now.month}-${now.day}";
+  }
+
+  String _getTaskTitle(String id, AppLocalizations l10n) {
+    final bool isAr = l10n.localeName == 'ar';
+    switch (id) {
+      case "short_shower_timing": return isAr ? "تقليل وقت الاستحمام" : "Shorter Shower";
+      case "brush_with_cup": return isAr ? "استخدام كوب لتنظيف الأسنان" : "Use a Cup for Brushing";
+      case "car_wash_bucket": return isAr ? "غسل السيارة بالدلو" : "Wash Car with a Bucket";
+      case "check_leaks": return isAr ? "فحص تسريبات المياه" : "Check for Water Leaks";
+      default: return isAr ? "مهمة ترشيد استهلاك" : "Resource Saving Task";
+    }
   }
 
   Future<void> _loadTasksStatus() async {
@@ -41,7 +52,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     try {
       // البحث في مجموعة المهام الجديدة للكشف عن الحالات (pending, approved)
       final query = await FirebaseFirestore.instance
-          .collection('tasks')
+          .collection('task_reviews')
           .where('userId', isEqualTo: user.uid)
           .where('date', isEqualTo: todayStr)
           .get();
@@ -102,7 +113,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
           final jsonResult = json.decode(data);
           photoUrl = jsonResult['data']['url'];
         } else {
-          throw Exception('فشل رفع الصورة');
+          throw Exception(l10n.localeName == 'ar' ? 'فشل رفع الصورة' : 'Image upload failed');
         }
       } catch (e) {
         _showFeedback(e.toString(), false);
@@ -126,9 +137,10 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
       // المهام بدون صور تتم الموافقة عليها تلقائياً مع إضافة النقاط مباشرة
       final String taskStatus = needsPhoto ? 'pending' : 'approved';
 
-      await FirebaseFirestore.instance.collection('tasks').add({
+      await FirebaseFirestore.instance.collection('task_reviews').add({
         'userId': user.uid,
         'taskId': taskId,
+        'taskTitle': _getTaskTitle(taskId, l10n),
         'date': todayStr,
         'pts': pts,
         'imageUrl': photoUrl ?? '',
@@ -254,9 +266,10 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     try {
                       final todayStr = _getTodayDateString();
                       final uid = FirebaseAuth.instance.currentUser?.uid;
-                      await FirebaseFirestore.instance.collection('tasks').add({
+                      await FirebaseFirestore.instance.collection('task_reviews').add({
                         'userId': uid,
                         'taskId': taskId,
+                        'taskTitle': _getTaskTitle(taskId, l10n),
                         'date': todayStr,
                         'pts': pts,
                         'imageUrl': 'Shower Timer: ${elapsed}s elapsed',
@@ -413,9 +426,10 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
                     try {
                       final todayStr = _getTodayDateString();
                       final uid = FirebaseAuth.instance.currentUser?.uid;
-                      await FirebaseFirestore.instance.collection('tasks').add({
+                      await FirebaseFirestore.instance.collection('task_reviews').add({
                         'userId': uid,
                         'taskId': taskId,
+                        'taskTitle': _getTaskTitle(taskId, l10n),
                         'date': todayStr,
                         'pts': pts,
                         'imageUrl': 'Brushing Timer: ${totalSeconds}s completed',
@@ -466,16 +480,16 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("إثبات 📸 - اختر المصدر", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
+            Text(l10n.task_proof_choose_source, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Colors.blue),
-              title: const Text("الكاميرا"),
+              title: Text(l10n.exp_camera),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Colors.blue),
-              title: const Text("معرض الصور"),
+              title: Text(l10n.exp_gallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -488,14 +502,14 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("إثبات 📸 - هل هذه الصورة واضحة؟", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontFamily: 'Cairo')),
+        title: Text(l10n.task_proof_is_clear, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontFamily: 'Cairo')),
         content: ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.file(file, height: 250, fit: BoxFit.cover)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("إعادة الالتقاط")),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.exp_retake)),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade600),
-            child: const Text("تأكيد ورفع", style: TextStyle(color: Colors.white)),
+            child: Text(l10n.exp_confirm_upload, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -503,8 +517,9 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
   }
 
   void _showFeedback(String msg, bool isSuccess) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(isSuccess ? "✅ $msg" : "❌ خطأ: $msg"),
+      content: Text(isSuccess ? "✅ $msg" : "${isAr ? '❌ خطأ' : '❌ Error'}: $msg"),
       backgroundColor: isSuccess ? Colors.blue.shade600 : Colors.red,
       behavior: SnackBarBehavior.floating,
     ));
@@ -633,7 +648,7 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         Scaffold(
           backgroundColor: const Color(0xFFF8FBFE),
           appBar: AppBar(
-            title: Text(isAr ? "💧 ترشيد استهلاك المياه" : "💧 Save Water", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white)),
+            title: Text(isAr ? "ترشيد استهلاك المياه" : "Save Water", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white)),
             centerTitle: true,
             backgroundColor: Colors.blue.shade700,
             elevation: 0,
@@ -686,17 +701,17 @@ class _SaveResourcesPageState extends State<SaveResourcesPage> {
         if (_isProcessing)
           Container(
             color: Colors.black45,
-            child: const Center(
+            child: Center(
               child: Card(
-                margin: EdgeInsets.all(24),
+                margin: const EdgeInsets.all(24),
                 child: Padding(
-                  padding: EdgeInsets.all(24.0),
+                  padding: const EdgeInsets.all(24.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CircularProgressIndicator(color: Colors.blue),
                       SizedBox(height: 16),
-                      Text("جاري معالجة الإثبات... ✨", style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                      Text(l10n.task_processing_proof, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),

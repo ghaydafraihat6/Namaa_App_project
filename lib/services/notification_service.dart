@@ -17,14 +17,15 @@ class NotificationService {
     required String title,
     required String body,
     required String type,
+    String? recipientUid,
   }) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
+    final targetUid = recipientUid ?? FirebaseAuth.instance.currentUser?.uid;
+    if (targetUid == null) return;
 
     try {
       await _firestore
           .collection('users')
-          .doc(user.uid)
+          .doc(targetUid)
           .collection('notifications')
           .add({
         'title': title,

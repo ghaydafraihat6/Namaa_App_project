@@ -33,15 +33,18 @@ class MyOrdersPage extends StatelessWidget {
             .where('userId', isEqualTo: userId)
             .snapshots(),
         builder: (_, snap) {
-          if (snap.connectionState == ConnectionState.waiting)
+          if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          if (snap.hasError)
+          }
+          if (snap.hasError) {
             return Center(
                 child: Text(l10n.store_error_prefix(snap.error.toString()),
                     style: const TextStyle(fontFamily: 'Cairo'),
                     textAlign: TextAlign.center));
-          if (!snap.hasData || snap.data!.docs.isEmpty)
+          }
+          if (!snap.hasData || snap.data!.docs.isEmpty) {
             return _EmptyOrders();
+          }
 
           // ترتيب محلي من الأحدث للأقدم لتجنب Composite Index
           final docs = snap.data!.docs.toList();
@@ -148,7 +151,7 @@ class _OrderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.06), blurRadius: 10)
+              color: Colors.black.withValues(alpha: 0.06), blurRadius: 10)
         ],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -172,7 +175,7 @@ class _OrderCard extends StatelessWidget {
                   padding:
                   const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(10)),
                   child: Text(status.getLabel(context),
                       style: TextStyle(
@@ -241,7 +244,7 @@ class _OrderCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFEBF4DD),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF386641).withOpacity(0.1)),
+                  border: Border.all(color: const Color(0xFF386641).withValues(alpha: 0.1)),
                 ),
                 child:  Row(
                   children: [

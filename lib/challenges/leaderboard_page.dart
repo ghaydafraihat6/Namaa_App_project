@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class LeaderboardPage extends StatelessWidget {
   const LeaderboardPage({super.key});
 
-  // دالة للحصول على الرمز التعبيري بناءً على النقاط
-  String _getTreeEmoji(int pts) {
+  // دالة للحصول على أيقونة الشجرة بناءً على النقاط
+  String _getTreeIcon(int pts) {
     if (pts >= 500) return '🌲';
     if (pts >= 300) return '🌳';
     if (pts >= 150) return '🌿';
     if (pts >= 50)  return '🌱';
-    return '🫘';
+    return '🌱';
   }
 
   // دالة للحصول على المستوى بناءً على النقاط
@@ -27,7 +28,7 @@ class LeaderboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser;
-    final l10n = AppLocalizations.of(context)!; // ✅ تعريف كائن الترجمة
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
@@ -51,7 +52,7 @@ class LeaderboardPage extends StatelessWidget {
                 child: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 10),
-              Text(l10n.leaderboard, // ✅ نص مترجم
+              Text(l10n.leaderboard,
                   style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 18,
@@ -61,7 +62,7 @@ class LeaderboardPage extends StatelessWidget {
             const SizedBox(height: 16),
             const Text('🏆', style: TextStyle(fontSize: 50)),
             const SizedBox(height: 8),
-            Text(l10n.forest_subtitle, // ✅ نص مترجم يصف المتصدرين
+            Text(l10n.forest_subtitle,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontFamily: 'Cairo',
@@ -91,7 +92,7 @@ class LeaderboardPage extends StatelessWidget {
                     children: [
                       const Text('🏆', style: TextStyle(fontSize: 60)),
                       const SizedBox(height: 16),
-                      Text(l10n.no_trees_yet, // ✅ نص مترجم عند خلو القائمة
+                      Text(l10n.no_trees_yet,
                           style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.grey)),
                     ],
                   ),
@@ -106,28 +107,41 @@ class LeaderboardPage extends StatelessWidget {
                 itemBuilder: (context, i) {
                   final doc  = users[i];
                   final data = doc.data() as Map<String, dynamic>;
-                  final name   = data['fullName'] ?? data['name'] ?? l10n.profile;
+                  final rawName = data['fullName'] ?? data['name'] ?? l10n.profile;
+                  final name = StoreLocalizer.reviewerName(context, rawName);
                   final points = data['points'] ?? 0;
                   final isMe   = currentUser?.uid == doc.id;
                   final rank   = i + 1;
 
                   // تحديد أيقونة المرتبة
-                  String rankIcon;
+                  Widget rankWidget;
                   Color rankBg;
-                  if (rank == 1) { rankBg = const Color(0xFFFFF3CD); rankIcon = '🥇'; }
-                  else if (rank == 2) { rankBg = const Color(0xFFF0F0F0); rankIcon = '🥈'; }
-                  else if (rank == 3) { rankBg = const Color(0xFFFFF0E8); rankIcon = '🥉'; }
-                  else { rankBg = const Color(0xFFEBF4DD); rankIcon = '$rank'; }
+                  if (rank == 1) { 
+                    rankBg = const Color(0xFFFFF3CD); 
+                    rankWidget = const Text('🥇', style: TextStyle(fontSize: 24)); 
+                  }
+                  else if (rank == 2) { 
+                    rankBg = const Color(0xFFF0F0F0); 
+                    rankWidget = const Text('🥈', style: TextStyle(fontSize: 24)); 
+                  }
+                  else if (rank == 3) { 
+                    rankBg = const Color(0xFFFFF0E8); 
+                    rankWidget = const Text('🥉', style: TextStyle(fontSize: 24)); 
+                  }
+                  else { 
+                    rankBg = const Color(0xFFEBF4DD); 
+                    rankWidget = Text('$rank', style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF386641))); 
+                  }
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: isMe ? const Color(0xFFEBF4DD).withOpacity(0.7) : Colors.white,
+                      color: isMe ? const Color(0xFFEBF4DD).withValues(alpha: 0.7) : Colors.white,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(color: isMe ? const Color(0xFF52B788) : Colors.transparent, width: 1.5),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))
                       ],
                     ),
                     child: Row(children: [
@@ -136,13 +150,13 @@ class LeaderboardPage extends StatelessWidget {
                         width: 40, height: 40,
                         decoration: BoxDecoration(color: rankBg, borderRadius: BorderRadius.circular(12)),
                         child: Center(
-                          child: Text(rankIcon, style: TextStyle(fontSize: rank <= 3 ? 20 : 14, fontWeight: FontWeight.bold)),
+                          child: rankWidget,
                         ),
                       ),
                       const SizedBox(width: 12),
 
                       // أيقونة الشجرة
-                      Text(_getTreeEmoji(points), style: const TextStyle(fontSize: 28)),
+                      Text(_getTreeIcon(points), style: const TextStyle(fontSize: 28)),
                       const SizedBox(width: 10),
 
                       // معلومات المستخدم
@@ -150,10 +164,10 @@ class LeaderboardPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(isMe ? '$name ⭐' : name,
+                            Text(name,
                                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF1B2E1F)),
                                 overflow: TextOverflow.ellipsis),
-                            Text('${l10n.tree_level} ${_getLevel(points)}', // ✅ نص مترجم
+                            Text('${l10n.tree_level} ${_getLevel(points)}',
                                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w600)),
                           ],
                         ),
@@ -163,9 +177,9 @@ class LeaderboardPage extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(points.toString(), // الرقم فقط
+                          Text(points.toString(),
                               style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF386641))),
-                          Text(l10n.points, // ✅ كلمة "نقطة" مترجمة
+                          Text(l10n.points,
                               style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold)),
                         ],
                       ),
@@ -176,7 +190,7 @@ class LeaderboardPage extends StatelessWidget {
             },
           ),
         ),
-      ]),
-    );
+        ]),
+      );
   }
 }

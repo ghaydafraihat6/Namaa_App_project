@@ -72,7 +72,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              isAr ? 'تم حذف التقييم بنجاح 🗑️' : 'Review deleted successfully 🗑️',
+              isAr ? 'تم حذف التقييم بنجاح' : 'Review deleted successfully',
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
             ),
             backgroundColor: const Color(0xFF386641),
@@ -104,7 +104,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Text('⚠️', style: TextStyle(fontSize: 22)),
+            const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 24),
             const SizedBox(width: 8),
             Text(
               isAr ? 'حذف التقييم' : 'Delete Review',
@@ -210,7 +210,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              isAr ? 'تم إرسال تقييمك بنجاح! ⭐' : 'Your review was submitted! ⭐',
+              isAr ? 'تم إرسال تقييمك بنجاح!' : 'Your review was submitted!',
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
             ),
             backgroundColor: const Color(0xFF386641),
@@ -275,14 +275,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
+                color: Colors.white.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Image.asset('assets/images/logo_namaa.png',
                   width:50,  height: 50),
             ),
             const SizedBox(width: 10),
-            Text(l10n.arabic == "العربية" ? "نماء" : "Namaa",
+            Text(l10n.arabic == "العربية" ? "نماء" : "NAMAA",
                 style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 24,
@@ -397,7 +397,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color:
-                      const Color(0xFFEBF4DD).withOpacity(0.1),
+                      const Color(0xFFEBF4DD).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -510,8 +510,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           ),
         ],
       ),
-
-      // ── الزر السفلي ──
       bottomSheet: Container(
         height: 90,
         padding:
@@ -520,7 +518,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -5))
           ],
@@ -622,8 +620,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ),
             ),
           ],
-        ),
-      ),
+        ),      ),
     );
   }
 
@@ -735,6 +732,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             final reviewUserId = r['userId'] as String? ?? '';
             final bool canDelete = _isAdmin || (currentUserId != null && reviewUserId == currentUserId);
 
+            final rawName = r['userName'] as String? ?? (isAr ? 'مستخدم' : 'User');
+            final translatedName = StoreLocalizer.reviewerName(context, rawName);
+            final rawComment = r['comment'] as String? ?? '';
+            final translatedComment = StoreLocalizer.reviewComment(context, rawComment);
+
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(14),
@@ -758,8 +760,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ),
                         child: Center(
                           child: Text(
-                            (r['userName'] as String?)?.isNotEmpty == true
-                                ? (r['userName'] as String)[0].toUpperCase()
+                            translatedName.isNotEmpty
+                                ? translatedName[0].toUpperCase()
                                 : '?',
                             style: const TextStyle(
                               fontFamily: 'Cairo',
@@ -775,7 +777,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(r['userName'] as String? ?? (isAr ? 'مستخدم' : 'User'),
+                            Text(translatedName,
                                 style: const TextStyle(
                                     fontFamily: 'Cairo',
                                     fontWeight: FontWeight.w800,
@@ -798,7 +800,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.08),
+                                color: Colors.red.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(Icons.delete_outline_rounded,
@@ -818,7 +820,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     direction: Axis.horizontal,
                   ),
                   const SizedBox(height: 6),
-                  Text(r['comment'] as String? ?? '',
+                  Text(translatedComment,
                       style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 13,

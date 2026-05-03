@@ -1,4 +1,4 @@
-import 'package:namaa_project_app/l10n/app_localizations.dart';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -7,7 +7,7 @@ class AdminTasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Admin - مراجعة المهام"),
@@ -15,7 +15,7 @@ class AdminTasksPage extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('tasks')
+            .collection('task_reviews')
             .where('status', isEqualTo: 'pending')
             .orderBy('createdAt', descending: true)
             .snapshots(),
@@ -83,7 +83,7 @@ class AdminTasksPage extends StatelessWidget {
     );
   }
 
-  // ✅ الموافقة
+  //  الموافقة
   Future<void> _approveTask(
       String taskId, Map<String, dynamic> data) async {
     final userId = data['userId'];
@@ -104,7 +104,7 @@ class AdminTasksPage extends StatelessWidget {
     });
   }
 
-  // ❌ رفض
+  // رفض
   Future<void> _rejectTask(String taskId) async {
     await FirebaseFirestore.instance
         .collection('tasks')

@@ -1,18 +1,32 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:namaa_project_app/store/order_status.dart';
-import 'store_localizer.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
+
 
 class AdminOrdersPage extends StatelessWidget {
   const AdminOrdersPage({super.key});
 
-  Future<void> _updateStatus(String id, String status) =>
-      FirebaseFirestore.instance
-          .collection('orders')
-          .doc(id)
-          .update({'status': status});
+  Future<void> _updateStatus(BuildContext context, String id, String status, String userId) async {
+    await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(id)
+        .update({'status': status});
+    
+    if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final orderStatus = OrderStatus.fromLabel(status);
+    
+    await NotificationService.send(
+      title: l10n.notifications,
+      body: "${l10n.store_my_orders}: ${orderStatus.getLabel(context)}",
+      type: "store",
+      recipientUid: userId,
+    );
+  }
 
   // [FIX] Widget موحد يدعم asset و network
   Widget _productImage(String src, String name) {
@@ -59,7 +73,7 @@ class AdminOrdersPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xFFF0F5F0),
         appBar: AppBar(
-          title: Text(isAr ? '🛠️ إدارة الطلبات' : '🛠️ Order Management',
+          title: Text(isAr ? 'إدارة الطلبات' : 'Order Management',
               style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.w800,
@@ -73,8 +87,8 @@ class AdminOrdersPage extends StatelessWidget {
             indicatorWeight: 4,
             labelStyle: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 16),
             tabs: [
-              Tab(text: isAr ? 'طلبات جديدة 📦' : 'Pending 📦'),
-              Tab(text: isAr ? 'مكتملة ✅' : 'Completed ✅'),
+              Tab(text: isAr ? 'طلبات جديدة' : 'Pending'),
+              Tab(text: isAr ? 'مكتملة' : 'Completed'),
             ],
           ),
         ),
@@ -159,20 +173,24 @@ class AdminOrdersPage extends StatelessWidget {
                                 child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text("👤 ${order['userName'] ?? (isAr ? 'مجهول' : 'Unknown')}",
+                                      Text(StoreLocalizer.reviewerName(context, order['userName'] ?? (isAr ? 'مجهول' : 'Unknown')),
                                           style: const TextStyle(
                                               fontFamily: 'Cairo',
                                               fontSize: 16,
                                               fontWeight: FontWeight.w900,
                                               color: Color(0xFF1B2E1F))),
                                       const SizedBox(height: 2),
-                                      Text(
-                                          '📞 ${order['phone'] ?? ''}  •  🗓️ $date',
-                                          style: const TextStyle(
-                                              fontFamily: 'Cairo',
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                              color: Color(0xFF4A4A4A))),
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.phone_outlined, size: 14, color: Color(0xFF4A4A4A)),
+                                          const SizedBox(width: 4),
+                                          Text('${order['phone'] ?? ''}', style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF4A4A4A))),
+                                          const SizedBox(width: 12),
+                                          const Icon(Icons.calendar_today_outlined, size: 14, color: Color(0xFF4A4A4A)),
+                                          const SizedBox(width: 4),
+                                          Text(date, style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF4A4A4A))),
+                                        ],
+                                      ),
                                     ]),
                               ),
                               DropdownButton<String>(
@@ -195,7 +213,7 @@ class AdminOrdersPage extends StatelessWidget {
                                 ))
                                     .toList(),
                                 onChanged: (val) {
-                                  if (val != null) _updateStatus(doc.id, val);
+                                  if (val != null) _updateStatus(context, doc.id, val, order['userId'] ?? '');
                                 },
                               ),
                             ]),

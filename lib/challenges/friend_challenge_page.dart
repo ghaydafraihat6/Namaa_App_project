@@ -16,7 +16,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
   bool _loading   = false;
   Map<String, dynamic>? _friendData;
 
-  // ✅ 1. تعريف قائمة الأصدقاء المكتشفين مؤخراً (توضع هنا في البداية)
+  // 1. تعريف قائمة الأصدقاء المكتشفين مؤخراً (توضع هنا في البداية)
   final List<Map<String, dynamic>> _recentFriends = [];
 
   @override
@@ -25,7 +25,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
     super.dispose();
   }
 
-  // ✅ 2. دالة إضافة صديق للقائمة (توضع هنا كـ Method)
+  // 2. دالة إضافة صديق للقائمة (توضع هنا كـ Method)
   void _addToRecent(Map<String, dynamic> friend) {
     bool exists = _recentFriends.any((f) => f['referralCode'] == friend['referralCode']);
     if (!exists) {
@@ -38,6 +38,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
 
   void _shareMyCode(String code, AppLocalizations l10n) {
     final String message = "${l10n.yourCode}: ${code.toUpperCase()}\n${l10n.inviteFriend}";
+    // ignore: deprecated_member_use
     Share.share(message);
   }
 
@@ -77,7 +78,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
           ));
         }
       } else {
-        // ✅ 3. استدعاء الدالة عند النجاح في البحث
+        //  3. استدعاء الدالة عند النجاح في البحث
         final data = query.docs.first.data() as Map<String, dynamic>;
         setState(() {
           _friendData = data;
@@ -97,13 +98,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
     }
   }
 
-  int _getLevel(int pts) {
-    if (pts >= 500) return 5;
-    if (pts >= 300) return 4;
-    if (pts >= 150) return 3;
-    if (pts >= 50)  return 2;
-    return 1;
-  }
+
 
   String _getTreeEmoji(int pts) {
     if (pts >= 500) return '🌲';
@@ -137,7 +132,7 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
           final myPoints = myData['points'] ?? 0;
           final myName   = myData['fullName'] ?? myData['name'] ?? l10n.profile;
           
-          // ✅ تعديل: استخدام fallback في حال كان الكود مفقوداً في Firestore
+          //  تعديل: استخدام fallback في حال كان الكود مفقوداً في Firestore
           final String uidStr = user?.uid ?? "";
           final myCode = myData['referralCode'] ?? (uidStr.length >= 8 
               ? uidStr.substring(0, 8).toUpperCase() 
@@ -146,17 +141,14 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              // --- كودك ---
+
               _buildMyCodeCard(myCode, l10n),
               const SizedBox(height: 20),
-
               // --- البحث ---
               _buildSearchBox(l10n),
-
               // --- نتيجة البحث والمقارنة ---
               if (_friendData != null) _buildComparisonView(l10n, myName, myPoints),
-
-              // ✅ 4. عرض قائمة الأصدقاء المكتشفين حديثاً (تظهر فقط عند عدم وجود نتيجة بحث حالية)
+              //  4. عرض قائمة الأصدقاء المكتشفين حديثاً (تظهر فقط عند عدم وجود نتيجة بحث حالية)
               if (_recentFriends.isNotEmpty && _friendData == null)
                 _buildRecentFriendsList(l10n),
 
@@ -168,7 +160,6 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
     );
   }
 
-  // --- Widgets مفصولة لتنظيم الكود ---
 
   Widget _buildMyCodeCard(String myCode, AppLocalizations l10n) {
     return GestureDetector(

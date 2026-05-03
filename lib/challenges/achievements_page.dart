@@ -32,10 +32,10 @@ class AchievementsPage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        // ✅ إضافة ظل خفيف للشارات المفتوحة لتبدو "مكافأة" حقيقية
+        //  إضافة ظل خفيف للشارات المفتوحة لتبدو "مكافأة" حقيقية
         boxShadow: unlocked ? [
           BoxShadow(
-            color: const Color(0xFF386641).withOpacity(0.15),
+            color: const Color(0xFF386641).withValues(alpha: 0.15),
             blurRadius: 10,
             offset: const Offset(0, 4),
           )
@@ -46,7 +46,7 @@ class AchievementsPage extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: unlocked ? const Color(0xFF386641).withOpacity(0.3) : Colors.transparent,
+            color: unlocked ? const Color(0xFF386641).withValues(alpha: 0.3) : Colors.transparent,
             width: 1.5,
           ),
         ),
@@ -90,9 +90,9 @@ class AchievementsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              // ✅ إضافة علامة الصح للشارات المكتملة
+              //  إضافة علامة الصح للشارات المكتملة
               trailing: unlocked
-                  ? const Icon(Icons.check_circle, color: Color(0xFF386641), size: 28)
+                  ? const Text('✅', style: TextStyle(fontSize: 28))
                   : Text("$userPoints/$requiredPoints", style: const TextStyle(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.bold)),
             ),
             if (!unlocked)
@@ -120,7 +120,7 @@ class AchievementsPage extends StatelessWidget {
     final bool isAr = l10n.localeName == 'ar';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAF8), // لون خلفية هادئ
+      backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
         title: Text(
           l10n.badges,
@@ -144,7 +144,7 @@ class AchievementsPage extends StatelessWidget {
           }
 
           return ListView(
-            padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
             children: [
               // كارد ملخص النقاط
               Container(
@@ -159,7 +159,7 @@ class AchievementsPage extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.workspace_premium, color: Colors.amber, size: 40),
+                    const Text('🏆', style: TextStyle(fontSize: 40)),
                     const SizedBox(height: 8),
                     Text(
                       l10n.tree_current_points,

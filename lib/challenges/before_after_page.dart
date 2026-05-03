@@ -7,7 +7,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
-
 import 'before_after_history_page.dart';
 
 class BeforeAfterPage extends StatefulWidget {
@@ -134,9 +133,11 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
           if (widget.editId == null) descriptionController.clear();
         });
       } else {
+         if (!mounted) return;
          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "فشل في رفع بعض الصور." : "Failed to upload some images.", style: const TextStyle(fontFamily: 'Cairo'))));
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "حدث خطأ أثناء الرفع: $e" : "Upload error: $e", style: const TextStyle(fontFamily: 'Cairo'))));
     } finally {
       if (mounted) setState(() => isUploading = false);
@@ -150,7 +151,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: Text(isAr ? "قبل وبعد ✨" : "Before & After ✨",
+        title: Text(isAr ? "قبل وبعد" : "Before & After",
             style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
@@ -242,7 +243,7 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         decoration: BoxDecoration(
           color: hasImage ? Colors.grey.shade100 : Colors.white,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFF386641).withOpacity(0.2)),
+          border: Border.all(color: const Color(0xFF386641).withValues(alpha: 0.2)),
           image: decorImage,
         ),
         child: !hasImage

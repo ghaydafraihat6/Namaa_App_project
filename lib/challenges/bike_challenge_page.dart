@@ -15,7 +15,7 @@ class BikeChallengePage extends StatefulWidget {
 }
 
 class _BikeChallengePageState extends State<BikeChallengePage> {
-  final int targetSeconds = 1200; // 20 دقيقة
+  final int targetSeconds = 1200;
   int currentSeconds = 0;
   Timer? timer;
   bool isRunning = false;
@@ -37,7 +37,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     super.initState();
     _checkTodayStatus();
     // مراقبة الحركة لمنع الغش
-    accelerometerEvents.listen((AccelerometerEvent event) {
+    accelerometerEventStream().listen((AccelerometerEvent event) {
       double accel = event.x.abs() + event.y.abs() + event.z.abs();
       _lastAccel = accel;
     });
@@ -122,7 +122,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     try {
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final snapshot = await transaction.get(userDoc);
-        final data = snapshot.data() as Map<String, dynamic>? ?? {};
+        final data = snapshot.data() ?? {};
         
         // التحقق إذا أكمل التحدي اليوم بالفعل
         if (data['lastBikeDate'] == _todayStr) return;
@@ -181,9 +181,9 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
           var userData = snapshot.data!.data() as Map<String, dynamic>? ?? {};
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(25),
-            child: Column(
-              children: [
+              padding: const EdgeInsets.all(25),
+              child: Column(
+                children: [
                 // كارت الـ CO2 والأثر البيئي
                 _buildImpactCard(l10n, co2Saved),
 
@@ -217,18 +217,18 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _impactItem(Icons.cloud_done, "${currentCo2.toStringAsFixed(1)}g", l10n.co2Saved),
+          _impactItem('☁️', "${currentCo2.toStringAsFixed(1)}g", l10n.co2Saved),
           const VerticalDivider(color: Colors.white54),
-          _impactItem(Icons.eco, "0.2", l10n.treesEquivalent),
+          _impactItem('🌱', "0.2", l10n.treesEquivalent),
         ],
       ),
     );
   }
 
-  Widget _impactItem(IconData icon, String value, String label) {
+  Widget _impactItem(String icon, String value, String label) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 30),
+        Text(icon, style: const TextStyle(fontSize: 30)),
         Text(value, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
         Text(label, style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
       ],
@@ -254,7 +254,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
               "${(currentSeconds ~/ 60).toString().padLeft(2, '0')}:${(currentSeconds % 60).toString().padLeft(2, '0')}",
               style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
-            const Icon(Icons.directions_bike, size: 40, color: Color(0xFF386641)),
+              const Text('🚴', style: TextStyle(fontSize: 40)),
           ],
         ),
       ],
@@ -269,7 +269,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       onPressed: isRunning ? stopTimer : startTimer,
-      icon: Icon(isRunning ? Icons.pause : Icons.play_arrow, color: Colors.white),
+      icon: Text(isRunning ? '⏸️' : '▶️', style: const TextStyle(fontSize: 20)),
       label: Text(isRunning ? l10n.bike_stop : l10n.bike_start, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
     );
   }
@@ -279,7 +279,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       children: [
         Text("🎉 ${l10n.bike_completed_msg}", style: const TextStyle(color: Color(0xFF386641), fontWeight: FontWeight.bold, fontSize: 20)),
         const SizedBox(height: 10),
-        Text("${l10n.dayStreak(data['bikeStreak'] ?? 0)}", style: const TextStyle(color: Colors.orange, fontSize: 18)),
+        Text(l10n.dayStreak(data['bikeStreak'] ?? 0), style: const TextStyle(color: Colors.orange, fontSize: 18)),
       ],
     );
   }

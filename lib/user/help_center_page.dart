@@ -22,7 +22,7 @@ class HelpCenterPage extends StatelessWidget {
     },
     {
       'q': isAr ? l10n.help_q_is_free : 'Is the app free?',
-      'a': isAr ? l10n.help_a_is_free : 'Yes! Namaa is 100% free with no subscription needed.',
+      'a': isAr ? l10n.help_a_is_free : 'Yes! NAMAA is 100% free with no subscription needed.',
     },
     {
       'q': isAr ? l10n.help_q_contact_support : 'How do I contact support?',
@@ -50,8 +50,6 @@ class HelpCenterPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-
-          // ── هيدر ──
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -66,7 +64,7 @@ class HelpCenterPage extends StatelessWidget {
                 height: 150,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEBF4DD).withOpacity(0.3),
+                  color: const Color(0xFFEBF4DD).withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(30),
                   image: const DecorationImage(
                     image: AssetImage('assets/images/logo_namaa.png'),
@@ -119,7 +117,7 @@ class HelpCenterPage extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8)],
             ),
             child: Column(children: [
@@ -175,7 +173,7 @@ class _FaqItemState extends State<_FaqItem> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8)],
       ),
       child: Column(children: [

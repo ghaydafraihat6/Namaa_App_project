@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:namaa_project_app/l10n/app_localizations.dart'; // ✅ استيراد الترجمة
+import 'package:namaa_project_app/l10n/app_localizations.dart';
 
 class GlobalCounterPage extends StatefulWidget {
   const GlobalCounterPage({super.key});
@@ -48,13 +48,13 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // ✅ تعريف كائن الترجمة
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          l10n.forestPage, // ✅ نص مترجم (غابة نماء / الأثر الجماعي)
+          l10n.forestPage,
           style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         centerTitle: true,
@@ -109,7 +109,7 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
                   const SizedBox(height: 40),
 
                   Text(
-                    l10n.forest_subtitle, // ✅ نص مترجم يصف مجهود الجميع
+                    l10n.forest_subtitle,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 18, color: Colors.grey, fontFamily: 'Cairo'),
                   ),
@@ -141,7 +141,7 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
                           ),
                         ),
                         Text(
-                          l10n.treesEquivalent, // ✅ نص مترجم (شجرة معادلة)
+                          l10n.treesEquivalent,
                           style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white70,
@@ -156,7 +156,7 @@ class _GlobalCounterPageState extends State<GlobalCounterPage> {
 
                   // رسالة توضيحية لنظام النقاط الجماعي
                   Text(
-                    l10n.challenges_intro_text, // ✅ نص مترجم يشرح فكرة التحدي الجماعي
+                    l10n.challenges_intro_text,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 15,

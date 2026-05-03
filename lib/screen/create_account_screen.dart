@@ -300,6 +300,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                                   style: const TextStyle(
                                       fontFamily: 'Cairo',
                                       fontWeight: FontWeight.w900)),
+                              // ignore: deprecated_member_use
                               Radio<String>(
                                 value: "Male",
                                 groupValue: _selectedGender,
@@ -311,6 +312,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                                   style: const TextStyle(
                                       fontFamily: 'Cairo',
                                       fontWeight: FontWeight.w900)),
+                              // ignore: deprecated_member_use
                               Radio<String>(
                                 value: "Female",
                                 groupValue: _selectedGender,

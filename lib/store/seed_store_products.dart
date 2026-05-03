@@ -1,9 +1,8 @@
 // 🌱 سكريبت رفع المنتجات إلى Firestore
 // تشغيل: dart run lib/store/seed_store_products.dart
-
-import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 const firebaseOptions = FirebaseOptions(
   apiKey: 'AIzaSyAbzF4P5s6DuXw2APQODoWhQMLoGE81bx8',
@@ -534,7 +533,7 @@ const List<Map<String, dynamic>> _products = [
 ];
 
 Future<void> seedDatabase() async {
-  print('🚀 بدأت عملية رفع المنتجات...');
+  debugPrint('🚀 بدأت عملية رفع المنتجات...');
 
   try {
     final db = FirebaseFirestore.instance;
@@ -542,20 +541,20 @@ Future<void> seedDatabase() async {
     // إذا المنتجات موجودة، لا تعيد رفعها (للحفاظ على التقييمات)
     final existing = await db.collection('products').get();
     if (existing.docs.isNotEmpty) {
-      print('✅ المنتجات موجودة أصلاً (${existing.docs.length}), تخطي...');
+      debugPrint('✅ المنتجات موجودة أصلاً (${existing.docs.length}), تخطي...');
       return;
     }
 
-    print('🆕 رفع ${_products.length} منتج...');
+    debugPrint('🆕 رفع ${_products.length} منتج...');
     final addBatch = db.batch();
     for (final p in _products) {
       addBatch.set(db.collection('products').doc(), p);
     }
     await addBatch.commit();
 
-    print('✅ تم بنجاح! إجمالي المنتجات: ${_products.length}');
+    debugPrint('✅ تم بنجاح! إجمالي المنتجات: ${_products.length}');
   } catch (e) {
-    print('❌ حدث خطأ كبير: $e');
+    debugPrint('❌ حدث خطأ كبير: $e');
   }
 }
 
@@ -643,7 +642,7 @@ const List<String> _productsToReview = [
 ];
 
 Future<void> seedReviews() async {
-  print('⭐ بدأت عملية إضافة التقييمات...');
+  debugPrint('⭐ بدأت عملية إضافة التقييمات...');
 
   try {
     final db = FirebaseFirestore.instance;
@@ -661,7 +660,7 @@ Future<void> seedReviews() async {
       );
 
       if (matchingDocs.isEmpty) {
-        print('⚠️ لم يتم العثور على: $productName');
+        debugPrint('⚠️ لم يتم العثور على: $productName');
         continue;
       }
 
@@ -677,7 +676,7 @@ Future<void> seedReviews() async {
           .get();
 
       if (existingReviews.docs.isNotEmpty) {
-        print('⏭️ $productName عنده تقييمات أصلاً، تخطي...');
+        debugPrint('⏭️ $productName عنده تقييمات أصلاً، تخطي...');
         continue;
       }
 
@@ -702,11 +701,11 @@ Future<void> seedReviews() async {
         totalAdded++;
       }
 
-      print('✅ تم إضافة ${selectedReviews.length} تقييم لـ: $productName');
+      debugPrint('✅ تم إضافة ${selectedReviews.length} تقييم لـ: $productName');
     }
 
-    print('🎉 اكتملت العملية! تم إضافة $totalAdded تقييم إجمالاً');
+    debugPrint('🎉 اكتملت العملية! تم إضافة $totalAdded تقييم إجمالاً');
   } catch (e) {
-    print('❌ خطأ في إضافة التقييمات: $e');
+    debugPrint('❌ خطأ في إضافة التقييمات: $e');
   }
 }

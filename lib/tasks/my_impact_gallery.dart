@@ -57,7 +57,7 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
     // 1. المهام الجديدة والتجارب
     _subscriptions.add(
       FirebaseFirestore.instance
-          .collection('tasks')
+          .collection('task_reviews')
           .where('userId', isEqualTo: user.uid)
           .snapshots()
           .listen((snap) {
@@ -157,7 +157,7 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: Text(isAr ? '📸 معرض إنجازاتي' : '📸 My Impact Gallery',
+        title: Text(isAr ? 'معرض إنجازاتي' : 'My Impact Gallery',
             style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
@@ -202,7 +202,7 @@ class _MyImpactGalleryPageState extends State<MyImpactGalleryPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

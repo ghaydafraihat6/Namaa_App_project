@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 
 class AdminUsersPage extends StatefulWidget {
   const AdminUsersPage({super.key});
@@ -206,20 +207,13 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                     final data = doc.data() as Map<String, dynamic>;
                     final docId = doc.id;
                     
-                    final name = data['fullName'] ?? data['name'] ?? (isAr ? 'بدون اسم' : 'No Name');
+                    final rawName = data['fullName'] ?? data['name'] ?? (isAr ? 'بدون اسم' : 'No Name');
+                    final name = StoreLocalizer.reviewerName(context, rawName);
                     final email = data['email'] ?? '';
                     final refCode = data['referralCode'] ?? '---';
-                    final points = data['points'] ?? 0;
+                    final int points = (data['points'] as num?)?.toInt() ?? 0;
                     final bool isAdmin = data['role'] == 'admin' || data['isAdmin'] == true;
                     
-                    // تحويل التاريخ
-                    String dateStr = '';
-                    if (data['createdAt'] != null) {
-                      try {
-                        final ts = data['createdAt'] as Timestamp;
-                        dateStr = ts.toDate().toString().substring(0, 10);
-                      } catch (_) {}
-                    }
 
                     return Card(
                       elevation: 3,
@@ -273,7 +267,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                                             color: const Color(0xFFF4A261),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
-                                          child: const Text('Admin', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)),
+                                          child: Text(isAr ? 'مشرف' : 'Admin', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white, fontFamily: 'Cairo')),
                                         ),
                                     ],
                                   ),

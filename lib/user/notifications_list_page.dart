@@ -70,15 +70,29 @@ class NotificationsListPage extends StatelessWidget {
     String translated = text;
 
     // Titles
+    translated = translated.replaceAll('مهمة مكتملة ✅', 'Task Completed ✅');
+    translated = translated.replaceAll('تم تأكيد طلبك ومعه هدية!', 'Order confirmed with a gift!');
+    translated = translated.replaceAll('تم تأكيد طلبك!', 'Order confirmed!');
     translated = translated.replaceAll('طلب تدوير جديد', 'New Recycle Request');
+    translated = translated.replaceAll('مهمة تدوير مكتملة!', 'Recycle Task Completed!');
     translated = translated.replaceAll('مهمة توفير مكتملة', 'Saving Task Completed');
     translated = translated.replaceAll('مهمة بيئية مكتملة', 'Eco Task Completed');
     translated = translated.replaceAll('تمت الموافقة على مهمتك', 'Task Approved');
     translated = translated.replaceAll('تحدي الدراجة', 'Bike Challenge');
+    translated = translated.replaceAll('أكملت تحدي الدراجة!', 'You completed the bike challenge!');
     translated = translated.replaceAll('يوم جديد، نقاط جديدة!', 'New Day, New Points!');
     translated = translated.replaceAll('مبادرة بيئية جديدة', 'New Eco Initiative');
+    translated = translated.replaceAll('مبادرة جديدة!', 'New Initiative!');
     
     // Bodies
+    translated = translated.replaceAll('شكراً', 'Thanks');
+    translated = translated.replaceAll('! حصلت على هدية: الكبسولة الذكية الزراعية 🌱', '! Received gift: Smart Capsule 🌱');
+    translated = translated.replaceAll('! طلبك قيد المعالجة وسيتم التواصل معك قريباً 🌿', '! Your order is processing and we will contact you soon 🌿');
+    translated = translated.replaceAll('تم نشر مبادرتك البيئية بنجاح وحصلت على 10 نقاط ⭐', 'Your eco initiative was published successfully and you received 10 points ⭐');
+    translated = translated.replaceAll('من مهمة التدوير (تحقق فوري)', 'from the recycling task (instant verify)');
+    translated = translated.replaceAll('ووفرت', 'and saved');
+    translated = translated.replaceAll('من CO₂', 'of CO₂');
+    
     translated = translated.replaceAll('رائع! حصلت على', 'Awesome! You earned');
     translated = translated.replaceAll('أحسنت! حصلت على', 'Great job! You earned');
     translated = translated.replaceAll('تم إرسال طلب تدوير', 'Recycling request sent for');
@@ -89,6 +103,7 @@ class NotificationsListPage extends StatelessWidget {
     translated = translated.replaceAll('نقطة من مهمة', 'points from task:');
     translated = translated.replaceAll('وحصلت على', 'and earned');
     translated = translated.replaceAll('نقطة', 'points');
+    translated = translated.replaceAll('نقاط', 'points');
 
     // Specific Tasks
     translated = translated.replaceAll('استخدام كوب لتنظيف الأسنان', 'Using a cup to brush teeth');
@@ -234,9 +249,7 @@ class NotificationsListPage extends StatelessWidget {
                     ),
                   );
                 }
-
                 final docs = snapshot.data!.docs;
-
                 // تعليم الإشعارات كمقروءة عند فتح الصفحة
                 Future.microtask(() => NotificationService.markAllRead());
 
@@ -249,7 +262,6 @@ class NotificationsListPage extends StatelessWidget {
                     final type = data['type'] ?? '';
                     final isRead = data['isRead'] ?? true;
                     final ts = data['createdAt'] as Timestamp?;
-
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),

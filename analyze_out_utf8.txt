@@ -1,142 +1,106 @@
-﻿Analyzing Namaa_Project_App...                                  
+﻿Resolving dependencies...
+Downloading packages...
+  _flutterfire_internals 1.3.68 (1.3.69 available)
+  characters 1.4.0 (1.4.1 available)
+  cli_util 0.4.2 (0.5.0 available)
+  cloud_firestore 6.2.0 (6.3.0 available)
+  cloud_firestore_platform_interface 7.1.0 (7.2.0 available)
+  cloud_firestore_web 5.2.0 (5.3.0 available)
+  firebase_auth 6.3.0 (6.4.0 available)
+  firebase_auth_platform_interface 8.1.8 (8.1.9 available)
+  firebase_auth_web 6.1.4 (6.1.5 available)
+  firebase_core 4.6.0 (4.7.0 available)
+  firebase_core_web 3.5.1 (3.6.0 available)
+  firebase_storage 13.2.0 (13.3.0 available)
+  firebase_storage_platform_interface 5.2.19 (5.2.20 available)
+  firebase_storage_web 3.11.4 (3.11.5 available)
+  geocoding 3.0.0 (4.0.0 available)
+  geocoding_android 3.3.1 (5.0.1 available)
+  geocoding_platform_interface 3.2.0 (5.0.0 available)
+  google_sign_in 5.4.4 (7.2.0 available)
+  google_sign_in_android 6.2.1 (7.2.10 available)
+  google_sign_in_ios 5.9.0 (6.3.0 available)
+  google_sign_in_platform_interface 2.5.0 (3.1.0 available)
+  google_sign_in_web 0.10.2+1 (1.1.3 available)
+  hooks 1.0.2 (1.0.3 available)
+  image_picker 1.2.1 (1.2.2 available)
+  image_picker_android 0.8.13+16 (0.8.13+17 available)
+  js 0.6.7 (0.7.2 available)
+  lottie 3.3.2 (3.3.3 available)
+  matcher 0.12.17 (0.12.20 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.17.0 (1.18.2 available)
+  native_toolchain_c 0.17.6 (0.18.0 available)
+  package_info_plus 9.0.1 (10.1.0 available)
+  package_info_plus_platform_interface 3.2.1 (4.1.0 available)
+  path_provider_android 2.2.23 (2.3.1 available)
+  sensors_plus 6.1.2 (7.0.0 available)
+  share_plus 12.0.2 (13.1.0 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  sqflite 2.4.2 (2.4.2+1 available)
+  sqflite_common 2.5.6 (2.5.6+1 available)
+  synchronized 3.4.0 (3.4.0+1 available)
+  test_api 0.7.7 (0.7.12 available)
+  vector_math 2.2.0 (2.3.0 available)
+  vm_service 15.0.2 (15.2.0 available)
+  win32 5.15.0 (6.1.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+45 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Analyzing Namaa_Project_App...                                  
 
-warning - The value of the local variable 'l10n' isn't used - lib\admin\admin_tasks_page.dart:10:11 - unused_local_variable
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\achievements_page.dart:38:44 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\achievements_page.dart:49:55 - deprecated_member_use
-   info - Don't use 'BuildContext's across async gaps - lib\challenges\before_after_page.dart:137:31 - use_build_context_synchronously
-   info - Don't use 'BuildContext's across async gaps - lib\challenges\before_after_page.dart:140:28 - use_build_context_synchronously
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\before_after_page.dart:245:61 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\admin\admin_login_page.dart:103:40 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\admin\admin_login_page.dart:123:48 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\admin\admin_products_page.dart:92:51 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\admin\admin_recycle_requests_page.dart:30:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\challenges\before_after_page.dart:136:31 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\challenges\before_after_page.dart:139:28 - use_build_context_synchronously
    info - 'accelerometerEvents' is deprecated and shouldn't be used. Use accelerometerEventStream() instead - lib\challenges\bike_challenge_page.dart:40:5 - deprecated_member_use
-warning - Unnecessary cast - lib\challenges\bike_challenge_page.dart:125:22 - unnecessary_cast
-   info - Unnecessary use of string interpolation - lib\challenges\bike_challenge_page.dart:282:14 - unnecessary_string_interpolations
-warning - The value of the field '_pendingExperiments' isn't used - lib\challenges\eco_experiments_page.dart:21:29 - unused_field
    info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\challenges\eco_experiments_page.dart:139:30 - use_build_context_synchronously
    info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\challenges\eco_experiments_page.dart:149:30 - use_build_context_synchronously
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\eco_experiments_page.dart:275:65 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\eco_experiments_page.dart:278:90 - deprecated_member_use
-warning - Unused import: 'package:firebase_auth/firebase_auth.dart' - lib\challenges\forest_page.dart:4:8 - unused_import
-warning - The value of the local variable 'isArabic' isn't used - lib\challenges\forest_page.dart:14:11 - unused_local_variable
    info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\challenges\friend_challenge_page.dart:41:5 - deprecated_member_use
    info - 'share' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\challenges\friend_challenge_page.dart:41:11 - deprecated_member_use
-warning - Unnecessary cast - lib\challenges\friend_challenge_page.dart:71:22 - unnecessary_cast
-warning - The declaration '_getLevel' isn't referenced - lib\challenges\friend_challenge_page.dart:90:7 - unused_element
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\leaderboard_page.dart:126:61 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\leaderboard_page.dart:130:55 - deprecated_member_use
-   info - Unnecessary use of 'toList' in a spread - lib\challenges\weekly_challenges_page.dart:112:18 - unnecessary_to_list_in_spreads
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\challenges\weekly_challenges_page.dart:129:41 - deprecated_member_use
-warning - Unused import: 'dart:math' - lib\dashboard\advanced_tree_page.dart:2:8 - unused_import
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:156:45 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:223:47 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:311:62 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:421:39 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\dashboard\full_app_dashboard.dart:446:31 - deprecated_member_use
-   info - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\dashboard\main_wrappe.dart:76:12 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_dashboard.dart:91:53 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_dashboard.dart:92:43 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_dashboard.dart:98:54 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\recycle\recycle_history_page.dart:106:67 - deprecated_member_use
-warning - Unused import: 'package:http/http.dart' - lib\recycle\recycle_submission_page.dart:7:8 - unused_import
-warning - Unused import: 'dart:convert' - lib\recycle\recycle_submission_page.dart:8:8 - unused_import
-warning - The value of the field '_detectedLabel' isn't used - lib\recycle\recycle_submission_page.dart:52:11 - unused_field
-   info - The parameter name 'sum' matches a visible type name - lib\recycle\recycle_submission_page.dart:103:17 - avoid_types_as_parameter_names
-   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:142:77 - use_build_context_synchronously
-   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:143:32 - use_build_context_synchronously
-   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:256:30 - use_build_context_synchronously
-   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:258:40 - use_build_context_synchronously
-warning - The operand can't be 'null', so the condition is always 'true' - lib\recycle\recycle_submission_page.dart:275:31 - unnecessary_null_comparison
-warning - The operand can't be 'null', so the condition is always 'true' - lib\recycle\recycle_submission_page.dart:388:50 - unnecessary_null_comparison
-warning - The operand can't be 'null', so the condition is always 'true' - lib\recycle\recycle_submission_page.dart:395:168 - unnecessary_null_comparison
-warning - The value of the local variable 'pendingQuery' isn't used - lib\recycle\recycle_tasks_page.dart:49:11 - unused_local_variable
+   info - 'WillPopScope' is deprecated and shouldn't be used. Use PopScope instead. The Android predictive back feature will not work with WillPopScope. This feature was deprecated after v3.12.0-1.0.pre - lib\dashboard\main_wrappe.dart:84:12 - deprecated_member_use
+   info - The parameter name 'sum' matches a visible type name - lib\recycle\recycle_submission_page.dart:101:17 - avoid_types_as_parameter_names
+  error - Undefined name '_detectedLabel' - lib\recycle\recycle_submission_page.dart:109:9 - undefined_identifier
+  error - Undefined name '_detectedLabel' - lib\recycle\recycle_submission_page.dart:137:13 - undefined_identifier
+   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:140:77 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:141:32 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:254:30 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\recycle\recycle_submission_page.dart:256:40 - use_build_context_synchronously
    info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:305:33 - deprecated_member_use
    info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:307:33 - deprecated_member_use
    info - 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:316:33 - deprecated_member_use
    info - 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre - lib\screen\create_account_screen.dart:318:33 - deprecated_member_use
-   info - Don't use 'BuildContext's across async gaps - lib\screen\login_screen.dart:100:42 - use_build_context_synchronously
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screen\login_screen.dart:209:61 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screen\splash_screen.dart:70:51 - deprecated_member_use
-warning - Unused import: 'dart:math' - lib\screen\tree_page.dart:2:8 - unused_import
-   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:58:7 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:60:7 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:62:7 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:64:7 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:266:13 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\screen\tree_page.dart:268:13 - curly_braces_in_flow_control_structures
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screen\tree_page.dart:314:47 - deprecated_member_use
+   info - Don't use 'BuildContext's across async gaps - lib\screen\login_screen.dart:105:42 - use_build_context_synchronously
    info - Don't invoke 'print' in production code - lib\services\material_classifier_native.dart:27:7 - avoid_print
    info - Angle brackets will be interpreted as HTML - lib\services\material_classifier_native.dart:35:15 - unintended_html_in_doc_comment
-warning - Unused import: 'seed_store_products.dart' - lib\store\admin_orders_page.dart:5:8 - unused_import
-   info - Statements in an if should be enclosed in a block - lib\store\admin_orders_page.dart:62:13 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\store\admin_orders_page.dart:64:13 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\store\admin_orders_page.dart:69:13 - curly_braces_in_flow_control_structures
-   info - 'label' is deprecated and shouldn't be used. Use getLabel(context) instead - lib\store\admin_orders_page.dart:135:43 - deprecated_member_use_from_same_package
-   info - 'label' is deprecated and shouldn't be used. Use getLabel(context) instead - lib\store\admin_orders_page.dart:145:40 - deprecated_member_use_from_same_package
-   info - 'label' is deprecated and shouldn't be used. Use getLabel(context) instead - lib\store\admin_orders_page.dart:146:45 - deprecated_member_use_from_same_package
+   info - Don't use 'BuildContext's across async gaps - lib\store\admin_orders_page.dart:19:38 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps - lib\store\admin_orders_page.dart:24:62 - use_build_context_synchronously
    info - Don't invoke 'print' in production code - lib\store\check_firestore_products.dart:11:3 - avoid_print
    info - Don't invoke 'print' in production code - lib\store\check_firestore_products.dart:14:5 - avoid_print
-warning - Unused import: 'package:namaa_project_app/l10n/app_localizations.dart' - lib\store\check_firestore_status.dart:1:8 - unused_import
-   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:7:3 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:17:5 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:20:7 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:22:7 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:24:9 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:28:5 - avoid_print
-   info - The parameter name 'sum' matches a visible type name - lib\store\eco_store_with_discount.dart:135:32 - avoid_types_as_parameter_names
-warning - The declaration '_cleanStaleCarts' isn't referenced - lib\store\eco_store_with_discount.dart:146:8 - unused_element
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\eco_store_with_discount.dart:983:47 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\eco_store_with_discount.dart:1024:43 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\eco_store_with_discount.dart:1283:35 - deprecated_member_use
-   info - Statements in an if should be enclosed in a block - lib\store\my_orders_page.dart:32:13 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\store\my_orders_page.dart:34:13 - curly_braces_in_flow_control_structures
-   info - Statements in an if should be enclosed in a block - lib\store\my_orders_page.dart:39:13 - curly_braces_in_flow_control_structures
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\my_orders_page.dart:134:35 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\my_orders_page.dart:158:43 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\my_orders_page.dart:227:69 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\order_status.dart:33:25 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\product_details_page.dart:86:37 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\product_details_page.dart:229:47 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\store\product_details_page.dart:381:37 - deprecated_member_use
-warning - Unused import: 'dart:io' - lib\store\seed_store_products.dart:4:8 - unused_import
-   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:350:3 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:355:5 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:364:5 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:366:5 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:373:5 - avoid_print
-   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:375:5 - avoid_print
-warning - Unused import: 'package:namaa_project_app/services/notification_service.dart' - lib\tasks\eco_action_page.dart:10:8 - unused_import
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\tasks\eco_action_page.dart:316:59 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\tasks\eco_action_page.dart:428:51 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\tasks\my_impact_gallery.dart:205:53 - deprecated_member_use
-warning - Unused import: 'package:namaa_project_app/services/notification_service.dart' - lib\tasks\save_resources_page.dart:10:9 - unused_import
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:45:45 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:57:45 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:71:60 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:257:33 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:280:44 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:329:33 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:341:30 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:397:39 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\about_page.dart:520:26 - deprecated_member_use
-warning - Unused import: 'dart:io' - lib\user\account_settings_page.dart:7:8 - unused_import
-warning - The declaration '_readonlyField' isn't referenced - lib\user\account_settings_page.dart:959:10 - unused_element
-   info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\user\certificate_page.dart:174:13 - deprecated_member_use
-   info - 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\user\certificate_page.dart:174:19 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\help_center_page.dart:69:50 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\help_center_page.dart:122:39 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\help_center_page.dart:178:33 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:6:3 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:16:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:19:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:21:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:23:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\check_firestore_status.dart:27:5 - avoid_print
+   info - The parameter name 'sum' matches a visible type name - lib\store\eco_store_with_discount.dart:139:32 - avoid_types_as_parameter_names
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check - lib\store\eco_store_with_discount.dart:709:37 - use_build_context_synchronously
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:535:3 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:543:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:547:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:554:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:556:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:644:3 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:662:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:678:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:703:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:706:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\store\seed_store_products.dart:708:5 - avoid_print
+   info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\user\certificate_page.dart:227:13 - deprecated_member_use
+   info - 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\user\certificate_page.dart:227:19 - deprecated_member_use
    info - 'Share' is deprecated and shouldn't be used. Use SharePlus instead - lib\user\invite_friend_page.dart:116:19 - deprecated_member_use
    info - 'share' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead - lib\user\invite_friend_page.dart:116:25 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\notifications_page.dart:130:35 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\notifications_page.dart:137:30 - deprecated_member_use
-   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\user\notifications_page.dart:161:13 - deprecated_member_use
-warning - Unused import: 'about_page.dart' - lib\user\settings_page.dart:11:8 - unused_import
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\settings_page.dart:155:31 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\settings_page.dart:174:30 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\user_profile_page.dart:148:43 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\user_profile_page.dart:249:33 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\user\user_profile_page.dart:281:37 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\co2_stats.dart:22:33 - deprecated_member_use
-   info - Unnecessary use of string interpolation - lib\widgets\co2_stats.dart:52:24 - unnecessary_string_interpolations
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\co2_stats.dart:111:26 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\co2_stats.dart:114:30 - deprecated_member_use
-   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\daily_reminder.dart:75:39 - deprecated_member_use
 

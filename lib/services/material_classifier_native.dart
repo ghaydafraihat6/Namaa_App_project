@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
 
@@ -24,7 +25,7 @@ class MaterialClassifier {
           .where((l) => l.isNotEmpty)
           .toList();
     } catch (e) {
-      print('MaterialClassifier init error: $e');
+      debugPrint('MaterialClassifier init error: $e');
     }
   }
 
@@ -32,7 +33,7 @@ class MaterialClassifier {
   static bool get isReady => _interpreter != null && _labels != null;
 
   /// تصنيف صورة وإرجاع النتائج
-  /// يرجع Map<String, double> مثل: {'plastic': 0.95, 'metal': 0.03, ...}
+  /// يرجع `Map<String, double>` مثل: {'plastic': 0.95, 'metal': 0.03, ...}
   static Future<Map<String, double>> classify(File imageFile) async {
     try {
       if (!isReady) {
@@ -75,8 +76,7 @@ class MaterialClassifier {
 
       return results;
     } catch (e) {
-      // ignore: avoid_print
-      print('MaterialClassifier classify error: $e');
+      debugPrint('MaterialClassifier classify error: $e');
       return {};
     }
   }

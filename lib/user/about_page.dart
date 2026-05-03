@@ -46,7 +46,7 @@ class AboutPage extends StatelessWidget {
                       height: 200,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -58,7 +58,7 @@ class AboutPage extends StatelessWidget {
                       height: 150,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                       ),
                     ),
                   ),
@@ -72,7 +72,7 @@ class AboutPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(15),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEBF4DD).withOpacity(0.3),
+                            color: const Color(0xFFEBF4DD).withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Image.asset(
@@ -83,7 +83,7 @@ class AboutPage extends StatelessWidget {
                         ),
                         SizedBox(height: 12),
                         Text(
-                          isArabic ? "نـمـاء" : "Namaa",
+                          isArabic ? "نـمـاء" : "NAMAA",
                           style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 42,
@@ -126,7 +126,7 @@ class AboutPage extends StatelessWidget {
                     child: Text(
                       isArabic
                           ? "نماء هو تطبيق بيئي تفاعلي يهدف إلى تحفيز الأفراد على اتخاذ خطوات يومية نحو حياة أكثر استدامة. نؤمن بأن كل فعل إيجابي صغير، مهما كان بسيطاً، يمكن أن يُحدث فرقاً حقيقياً في عالمنا."
-                          : "Namaa is an interactive eco-friendly app aimed at motivating individuals to take daily steps toward a more sustainable life. We believe that every small positive action, however simple, can make a real difference in our world.",
+                          : "NAMAA is an interactive eco-friendly app aimed at motivating individuals to take daily steps toward a more sustainable life. We believe that every small positive action, however simple, can make a real difference in our world.",
                       style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 18,
@@ -148,7 +148,7 @@ class AboutPage extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // ── ماذا يقدم نماء ──
-                  _buildSectionTitle(isArabic ? "✨ ماذا يقدم نماء؟" : "✨ What does Namaa offer?"),
+                  _buildSectionTitle(isArabic ? "✨ ماذا يقدم نماء؟" : "✨ What does NAMAA offer?"),
                   const SizedBox(height: 12),
                   _buildFeatureItem(
                     icon: Icons.recycling,
@@ -190,14 +190,14 @@ class AboutPage extends StatelessWidget {
                   SizedBox(height: 24),
 
                   // ── فريق العمل ──
-                  _buildSectionTitle(isArabic ? "👥 فريق نماء" : "👥 Namaa Team"),
+                  _buildSectionTitle(isArabic ? "👥 فريق نماء" : "👥 NAMAA Team"),
                   const SizedBox(height: 12),
                   _buildTeamSection(isArabic),
 
                   SizedBox(height: 24),
 
                   // ── إحصائيات ──
-                  _buildSectionTitle(isArabic ? "📊 نماء بالأرقام" : "📊 Namaa in Numbers"),
+                  _buildSectionTitle(isArabic ? "📊 نماء بالأرقام" : "📊 NAMAA in Numbers"),
                   const SizedBox(height: 12),
                   _buildStatsRow(isArabic),
 
@@ -259,7 +259,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -282,7 +282,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF386641).withOpacity(0.3),
+            color: const Color(0xFF386641).withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -306,7 +306,7 @@ class AboutPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            isArabic ? "— فريق نماء 🌱" : "— Namaa Team 🌱",
+            isArabic ? "— فريق نماء 🌱" : "— NAMAA Team 🌱",
             style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 15,
@@ -333,7 +333,7 @@ class AboutPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -345,7 +345,7 @@ class AboutPage extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: color, size: 26),
@@ -386,7 +386,7 @@ class AboutPage extends StatelessWidget {
   Widget _buildTeamSection(bool isArabic) {
     final List<Map<String, String>> team = [
       {"name": isArabic ? "غيداء" : "Ghayda", "role": isArabic ? "مطور التطبيق" : "App Developer", "emoji": "👩‍💻"},
-      {"name": isArabic ? "فريق نماء" : "Namaa Team", "role": isArabic ? "التصميم والمحتوى" : "Design & Content", "emoji": "🎨"},
+      {"name": isArabic ? "فريق نماء" : "NAMAA Team", "role": isArabic ? "التصميم والمحتوى" : "Design & Content", "emoji": "🎨"},
       {"name": isArabic ? "المجتمع" : "Community", "role": isArabic ? "شركاء التغيير" : "Partners of Change", "emoji": "🌍"},
     ];
 
@@ -401,7 +401,7 @@ class AboutPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -524,7 +524,7 @@ class AboutPage extends StatelessWidget {
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -554,7 +554,7 @@ class AboutPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            isArabic ? "🌱 نماء" : "🌱 Namaa",
+            isArabic ? "🌱 نماء" : "🌱 NAMAA",
             style: const TextStyle(
               fontFamily: 'Cairo',
               fontSize: 24,

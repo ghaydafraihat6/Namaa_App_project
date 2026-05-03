@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
-      body: SafeArea( // ✅ SafeArea
+      body: SafeArea(
         child: Container(
           width: double.infinity,
           height: double.infinity,
@@ -154,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      Container( // ✅ Container بدل DecoratedBox
+                      Container(
                         width: 40,
                         height: 3,
                         decoration: BoxDecoration(

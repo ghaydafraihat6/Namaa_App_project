@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
+
 class Co2StatsWidget extends StatelessWidget {
   final int points;
   const Co2StatsWidget({super.key, required this.points});
@@ -19,7 +20,7 @@ class Co2StatsWidget extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12)],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +50,7 @@ class Co2StatsWidget extends StatelessWidget {
               const SizedBox(width: 10),
               _co2Card(
                 emoji: '🌳',
-                value: '${treesEquivalent.toStringAsFixed(1)}',
+                value: treesEquivalent.toStringAsFixed(1),
                 label: l10n.treesEquivalent,
                 color: const Color(0xFF386641),
               ),
@@ -108,10 +109,10 @@ class Co2StatsWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
               vertical: 14, horizontal: 8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-                color: color.withOpacity(0.2)),
+                color: color.withValues(alpha: 0.2)),
           ),
           child: Column(children: [
             Text(emoji, style: const TextStyle(fontSize: 24)),

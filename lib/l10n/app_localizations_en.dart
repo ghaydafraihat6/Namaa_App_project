@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'Namaa';
+  String get appName => 'NAMAA';
 
   @override
   String get welcome => 'Welcome Back!';
@@ -48,7 +48,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get level => 'Level';
 
   @override
-  String get badges => '🏅 My Badges';
+  String get badges => 'My Badges';
 
   @override
   String get settings => 'Settings';
@@ -126,7 +126,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyStreak => 'Day Streak';
 
   @override
-  String get forestPage => 'Namaa Forest';
+  String get forestPage => 'NAMAA Forest';
 
   @override
   String get certificate => 'Certificate';
@@ -334,7 +334,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tree_stage_4 => 'Big Tree';
 
   @override
-  String get tree_stage_5 => 'Namaa Forest';
+  String get tree_stage_5 => 'NAMAA Forest';
 
   @override
   String get ecoExperiments => 'Eco Experiments';
@@ -379,7 +379,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bike_reset_snack => 'Challenge reset, start again! 🚴';
 
   @override
-  String get experiments_title => '🧪 Daily Experiments';
+  String get experiments_title => 'Daily Experiments';
 
   @override
   String get experiments_progress_header => 'Today\'s Experiments Progress';
@@ -411,7 +411,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get be_the_first_to_plant =>
-      'Be the first to plant a tree in Namaa Forest';
+      'Be the first to plant a tree in NAMAA Forest';
 
   @override
   String get by_user => 'By';
@@ -682,13 +682,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'All notifications will be deleted permanently';
 
   @override
-  String get settings_version => 'Namaa v1.0.0';
+  String get settings_version => 'NAMAA v1.0.0';
 
   @override
   String get cert_share_failed => 'Failed to prepare sharing, try again';
 
   @override
-  String get cert_my_certs => '🏅 My Certificates';
+  String get cert_my_certs => 'My Certificates';
 
   @override
   String get cert_load_error => 'An error occurred while loading certificates';
@@ -700,7 +700,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cert_date => 'Date';
 
   @override
-  String get cert_app_name => 'Namaa App';
+  String get cert_app_name => 'NAMAA App';
 
   @override
   String get acc_changes_saved => '✅ Changes saved successfully';
@@ -736,7 +736,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invite_code_copied => 'Code copied successfully! ✅';
 
   @override
-  String get invite_friend_title => 'Invite a Friend 🤝';
+  String get invite_friend_title => 'Invite a Friend';
 
   @override
   String get invite_friend_desc =>
@@ -754,7 +754,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String invite_share_text(String code) {
-    return 'Join me on Namaa to save the environment! Use my code: $code to get a starter bonus 🌱✨';
+    return 'Join me on NAMAA to save the environment! Use my code: $code to get a starter bonus 🌱✨';
   }
 
   @override
@@ -962,13 +962,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loc_ghumdan => 'Ghumdan National Park 🌳';
 
   @override
-  String get recycle_dashboard_title => 'Recycle Center ♻️';
+  String get recycle_dashboard_title => 'Recycle Center';
 
   @override
-  String get recycle_history_title => 'My Requests History 🗂️';
+  String get recycle_history_title => 'My Requests History';
 
   @override
-  String get recycle_welcome => 'Welcome to Namaa! 🌱';
+  String get recycle_welcome => 'Welcome to NAMAA! 🌱';
 
   @override
   String get recycle_how_to_contribute =>
@@ -1015,13 +1015,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get store_order_cancelled => 'Cancelled';
 
   @override
-  String get store_my_orders => '📦 My Orders';
+  String get store_my_orders => 'My Orders';
 
   @override
   String get smart_capsule_title => 'Agriculture Smart Capsule 🌱';
 
   @override
-  String get smart_capsule_gift => 'Your gift from Namaa';
+  String get smart_capsule_gift => 'Your gift from NAMAA';
 
   @override
   String get smart_capsule_what_is_it => 'What is the Smart Capsule?';
@@ -1035,7 +1035,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get smart_capsule_why_special_desc =>
-      'Because it links buying from the Namaa store with an environmental impact and a real farming experience, which enhances the idea of sustainability and gives the user added value.';
+      'Because it links buying from the NAMAA store with an environmental impact and a real farming experience, which enhances the idea of sustainability and gives the user added value.';
 
   @override
   String get smart_capsule_how_to_use => 'How does the user benefit?';
@@ -1052,7 +1052,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The capsule can later be linked within the app to a plant growth tracking page, providing watering reminders and smart planting tips.';
 
   @override
-  String get challenges_initiatives_history => 'My Initiatives History ✨';
+  String get challenges_initiatives_history => 'My Initiatives History';
 
   @override
   String get challenges_no_initiatives =>
@@ -1094,7 +1094,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get help_a_is_free =>
-      'Yes! The Namaa app is 100% free and requires no subscription.';
+      'Yes! The NAMAA app is 100% free and requires no subscription.';
 
   @override
   String get help_q_contact_support => 'How do I contact support?';
@@ -1153,10 +1153,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get review_text_3 =>
-      'Loved it! A great step towards saving the environment. Thanks Namaa.';
+      'Loved it! A great step towards saving the environment. Thanks NAMAA.';
 
   @override
-  String get store_check_db_title => '🔍 Checking Namaa store DB...';
+  String get store_check_db_title => '🔍 Checking NAMAA store DB...';
 
   @override
   String store_check_db_count(int count) {
@@ -1185,7 +1185,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get splash_app_name => 'Namaa';
+  String get exp_pending_review => 'Awaiting review... ⏳';
+
+  @override
+  String get exp_upload_failed => 'Image upload failed';
+
+  @override
+  String get splash_app_name => 'NAMAA';
 
   @override
   String get splash_tagline_part1 => 'Your Green';

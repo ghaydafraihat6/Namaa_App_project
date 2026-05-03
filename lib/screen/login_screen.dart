@@ -102,6 +102,7 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
       } on FirebaseAuthException catch (e) {
+        if (!mounted) return;
         final l10n = AppLocalizations.of(context)!;
         String errorMessage;
 
@@ -124,7 +125,8 @@ class _LoginPageState extends State<LoginPage> {
 
         if (mounted) _showErrorSnackBar(errorMessage);
       } catch (e) {
-        if (mounted) _showErrorSnackBar("An error occurred. Please try again.");
+        if (!mounted) return;
+        _showErrorSnackBar("An error occurred. Please try again.");
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -169,13 +171,13 @@ class _LoginPageState extends State<LoginPage> {
         }
 
         if (_rememberMe) await _setLoggedInStatus(true);
-        if (mounted) {
-          Navigator.pushReplacementNamed(
-              context, isAdmin ? '/admin-dashboard' : '/home');
-        }
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(
+            context, isAdmin ? '/admin-dashboard' : '/home');
       }
     } catch (e) {
-      if (mounted) _showErrorSnackBar("Google Sign-In failed.");
+      if (!mounted) return;
+      _showErrorSnackBar("Google Sign-In failed.");
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -193,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // متغير لتسهيل الوصول للترجمة
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -218,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [Colors.white, Colors.white.withOpacity(0.0)],
+                        colors: [Colors.white, Colors.white.withValues(alpha: 0.0)],
                         stops: const [0.0, 0.5],
                       ),
                     ),
@@ -259,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                     // Identifier Field
                     _buildInputField(
                       controller: _identifierController,
-                      hint: l10n.login_hint_id, // مترجم
+                      hint: l10n.login_hint_id,
                       icon: Icons.person_outline,
                       validator: (val) => (val == null || val.isEmpty) ? l10n.error_field_required : null,
                     ),
@@ -268,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                     // Password Field
                     _buildInputField(
                       controller: _passwordController,
-                      hint: l10n.login_hint_password, // مترجم
+                      hint: l10n.login_hint_password,
                       icon: Icons.lock_outline,
                       isPassword: true,
                       validator: (val) => (val == null || val.isEmpty) ? l10n.error_field_required : null,

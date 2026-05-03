@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:namaa_project_app/screen/login_screen.dart';
@@ -62,8 +63,8 @@ class ProfilePage extends StatelessWidget {
         return Scaffold(
           backgroundColor: const Color(0xFFF0F5F0),
           body: ListView(
-            padding: EdgeInsets.zero,
-            children: [
+              padding: EdgeInsets.zero,
+              children: [
 
               // ── Hero ──
               Container(
@@ -114,7 +115,7 @@ class ProfilePage extends StatelessWidget {
                               shaderCallback: (rect) {
                                 return const RadialGradient(
                                   colors: [Colors.transparent, Colors.black],
-                                  stops: [0.55, 0.65], // يفرّغ وسط الصورة
+                                  stops: [0.55, 0.65],
                                 ).createShader(rect);
                               },
                               blendMode: BlendMode.dstIn,
@@ -129,7 +130,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Text(name,
+                  Text(StoreLocalizer.reviewerName(context, name),
                       style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 22,
@@ -147,13 +148,13 @@ class ProfilePage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text('🏅 ${l10n.level} $lvl',
+                    child: Text('⭐ ${l10n.level} $lvl',
                         style: const TextStyle(
                             fontFamily: 'Cairo',
-                            fontSize: 15,
+                            fontSize: 14,
                             fontWeight: FontWeight.w900,
                             color: Colors.white)),
                   ),
@@ -164,9 +165,9 @@ class ProfilePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Row(children: [
-                  _statCard('$pts', isArabic ? 'نقطة' : 'Points'),
+                  _statCard('✨ $pts', isArabic ? 'نقطة' : 'Points'),
                   const SizedBox(width: 10),
-                  _statCard('${data['completedTasksCount'] ?? 0}', isArabic ? 'مهمة منجزة' : 'Tasks Done'),
+                  _statCard('✅ ${data['completedTasksCount'] ?? 0}', isArabic ? 'مهمة منجزة' : 'Tasks Done'),
                   const SizedBox(width: 10),
                   _statCard('🔥 ${data['bikeStreak'] ?? 0}', isArabic ? 'يوم متواصل' : 'Day Streak'),
                 ]),
@@ -183,14 +184,14 @@ class ProfilePage extends StatelessWidget {
                       l10n.leaderboard, () =>
                           Navigator.pushNamed(context, '/leaderboard')),
 
-                  // ✅ زر تحدي مع صديق
-                  _menuItem(context, '👥', const Color(0xFFE8F0FF),
+                  // زر تحدي مع صديق
+                  _menuItem(context, '🤝', const Color(0xFFE8F0FF),
                       l10n.challengeFriend, () => Navigator.push(context,
                           MaterialPageRoute(
                               builder: (_) =>
                               const FriendChallengePage()))),
 
-                  _menuItem(context, '🤝', const Color(0xFFF0F4FF),
+                  _menuItem(context, '🎁', const Color(0xFFF0F4FF),
                       l10n.inviteFriend, () =>
                           Navigator.pushNamed(context, '/invite')),
                   _menuItem(context, '🛍️', const Color(0xFFFFF0E8),
@@ -221,7 +222,7 @@ class ProfilePage extends StatelessWidget {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('🚪', style: TextStyle(fontSize: 18)),
+                          const Icon(Icons.logout, color: Color(0xFFE63946), size: 20),
                           const SizedBox(width: 8),
                           Text(l10n.logout,
                               style: const TextStyle(
@@ -248,7 +249,7 @@ class ProfilePage extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 10)],
       ),
       child: Column(children: [
@@ -280,7 +281,7 @@ class ProfilePage extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 8)],
           ),
           child: Row(children: [
@@ -289,8 +290,7 @@ class ProfilePage extends StatelessWidget {
               decoration: BoxDecoration(
                   color: bg,
                   borderRadius: BorderRadius.circular(12)),
-              child: Center(child: Text(icon,
-                  style: const TextStyle(fontSize: 20))),
+              child: Center(child: Text(icon, style: const TextStyle(fontSize: 22))),
             ),
             const SizedBox(width: 14),
             Expanded(child: Text(label,

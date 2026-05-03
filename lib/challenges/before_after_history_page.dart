@@ -16,7 +16,7 @@ class BeforeAfterHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: Text(isAr ? "سجل مبادراتي ✨" : "Initiatives History ✨", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text(isAr ? "سجل مبادراتي" : "Initiatives History", style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: const Color(0xFF386641),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),

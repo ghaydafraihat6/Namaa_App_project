@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:namaa_project_app/dashboard/full_app_dashboard.dart';
-// ✅ أضف استيراد الداشبورد الجديد هنا
 import 'package:namaa_project_app/recycle/recycle_dashboard.dart';
 import 'package:namaa_project_app/screen/tree_page.dart';
 import 'package:namaa_project_app/store/eco_store_with_discount.dart';
@@ -83,22 +82,22 @@ class MainWrapperState extends State<MainWrapper> {
     final bool isAr = l10n.localeName == 'ar';
 
     return WillPopScope(
-        onWillPop: () async {
-          final isFirstRouteInCurrentTab =
-          !await _navigatorKeys[_currentIndex].currentState!.maybePop();
-          if (isFirstRouteInCurrentTab) {
-            if (_currentIndex != 0) {
-              setIndex(0);
-              return false;
-            }
+      onWillPop: () async {
+        final isFirstRouteInCurrentTab =
+            !await _navigatorKeys[_currentIndex].currentState!.maybePop();
+        if (isFirstRouteInCurrentTab) {
+          if (_currentIndex != 0) {
+            setIndex(0);
+            return false;
           }
-          return isFirstRouteInCurrentTab;
-        },
-        child: Scaffold(
+        }
+        return isFirstRouteInCurrentTab;
+      },
+      child: Scaffold(
           body: Stack(
             children: List.generate(
               5,
-                  (index) => _buildOffstageNavigator(index),
+              (index) => _buildOffstageNavigator(index),
             ),
           ),
           bottomNavigationBar: Container(
@@ -106,7 +105,10 @@ class MainWrapperState extends State<MainWrapper> {
               color: Colors.white,
               border: Border(top: BorderSide(color: Color(0x12000000))),
               boxShadow: [
-                BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, -4))
+                BoxShadow(
+                    color: Color(0x0A000000),
+                    blurRadius: 10,
+                    offset: Offset(0, -4))
               ],
             ),
             child: SafeArea(
@@ -115,18 +117,19 @@ class MainWrapperState extends State<MainWrapper> {
                 child: Row(
                   children: [
                     _navItem(0, '🏠', l10n.home),
-                    // ✅ التعديل هنا: الأيقونة والنص الجديد للتدوير
                     _navItem(1, '♻️', isAr ? 'التدوير' : 'Recycle'),
                     _navItem(2, '🌳', l10n.myTree),
-                    _navItem(3, '🛒', l10n.store),
+                    _navItem(3, '🛍️', l10n.store),
                     _navItem(4, '👤', l10n.profile),
                   ],
                 ),
               ),
             ),
           ),
-        ));
+        ),
+      );
   }
+
 
   Widget _navItem(int index, String icon, String label) {
     final active = _currentIndex == index;

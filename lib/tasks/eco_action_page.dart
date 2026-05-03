@@ -7,7 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:namaa_project_app/l10n/app_localizations.dart';
-import 'package:namaa_project_app/services/notification_service.dart';
+
 
 class EcoActionPage extends StatefulWidget {
   const EcoActionPage({super.key});
@@ -38,7 +38,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
     try {
       // البحث في مجموعة المهام الجديدة
       final query = await FirebaseFirestore.instance
-          .collection('tasks')
+          .collection('task_reviews')
           .where('userId', isEqualTo: user.uid)
           .where('date', isEqualTo: todayStr)
           .get();
@@ -62,7 +62,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
     return '${now.year}-${now.month}-${now.day}';
   }
 
-  // ✅ المهمة الرئيسية: التقاط الصورة (أو التأكيد) وحفظ النقاط
+  //المهمة الرئيسية: التقاط الصورة (أو التأكيد) وحفظ النقاط
   Future<void> _handleTaskCompletion(
     String taskId,
     int pts,
@@ -107,7 +107,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
           final jsonResult = json.decode(data);
           photoUrl = jsonResult['data']['url'];
         } else {
-          throw Exception('فشل رفع الصورة');
+          throw Exception(l10n.localeName == 'ar' ? 'فشل رفع الصورة' : 'Image upload failed');
         }
       } catch (e) {
         _showFeedback(e.toString(), false);
@@ -126,7 +126,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
-              child: const Text("تأكيد", style: TextStyle(color: Colors.white)),
+              child: Text(l10n.task_confirm, style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -140,7 +140,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       final todayStr = _getTodayDateString();
 
       // 🔥🔥 التعديل الأساسي هنا
-      await FirebaseFirestore.instance.collection('tasks').add({
+      await FirebaseFirestore.instance.collection('task_reviews').add({
         'userId': user.uid,
         'taskId': taskId,
         'date': todayStr,
@@ -153,7 +153,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       if (mounted) {
         setState(() => _completedTasks[taskId] = 'pending');
 
-        _showFeedback("تم إرسال المهمة للمراجعة ✅", true);
+        _showFeedback(l10n.localeName == 'ar' ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
       }
     } catch (e) {
       _showFeedback(e.toString(), false);
@@ -181,7 +181,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
         ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
       
       final reqResponse = await request.send();
-      if (reqResponse.statusCode != 200) throw Exception('فشل رفع الصورة المعدلة.');
+      if (reqResponse.statusCode != 200) throw Exception(l10n.localeName == 'ar' ? 'فشل رفع الصورة المعدلة.' : 'Modified image upload failed.');
 
       final responseData = await reqResponse.stream.bytesToString();
       final String photoUrl = json.decode(responseData)['data']['url'];
@@ -194,7 +194,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
           .doc(docId)
           .update({'imageUrl': photoUrl});
 
-      if (mounted) _showFeedback("تم تعديل الصورة بنجاح! 🖼️", true);
+      if (mounted) _showFeedback(l10n.localeName == 'ar' ? "تم تعديل الصورة بنجاح! 🖼️" : "Image updated successfully! 🖼️", true);
     } catch (e) {
       if (mounted) _showFeedback(e.toString(), false);
     } finally {
@@ -313,7 +313,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
                 border: Border.all(color: Colors.grey.shade200),
               ),
               child: Row(
@@ -425,7 +425,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       decoration: BoxDecoration(
         color: isDone ? Colors.green[50] : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
         border: Border.all(color: isDone ? const Color(0xFF386641) : Colors.transparent, width: 1.5),
       ),
       child: Row(
@@ -516,16 +516,16 @@ class _EcoActionPageState extends State<EcoActionPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("اختر مصدر الصورة كدليل بيئي", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
+            Text(l10n.exp_choose_source, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Color(0xFF386641)),
-              title: const Text("الكاميرا"),
+              title: Text(l10n.exp_camera),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Color(0xFF386641)),
-              title: const Text("معرض الصور"),
+              title: Text(l10n.exp_gallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -538,14 +538,14 @@ class _EcoActionPageState extends State<EcoActionPage> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("هل هذه الصورة دليل صحيح؟", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontFamily: 'Cairo')),
+        title: Text(l10n.exp_is_proof_valid, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontFamily: 'Cairo')),
         content: ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.file(file, height: 250, fit: BoxFit.cover)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("إعادة الالتقاط")),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.exp_retake)),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
-            child: const Text("تأكيد ورفع", style: TextStyle(color: Colors.white)),
+            child: Text(l10n.exp_confirm_upload, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -553,8 +553,9 @@ class _EcoActionPageState extends State<EcoActionPage> {
   }
 
   void _showFeedback(String msg, bool isSuccess) {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(isSuccess ? "🌿 تم إنجاز المهمة بنجاح! حصلت على $msg" : "❌ خطأ: $msg"),
+      content: Text(isSuccess ? (isAr ? "🌿 تم إنجاز المهمة بنجاح! حصلت على $msg" : "🌿 Task completed! You got $msg") : "${isAr ? '❌ خطأ' : '❌ Error'}: $msg"),
       backgroundColor: isSuccess ? const Color(0xFF386641) : Colors.red,
       behavior: SnackBarBehavior.floating,
     ));

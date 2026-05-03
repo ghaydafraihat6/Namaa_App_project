@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
@@ -22,13 +21,12 @@ class AdvancedTreePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // تعريف متغير الترجمة
+
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
       return Scaffold(
-        // استخدام نص مترجم بدل النص الثابت
         body: Center(child: Text(l10n.login)),
       );
     }
@@ -67,7 +65,6 @@ class AdvancedTreePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  // دمج كلمة "نقاط" المترجمة مع الرقم
                   "${l10n.points}: $points",
                   style: const TextStyle(
                     fontSize: 28,

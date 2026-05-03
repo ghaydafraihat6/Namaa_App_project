@@ -45,13 +45,6 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
         .where('date', isEqualTo: today)
         .get();
 
-    // تحميل المهام المعلقة لليوم فقط
-    final pendingQuery = await FirebaseFirestore.instance
-        .collection('task_reviews')
-        .where('userId', isEqualTo: user.uid)
-        .where('status', isEqualTo: 'pending')
-        .where('date', isEqualTo: today)
-        .get();
 
     if (mounted) {
       setState(() {
@@ -262,7 +255,7 @@ class _RecycleTasksPageState extends State<RecycleTasksPage> {
       children: [
         Scaffold(
           appBar: AppBar(
-            title: Text(isAr ? "مهام بيئية سريعة 🌱" : "Quick Eco Tasks 🌱", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+            title: Text(isAr ? "مهام بيئية سريعة" : "Quick Eco Tasks", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
             backgroundColor: const Color(0xFF386641),
             iconTheme: const IconThemeData(color: Colors.white),
           ),

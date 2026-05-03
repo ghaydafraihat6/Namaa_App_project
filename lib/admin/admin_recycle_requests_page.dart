@@ -1,16 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
+import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/services/notification_service.dart';
 
 class AdminRecycleRequestsPage extends StatelessWidget {
   const AdminRecycleRequestsPage({super.key});
 
-  Future<void> _updateStatus(BuildContext context, String docId, String newStatus, bool isAr) async {
+  Future<void> _updateStatus(BuildContext context, String docId, String newStatus, bool isAr, String userId) async {
     try {
       await FirebaseFirestore.instance
           .collection('recycle_requests')
           .doc(docId)
           .update({'status': newStatus});
+
       if (context.mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        
+        // إرسال إشعار للمستخدم
+        await NotificationService.send(
+          title: l10n.recycle_title,
+          body: newStatus == 'received' 
+            ? (isAr ? 'تم استلام طلب التدوير الخاص بك بنجاح ✅' : 'Your recycle request has been received ✅')
+            : (isAr ? 'تحديث في حالة طلب التدوير: $newStatus' : 'Recycle request status update: $newStatus'),
+          type: "recycle",
+          recipientUid: userId,
+        );
+
+        if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(isAr ? 'تم تحديث الحالة بنجاح ✅' : 'Status updated successfully ✅', style: const TextStyle(fontFamily: 'Cairo')),
           backgroundColor: const Color(0xFF386641),
@@ -48,7 +65,7 @@ class AdminRecycleRequestsPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xFFF0F5F0),
         appBar: AppBar(
-          title: Text(isAr ? '♻️ طلبات التدوير' : '♻️ Recycle Requests', 
+          title: Text(isAr ? 'طلبات التدوير' : 'Recycle Requests', 
             style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
           backgroundColor: primaryGreen,
           iconTheme: const IconThemeData(color: Colors.white),
@@ -112,7 +129,7 @@ class AdminRecycleRequestsPage extends StatelessWidget {
             final data = doc.data() as Map<String, dynamic>;
             
             final status = data['status'] ?? 'pending';
-            final points = data['points'] ?? 0;
+            final int points = (data['points'] as num?)?.toInt() ?? 0;
             final notes = data['notes'] ?? '';
             final imageUrl = data['imageUrl'];
             final ts = data['createdAt'] as Timestamp?;
@@ -135,7 +152,7 @@ class AdminRecycleRequestsPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(status).withOpacity(0.1),
+                            color: _getStatusColor(status).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -177,7 +194,8 @@ class AdminRecycleRequestsPage extends StatelessWidget {
                                     }
                                     if (userSnapshot.hasData && userSnapshot.data != null && userSnapshot.data!.exists) {
                                       final userData = userSnapshot.data!.data() as Map<String, dynamic>;
-                                      final name = userData['fullName'] ?? userData['name'] ?? (isAr ? 'بدون اسم' : 'No Name');
+                                      final rawName = userData['fullName'] ?? userData['name'] ?? (isAr ? 'بدون اسم' : 'No Name');
+                                      final name = StoreLocalizer.reviewerName(context, rawName);
                                       return Padding(
                                         padding: const EdgeInsets.only(bottom: 4.0),
                                         child: Row(
@@ -199,7 +217,12 @@ class AdminRecycleRequestsPage extends StatelessWidget {
                                     return const SizedBox();
                                   },
                                 ),
-                              Text(isAr ? 'المواد: ${materials.join(', ')}' : 'Materials: ${materials.join(', ')}', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 14)),
+                              Text(
+                                isAr 
+                                  ? 'المواد: ${materials.map((m) => StoreLocalizer.materialName(context, m)).join(', ')}' 
+                                  : 'Materials: ${materials.map((m) => StoreLocalizer.materialName(context, m)).join(', ')}', 
+                                style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 14)
+                              ),
                               const SizedBox(height: 4),
                               Text(isAr ? 'النقاط المكتسبة: $points ⭐' : 'Earned Points: $points ⭐', style: TextStyle(fontFamily: 'Cairo', color: primaryGreen, fontWeight: FontWeight.bold)),
                               if (notes.isNotEmpty) ...[
@@ -216,7 +239,7 @@ class AdminRecycleRequestsPage extends StatelessWidget {
                        SizedBox(
                          width: double.infinity,
                          child: ElevatedButton.icon(
-                           onPressed: () => _updateStatus(context, doc.id, 'received', isAr),
+                           onPressed: () => _updateStatus(context, doc.id, 'received', isAr, data['userId'] ?? ''),
                            icon: const Icon(Icons.check_circle_outline, color: Colors.white),
                            label: Text(isAr ? 'تأكيد الاستلام' : 'Mark as Received', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
                            style: ElevatedButton.styleFrom(

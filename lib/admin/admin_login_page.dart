@@ -92,7 +92,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         return;
       }
 
-      // أدمن ✅ — الدخول للوحة التحكم
+      // أدمن  — الدخول للوحة التحكم
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -100,6 +100,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         );
       }
     } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       String errorMessage;
       switch (e.code) {
@@ -120,6 +121,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       }
       if (mounted) _showErrorSnackBar(errorMessage);
     } catch (e) {
+      if (!mounted) return;
       final catchIsAr = Localizations.localeOf(context).languageCode == 'ar';
       if (mounted) _showErrorSnackBar(catchIsAr ? 'حدث خطأ، حاول مرة أخرى' : 'An error occurred. Try again.');
     } finally {
@@ -199,10 +201,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         Container(
                           width: 110,
                           height: 110,
-                          padding: const EdgeInsets.all(8), // تقليل البادنج شوي
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(25), // استخدام شكل مربع بحواف دائرية بدل الدائرة الكاملة لمنع قص الشعار
+                            borderRadius: BorderRadius.circular(25),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.2),

@@ -12,8 +12,8 @@ const _categories = [
   {'id': 'all', 'label': 'الكل', 'en': 'All', 'icon': '🌿'},
   {'id': 'plants', 'label': 'أشتال ونباتات', 'en': 'Plants & Seedlings', 'icon': '🌱'},
   {'id': 'pots', 'label': 'قواري وأصص', 'en': 'Pots', 'icon': '🪴'},
-  {'id': 'seeds', 'label': 'بذور', 'en': 'Seeds', 'icon': '🌰'},
-  {'id': 'tools', 'label': 'معدات زراعية', 'en': 'Farming Tools', 'icon': '🔧'},
+  {'id': 'seeds', 'label': 'بذور', 'en': 'Seeds', 'icon': '🌻'},
+  {'id': 'tools', 'label': 'معدات زراعية', 'en': 'Farming Tools', 'icon': '🛠️'},
   {'id': 'recycled', 'label': 'منتجات معاد تدويرها', 'en': 'Recycled', 'icon': '♻️'},
   {'id': 'other', 'label': 'أخرى', 'en': 'Other', 'icon': '🛍️'},
 ];
@@ -136,28 +136,17 @@ class _EcoStorePageState extends State<EcoStorePage> {
   }
 
   double _total(List<Map<String, dynamic>> products, int pts) =>
-      _cart.entries.fold(0.0, (sum, e) {
+      _cart.entries.fold(0.0, (total, e) {
         final p =
         products.firstWhere((p) => p['id'] == e.key, orElse: () => {});
-        if (p.isEmpty) return sum;
-        return sum + (p['price'] as num) * (1 - calcDiscount(pts)) * e.value;
+        if (p.isEmpty) return total;
+        return total + (p['price'] as num) * (1 - calcDiscount(pts)) * e.value;
       });
 
   int _validCartCount(List<Map<String, dynamic>> products) => _cart.entries
       .where((e) => products.any((p) => p['id'] == e.key))
       .fold(0, (a, b) => a + b.value);
 
-  void _cleanStaleCarts(List<Map<String, dynamic>> products) {
-    final staleKeys =
-    _cart.keys.where((k) => !products.any((p) => p['id'] == k)).toList();
-
-    if (staleKeys.isNotEmpty) {
-      for (final k in staleKeys) {
-        _cart.remove(k);
-      }
-      _saveCart();
-    }
-  }
 
   Future<bool> _isFirstStoreOrder() async {
     final snap = await _db
@@ -335,7 +324,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
   );
 
-  Widget _circleBtn(IconData icon, Color bg, Color fg, VoidCallback onTap) =>
+  Widget _circleBtn(dynamic icon, Color bg, Color fg, VoidCallback onTap) =>
       GestureDetector(
         onTap: onTap,
         child: Container(
@@ -345,7 +334,11 @@ class _EcoStorePageState extends State<EcoStorePage> {
             color: bg,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 16, color: fg),
+          child: Center(
+            child: icon is IconData
+                ? Icon(icon, size: 16, color: fg)
+                : Text(icon.toString(), style: TextStyle(fontSize: 14, color: fg)),
+          ),
         ),
       );
 
@@ -380,7 +373,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
   Widget _field(
       String hint,
-      String icon,
+      IconData icon,
       TextEditingController ctrl, {
         TextInputType type = TextInputType.text,
         int maxLines = 1,
@@ -397,7 +390,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 12),
-              child: Text(icon, style: const TextStyle(fontSize: 18)),
+              child: Icon(icon, color: const Color(0xFF386641), size: 20),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -464,7 +457,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                   _sheetHandle(),
                   const SizedBox(height: 14),
                   Text(
-                    isAr ? '🛒 سلة المشتريات' : '🛒 Shopping Cart',
+                    isAr ? 'سلة المشتريات' : 'Shopping Cart',
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 18,
@@ -649,7 +642,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 _sheetHandle(),
                 const SizedBox(height: 14),
                 Text(
-                  isAr ? '📦 تأكيد الطلب' : '📦 Confirm Order',
+                  isAr ? 'تأكيد الطلب' : 'Confirm Order',
                   style: TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 18,
@@ -659,7 +652,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 const SizedBox(height: 20),
                 _field(
                   isAr ? 'الاسم الكامل' : 'Full Name',
-                  '👤',
+                  Icons.person_outline,
                   nameCtrl,
                   v: (v) =>
                   (v?.trim().length ?? 0) < 3 ? isAr ? 'أدخل اسمك الكامل' : 'Enter your full name' : null,
@@ -667,7 +660,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 const SizedBox(height: 12),
                 _field(
                   isAr ? 'رقم الهاتف' : 'Phone Number',
-                  '📱',
+                  Icons.phone_android_outlined,
                   phoneCtrl,
                   type: TextInputType.phone,
                   v: (v) {
@@ -683,7 +676,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 const SizedBox(height: 12),
                 _field(
                   isAr ? 'العنوان التفصيلي' : 'Detailed Address',
-                  '📍',
+                  Icons.location_on_outlined,
                   addressCtrl,
                   maxLines: 3,
                   v: (v) => (v?.trim().length ?? 0) < 10
@@ -693,7 +686,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 const SizedBox(height: 16),
                 _totalRow(_total(products, pts)),
                 const SizedBox(height: 16),
-                _greenBtn(isAr ? 'تأكيد الطلب ✅' : 'Confirm Order ✅', () async {
+                _greenBtn(isAr ? 'تأكيد الطلب' : 'Confirm Order', () async {
                   if (!formKey.currentState!.validate()) return;
 
                   final savedName = nameCtrl.text.trim();
@@ -712,10 +705,9 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       address: addressCtrl.text.trim(),
                     );
 
-                    if (mounted) {
-                      Navigator.pop(checkoutCtx);
-                      _showSuccess(savedName, gotGift: gotGift);
-                    }
+                    if (!context.mounted) return;
+                    Navigator.pop(checkoutCtx);
+                    _showSuccess(savedName, gotGift: gotGift);
                   } catch (e) {
                     _snack(isAr ? 'حدث خطأ: $e' : 'Error: $e', color: Colors.red);
                   }
@@ -855,19 +847,13 @@ class _EcoStorePageState extends State<EcoStorePage> {
               backgroundColor: const Color(0xFFF0F5F0),
               body: CustomScrollView(
                 slivers: [
-
-                  // ✅ الهيدر
                   SliverToBoxAdapter(
                     child: _buildHeader(isAr, allProducts, pts, _validCartCount(allProducts)),
                   ),
-
-                  // ✅ البحث
+                  // البحث
                   SliverToBoxAdapter(child: _buildSearch(isAr)),
-
-                  // ✅ الفئات
+                  //  الفئات
                   SliverToBoxAdapter(child: _buildCategoryFilter(isAr)),
-
-                  // 🎁🔥 هذا التعديل (مهم جداً)
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -890,14 +876,14 @@ class _EcoStorePageState extends State<EcoStorePage> {
                     ),
                   ),
 
-                  // ✅ الخصم
+                  //الخصم
                   if (d > 0)
                     SliverToBoxAdapter(child: _discountBanner(isAr, pts, d)),
 
-                  // ✅ زر الطلبات
+                  // زر الطلبات
                   SliverToBoxAdapter(child: _myOrdersBtn(isAr)),
 
-                  // ✅ النص
+                  // النص
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -914,7 +900,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                     ),
                   ),
 
-                  // ✅ المنتجات
+                  //المنتجات
                   filtered.isEmpty
                       ? SliverToBoxAdapter(child: _emptyState(isAr))
                       : SliverPadding(
@@ -972,7 +958,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: Image.asset(
@@ -983,7 +969,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       ),
                       const SizedBox(width: 14),
                       Text(
-                        isAr ? 'متجر نماء' : 'Namaa Store',
+                        isAr ? 'متجر نماء' : 'NAMAA Store',
                         style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 24,
@@ -1013,13 +999,11 @@ class _EcoStorePageState extends State<EcoStorePage> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
-                      Icons.shopping_cart_outlined,
-                      color: Colors.white,
-                      size: 24,
+                    child: const Center(
+                      child: Text('🛒', style: TextStyle(fontSize: 22)),
                     ),
                   ),
                   if (validCount > 0)
@@ -1073,7 +1057,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           _cachedFiltered = null;
         }),
         decoration: InputDecoration(
-          hintText: isAr ? '🔍 ابحث عن منتج...' : '🔍 Search for a product...',
+          hintText: isAr ? 'ابحث عن منتج...' : 'Search for a product...',
           hintStyle:
           const TextStyle(fontFamily: 'Cairo', color: Colors.grey),
           border: InputBorder.none,
@@ -1082,7 +1066,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
             icon:
-            const Icon(Icons.clear, size: 18, color: Colors.grey),
+            const Text('❌', style: TextStyle(fontSize: 16)),
             onPressed: () {
               _searchCtrl.clear();
               setState(() {
@@ -1110,7 +1094,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
 
         return GestureDetector(
           onTap: () => setState(() {
-            _selectedCat = cat['id']!;
+            _selectedCat = cat['id'] as String;
             _cachedFiltered = null;
           }),
           child: AnimatedContainer(
@@ -1127,15 +1111,21 @@ class _EcoStorePageState extends State<EcoStorePage> {
                 ),
               ],
             ),
-            child: Text(
-              '${cat['icon']} ${isAr ? cat['label'] : cat['en']}',
-              style: TextStyle(
-                fontFamily: 'Cairo',
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color:
-                selected ? Colors.white : const Color(0xFF386641),
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(cat['icon'] as String, style: const TextStyle(fontSize: 16)),
+                const SizedBox(width: 6),
+                Text(
+                  isAr ? cat['label'] as String : cat['en'] as String,
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: selected ? Colors.white : const Color(0xFF386641),
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -1154,7 +1144,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
     ),
     child: Row(
       children: [
-        const Text('🎁', style: TextStyle(fontSize: 26)),
+        const Text('🎁', style: TextStyle(fontSize: 22)),
         const SizedBox(width: 10),
         Text(
           isAr ? 'خصمك ${(d * 100).toInt()}% فعال! | نقاطك: $pts' : 'Your ${(d * 100).toInt()}% discount is active! | Points: $pts',
@@ -1192,7 +1182,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
         ),
         child: Row(
           children: [
-            const Text('📦', style: TextStyle(fontSize: 22)),
+            const Text('📦', style: TextStyle(fontSize: 20)),
             const SizedBox(width: 12),
             Text(
               isAr ? 'طلباتي السابقة' : 'My Orders',
@@ -1204,7 +1194,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               ),
             ),
             Spacer(),
-            Icon(Icons.chevron_left, color: Colors.grey),
+            Icon((Directionality.of(context) == TextDirection.rtl) ? Icons.chevron_left : Icons.chevron_right, color: Colors.grey),
           ],
         ),
       ),
@@ -1216,11 +1206,11 @@ class _EcoStorePageState extends State<EcoStorePage> {
     child: Center(
       child: Column(
         children: [
-          const Text('🔍', style: TextStyle(fontSize: 48)),
+          const Text('🔎', style: TextStyle(fontSize: 48)),
           const SizedBox(height: 12),
           Text(
             _searchQuery.isNotEmpty
-                ? isAr ? 'لا توجد نتائج لـ \"$_searchQuery\"' : 'No results for \"$_searchQuery\"'
+                ? isAr ? 'لا توجد نتائج لـ "$_searchQuery"' : 'No results for "$_searchQuery"'
                 : isAr ? 'لا توجد منتجات في هذه الفئة' : 'No products in this category',
             textAlign: TextAlign.center,
             style: const TextStyle(
@@ -1273,7 +1263,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.07),
+              color: Colors.black.withValues(alpha: 0.07),
               blurRadius: 12,
               offset: const Offset(0, 3),
             ),
@@ -1294,7 +1284,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      isAr ? 'قارَب للنفاد ⏳' : 'Low Stock ⏳',
+                      isAr ? 'قارَب للنفاد' : 'Low Stock',
                       style: TextStyle(fontSize: 10, fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.orange.shade800),
                     ),
                   )
@@ -1311,7 +1301,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
                     _categories.firstWhere(
                           (c) => c['id'] == p['category'],
                       orElse: () => _categories.last,
-                    )['icon']!,
+                    )['icon'] as String,
                     style: const TextStyle(fontSize: 12),
                   ),
                 ),
@@ -1372,7 +1362,7 @@ class _EcoStorePageState extends State<EcoStorePage> {
               ),
             if (!outOfStock && stock <= 5)
               Text(
-                isAr ? '⚠️ متبقي $stock فقط' : '⚠️ Only $stock left',
+                isAr ? 'متبقي $stock فقط' : 'Only $stock left',
                 style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 9,

@@ -4,8 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'dart:io';
 import 'package:namaa_project_app/services/notification_service.dart';
 import 'package:namaa_project_app/services/material_classifier.dart';
@@ -49,7 +47,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   File? _imageFile;
   bool _isProcessing = false;
   bool _isAnalyzing = false; // حالة تحليل الذكاء الاصطناعي
-  String? _detectedLabel; // المادة المكتشفة
+
   double? _lat, _lng;
   String? _locationStatus;
   final TextEditingController _notesCtrl = TextEditingController();
@@ -72,7 +70,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
         GeoPoint gp = widget.editData!['location'];
         _lat = gp.latitude;
         _lng = gp.longitude;
-        _locationStatus = "موقع محفوظ مسبقاً ✅"; // Will be overridden in UI based on locale anyway
+        _locationStatus = "✅ Location Saved / موقع محفوظ";
       }
     }
   }
@@ -82,12 +80,12 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
     final bool isAr = l10n.localeName == 'ar';
     if (isAr) return _getName(key, l10n);
     switch (key) {
-      case 'plastic': return 'Plastic';
-      case 'metal': return 'Metals';
-      case 'paper': return 'Paper';
-      case 'glass': return 'Glass';
-      case 'electronics': return 'Electronics';
-      case 'batteries': return 'Batteries';
+      case 'plastic': return isAr ? l10n.recycle_plastic : 'Plastic';
+      case 'metal': return isAr ? l10n.recycle_metal : 'Metals';
+      case 'paper': return isAr ? l10n.recycle_paper : 'Paper';
+      case 'glass': return isAr ? l10n.recycle_glass : 'Glass';
+      case 'electronics': return isAr ? l10n.recycle_electronics : 'Electronics';
+      case 'batteries': return isAr ? l10n.recycle_batteries : 'Batteries';
       default: return key;
     }
   }
@@ -100,7 +98,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
 
   int get _totalPoints => _materials
       .where((m) => m['selected'] == true)
-      .fold(0, (sum, m) => sum + (m['pts'] as int));
+      .fold(0, (total, m) => total + (m['pts'] as int));
 
   Future<void> _pickImage(ImageSource source) async {
     final picked = await ImagePicker().pickImage(source: source, imageQuality: 50);
@@ -108,7 +106,6 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
       final file = File(picked.path);
       setState(() {
         _imageFile = file;
-        _detectedLabel = null;
       });
       _runAIAnalysis(file);
     }
@@ -136,9 +133,9 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
             for (var m in _materials) {
               m['selected'] = (m['key'] == materialKey);
             }
-            _detectedLabel = materialKey;
           });
           final bool isAr = l10n.localeName == 'ar';
+          if (!mounted) return;
           final String translatedName = _getTranslatedMaterial(materialKey, context);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -230,7 +227,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
           payload['createdAt'] = FieldValue.serverTimestamp();
           await FirebaseFirestore.instance.collection('recycle_requests').add(payload);
 
-          // ✅ إضافة النقاط لرصيد المستخدم
+          // إضافة النقاط لرصيد المستخدم
           final user = FirebaseAuth.instance.currentUser;
           if (user != null) {
             await FirebaseFirestore.instance
@@ -250,13 +247,18 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
             );
           }
 
+          if (!mounted) return;
           _showSuccess(isAr ? "تم الإرسال! وتم إضافة $_totalPoints نقطة لرصيدك 🌟" : "Submitted! You earned $_totalPoints pts 🌟");
         }
       } else {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "حدث خطأ أثناء رفع الصورة." : "Error uploading image.")));
       }
-    } catch (e) { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "خطأ: $e" : "Error: $e"))); }
-    finally { setState(() => _isProcessing = false); }
+    } catch (e) { 
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "خطأ: $e" : "Error: $e"))); 
+    }
+    finally { if (mounted) setState(() => _isProcessing = false); }
   }
 
   void _showSuccess(String message) {
@@ -272,7 +274,7 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
   Widget build(BuildContext context) {
     final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
     final l10n = AppLocalizations.of(context)!;
-    final String title = l10n != null ? l10n.recycle_title : (isAr ? "طلب تجميع مواد ♻️" : "Recycle Request ♻️");
+    final String title = l10n.recycle_title;
     
     return Scaffold(
       appBar: AppBar(title: Text(title, style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')), backgroundColor: primaryGreen, iconTheme: const IconThemeData(color: Colors.white)),
@@ -385,14 +387,14 @@ class _RecycleSubmissionPageState extends State<RecycleSubmissionPage> {
           ListTile(
             tileColor: Colors.grey.shade100, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             leading: Icon(Icons.location_on, color: primaryGreen),
-            title: Text(_locationStatus ?? (l10n != null ? l10n.get_location : (isAr ? "تحديد موقع الاستلام" : "Determine pickup location")), style: const TextStyle(fontFamily: 'Cairo')),
+            title: Text(_locationStatus ?? (l10n.get_location), style: const TextStyle(fontFamily: 'Cairo')),
             onTap: _determinePosition,
           ),
           const SizedBox(height: 30),
           SizedBox(width: double.infinity, height: 55, child: ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: primaryGreen, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15))),
             onPressed: _isProcessing ? null : _submitRequest,
-            child: _isProcessing ? const CircularProgressIndicator(color: Colors.white) : Text(widget.editId != null ? (isAr ? "تعديل الطلب" : "Edit Request") : (l10n != null ? l10n.submit_recycle_request : (isAr ? "إرسال الطلب الآن" : "Submit Request Now")), style: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+            child: _isProcessing ? const CircularProgressIndicator(color: Colors.white) : Text(widget.editId != null ? (isAr ? "تعديل الطلب" : "Edit Request") : (l10n.submit_recycle_request), style: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
           )),
         ]),
       ),

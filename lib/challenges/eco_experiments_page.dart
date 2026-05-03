@@ -18,9 +18,9 @@ class EcoExperimentsPage extends StatefulWidget {
 class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
   bool _resetChecked = false;
   bool _isProcessing = false;
-  final Map<String, String> _pendingExperiments = {};
 
-  // ✅ جلب المهام مع روابط الصور (استخدمنا روابط توضيحية يمكنك استبدالها بـ Cloudinary IDs)
+
+  //  جلب المهام مع روابط الصور (استخدمنا روابط توضيحية يمكنك استبدالها بـ Cloudinary IDs)
   List<Map<String, dynamic>> _getLocalizedExperiments(AppLocalizations l10n) {
     return [
       {
@@ -117,16 +117,18 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         final jsonResult = json.decode(data);
         photoUrl = jsonResult['data']['url'];
       } else {
-        throw Exception('فشل رفع الصورة');
+        throw Exception(l10n.exp_upload_failed);
       }
 
       // 4. حفظ في مجموعة tasks للمراجعة
       final now = DateTime.now();
       final dateStr = '${now.year}-${now.month}-${now.day}';
+      final experiments = _getLocalizedExperiments(l10n);
 
-      await FirebaseFirestore.instance.collection('tasks').add({
+      await FirebaseFirestore.instance.collection('task_reviews').add({
         'userId': user.uid,
         'taskId': taskId,
+        'taskTitle': experiments.firstWhere((e) => e['id'] == taskId)['title'],
         'type': 'experiment',
         'date': dateStr,
         'pts': rewardPoints,
@@ -135,21 +137,19 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         'createdAt': FieldValue.serverTimestamp(),
       });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("تم إرسال الإثبات للمراجعة بنجاح! ✅", style: TextStyle(fontFamily: 'Cairo')),
-            backgroundColor: const Color(0xFF386641),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.exp_proof_uploaded, style: const TextStyle(fontFamily: 'Cairo')),
+          backgroundColor: const Color(0xFF386641),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("خطأ: $e"), backgroundColor: Colors.red),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("${l10n.exp_error}$e"), backgroundColor: Colors.red),
+      );
     } finally {
       if (mounted) setState(() => _isProcessing = false);
     }
@@ -164,16 +164,16 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("اختر مصدر الصورة كدليل", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
+            Text(l10n.exp_choose_source, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Cairo')),
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: Color(0xFF386641)),
-              title: const Text("الكاميرا"),
+              title: Text(l10n.exp_camera),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: Color(0xFF386641)),
-              title: const Text("معرض الصور"),
+              title: Text(l10n.exp_gallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -186,14 +186,14 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("هل هذه الصورة دليل صحيح؟", textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontFamily: 'Cairo')),
+        title: Text(l10n.exp_is_proof_valid, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, fontFamily: 'Cairo')),
         content: ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.file(file, height: 250, fit: BoxFit.cover)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("إعادة الالتقاط")),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.exp_retake)),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
-            child: const Text("تأكيد ورفع", style: TextStyle(color: Colors.white)),
+            child: Text(l10n.exp_confirm_upload, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -223,7 +223,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         children: [
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
-                .collection('tasks')
+                .collection('task_reviews')
                 .where('userId', isEqualTo: user.uid)
                 .where('type', isEqualTo: 'experiment')
                 .snapshots(),
@@ -260,7 +260,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
                           itemBuilder: (context, index) {
                             final exp = experiments[index];
                             final String taskId = exp['id'];
-                            bool isDone = completed.contains(exp['title']);
+                            bool isDone = completed.contains(taskId);
                             String? taskStatus = pendingMap[taskId];
                             bool isPending = taskStatus == 'pending';
                             bool isLocked = userPoints < exp['requiredPoints'];
@@ -272,10 +272,10 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
                                 color: (isDone || isPending) ? const Color(0xFFEBF4DD) : Colors.white,
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4))
+                                  BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4))
                                 ],
                                 border: Border.all(
-                                  color: (isDone || isPending) ? const Color(0xFF386641).withOpacity(0.3) : Colors.transparent,
+                                  color: (isDone || isPending) ? const Color(0xFF386641).withValues(alpha: 0.3) : Colors.transparent,
                                   width: 1,
                                 ),
                               ),
@@ -307,7 +307,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
                                     child: Text(
                                       isLocked
                                           ? l10n.experiments_locked_msg(exp['requiredPoints'])
-                                          : (isPending ? "بانتظار المراجعة... ⏳" : l10n.experiments_reward_msg(exp['points'])),
+                                          : (isPending ? l10n.exp_pending_review : l10n.experiments_reward_msg(exp['points'])),
                                       style: TextStyle(
                                           color: isLocked ? Colors.red : (isPending ? Colors.orange : const Color(0xFF386641)),
                                           fontSize: 16,
@@ -329,7 +329,7 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
               );
             },
           ),
-          if (_isProcessing) _buildLoadingOverlay(),
+          if (_isProcessing) _buildLoadingOverlay(l10n),
         ],
       ),
     );
@@ -381,20 +381,20 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 12),
       ),
       onPressed: () => _handleExperimentSubmission(context, exp['id'], exp['points'], userDoc, l10n),
-      child: const Text("إثبات 📸", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+      child: Text(l10n.exp_proof, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
     );
   }
 
-  Widget _buildLoadingOverlay() {
+  Widget _buildLoadingOverlay(AppLocalizations l10n) {
     return Container(
       color: Colors.black54,
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(height: 20),
-            Text("جاري رفع الدليل... 🌿", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+            const CircularProgressIndicator(color: Colors.white),
+            const SizedBox(height: 20),
+            Text(l10n.exp_uploading, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
           ],
         ),
       ),

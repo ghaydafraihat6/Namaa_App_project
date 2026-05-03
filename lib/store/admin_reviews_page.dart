@@ -19,7 +19,7 @@ class AdminReviewsPage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              isAr ? 'تم حذف التقييم بنجاح 🗑️' : 'Review deleted successfully 🗑️',
+              isAr ? 'تم حذف التقييم بنجاح' : 'Review deleted successfully',
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
             ),
             backgroundColor: const Color(0xFF386641),
@@ -52,7 +52,7 @@ class AdminReviewsPage extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Text('⚠️', style: TextStyle(fontSize: 22)),
+            const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 24),
             const SizedBox(width: 8),
             Text(
               isAr ? 'حذف التقييم' : 'Delete Review',
@@ -109,7 +109,7 @@ class AdminReviewsPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
         title: Text(
-          isAr ? '⭐ إدارة التقييمات' : '⭐ Reviews Management',
+          isAr ? 'إدارة التقييمات' : 'Reviews Management',
           style: const TextStyle(
               fontFamily: 'Cairo', fontWeight: FontWeight.w800, color: Colors.white),
         ),
@@ -178,7 +178,7 @@ class AdminReviewsPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
+                          color: Colors.black.withValues(alpha: 0.06),
                           blurRadius: 10,
                         ),
                       ],
@@ -293,9 +293,11 @@ class AdminReviewsPage extends StatelessWidget {
                               : '';
                           final rating =
                               (r['rating'] as num?)?.toDouble() ?? 5.0;
-                          final userName =
+                          final rawName =
                               r['userName'] as String? ?? (isAr ? 'مستخدم' : 'User');
-                          final comment = r['comment'] as String? ?? '';
+                          final userName = StoreLocalizer.reviewerName(context, rawName);
+                          final rawComment = r['comment'] as String? ?? '';
+                          final comment = StoreLocalizer.reviewComment(context, rawComment);
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(
@@ -335,7 +337,7 @@ class AdminReviewsPage extends StatelessWidget {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(userName,
+                                          Text(StoreLocalizer.reviewerName(context, userName),
                                               style: const TextStyle(
                                                   fontFamily: 'Cairo',
                                                   fontWeight: FontWeight.w800,
@@ -376,7 +378,7 @@ class AdminReviewsPage extends StatelessWidget {
                                     child: Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.red.withOpacity(0.08),
+                                        color: Colors.red.withValues(alpha: 0.08),
                                         borderRadius:
                                             BorderRadius.circular(10),
                                       ),

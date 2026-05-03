@@ -4,10 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:intl/intl.dart';
 import 'package:namaa_project_app/admin/task_approvals_page.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
@@ -172,7 +173,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       _newPassCtrl.clear();
       _confirmPassCtrl.clear();
 
-      if (mounted) _snack(isAr ? '✅ تم تغيير كلمة المرور بنجاح' : '✅ Password changed successfully', _green);
+      if (mounted) _snack(isAr ? 'تم تغيير كلمة المرور بنجاح' : 'Password changed successfully', _green);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'wrong-password') {
         _snack(isAr ? 'كلمة المرور الحالية غير صحيحة' : 'Current password incorrect', Colors.red);
@@ -228,7 +229,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         final bool isAr = Localizations.localeOf(context).languageCode == 'ar';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isAr ? '✅ تم تحديث الصورة بنجاح' : '✅ Profile picture updated', style: const TextStyle(fontFamily: 'Cairo')),
+            content: Text(isAr ? 'تم تحديث الصورة بنجاح' : 'Profile picture updated', style: const TextStyle(fontFamily: 'Cairo')),
             backgroundColor: _green,
           ),
         );
@@ -329,7 +330,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       // تحديث العرض فوراً
       if (mounted) {
         setState(() => _displayEmail = newEmail);
-        _snack(isAr ? '✉️ تم إرسال رابط التأكيد للبريد الجديد. تفقدي بريدك!' : '✉️ Verification link sent to new email!', _green);
+        _snack(isAr ? 'تم إرسال رابط التأكيد للبريد الجديد. تفقدي بريدك!' : 'Verification link sent to new email!', _green);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'wrong-password') {
@@ -492,7 +493,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 _avatar(name, email, _photoUrl),
                 const SizedBox(height: 4),
                 Text(
-                  name.isNotEmpty ? name : (isAr ? 'اسمك' : 'Your Name'),
+                  name.isNotEmpty ? StoreLocalizer.reviewerName(context, name) : (isAr ? 'اسمك' : 'Your Name'),
                   style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 20,
@@ -576,7 +577,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(color: _lightGreen, borderRadius: BorderRadius.circular(8)),
-                    child: Text(isAr ? 'تغيير ✏️' : 'Change ✏️', style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w700, color: _green)),
+                    child: Text(isAr ? 'تغيير' : 'Change', style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w700, color: _green)),
                   ),
                 ),
               ]),

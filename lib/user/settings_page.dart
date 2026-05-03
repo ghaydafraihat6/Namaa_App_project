@@ -8,7 +8,7 @@ import 'package:namaa_project_app/screen/login_screen.dart';
 import 'account_settings_page.dart';
 import 'notifications_page.dart';
 import 'help_center_page.dart';
-import 'about_page.dart';
+
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -30,7 +30,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: Text('⚙️ ${l10n.settings}',
+        title: Text(l10n.settings,
             style: const TextStyle(
                 fontFamily: 'Cairo',
                 fontSize: 19,
@@ -125,9 +125,9 @@ class SettingsPage extends StatelessWidget {
           ),
 
           const SizedBox(height: 20),
-          const Center(
-            child: Text('نماء v1.0.0',
-                style: TextStyle(
+          Center(
+            child: Text(l10n.settings_version,
+                style: const TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 14,
                     fontWeight: FontWeight.w900,
@@ -153,7 +153,7 @@ class SettingsPage extends StatelessWidget {
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: [BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 10)],
     ),
     child: Column(children: items),
@@ -172,7 +172,7 @@ class SettingsPage extends StatelessWidget {
           leading: Container(
             width: 38, height: 38,
             decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, color: color, size: 20),
           ),

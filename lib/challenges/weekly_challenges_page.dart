@@ -12,7 +12,7 @@ class WeeklyChallengesPage extends StatefulWidget {
 
 class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
 
-  // ✅ دالة جلب التحديات المترجمة
+
   List<Map<String, dynamic>> _getChallenges(AppLocalizations l10n) {
     return [
       {
@@ -20,21 +20,21 @@ class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
         "title": l10n.challenge_plastic_title, // تأكد من إضافة هذه المفاتيح في ARB
         "desc": l10n.challenge_plastic_desc,
         "points": 50,
-        "icon": Icons.shopping_bag_outlined,
+        "icon": "🛍️",
       },
       {
         "id": "save_electricity",
         "title": l10n.challenge_elec_title,
         "desc": l10n.challenge_elec_desc,
         "points": 40,
-        "icon": Icons.lightbulb_outline,
+        "icon": "💡",
       },
       {
         "id": "walking_challenge",
         "title": l10n.challenge_walk_title,
         "desc": l10n.challenge_walk_desc,
         "points": 60,
-        "icon": Icons.directions_walk,
+        "icon": "🚶",
       },
     ];
   }
@@ -109,7 +109,7 @@ class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
               ...challenges.map((ch) {
                 bool isDone = completedList.contains(ch['id']);
                 return _buildChallengeCard(ch, isDone, completedList, l10n, user.uid);
-              }).toList(),
+              }),
             ],
           );
         },
@@ -126,7 +126,7 @@ class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: isDone ? Colors.orange.shade200 : Colors.transparent),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4))
         ],
       ),
       child: Padding(
@@ -137,7 +137,7 @@ class _WeeklyChallengesPageState extends State<WeeklyChallengesPage> {
               children: [
                 CircleAvatar(
                   backgroundColor: isDone ? Colors.orange.shade100 : const Color(0xFFF5F5F5),
-                  child: Icon(ch['icon'], color: isDone ? Colors.orange.shade800 : Colors.grey),
+                  child: Text(ch['icon'], style: TextStyle(fontSize: 18, color: isDone ? Colors.orange.shade800 : Colors.grey)),
                 ),
                 const SizedBox(width: 15),
                 Expanded(

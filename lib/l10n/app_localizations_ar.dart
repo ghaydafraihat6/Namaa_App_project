@@ -48,7 +48,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get level => 'المستوى';
 
   @override
-  String get badges => '🏅 شاراتي';
+  String get badges => 'شاراتي';
 
   @override
   String get settings => 'الإعدادات';
@@ -377,7 +377,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bike_reset_snack => 'تم إعادة ضبط التحدي، ابدأ من جديد! 🚴';
 
   @override
-  String get experiments_title => '🧪 التجارب اليومية';
+  String get experiments_title => 'التجارب اليومية';
 
   @override
   String get experiments_progress_header => 'إنجاز تجارب اليوم';
@@ -440,7 +440,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reward_points => 'Reward Points';
 
   @override
-  String get recycle_title => 'Recycle Request';
+  String get recycle_title => 'طلب تجميع مواد';
 
   @override
   String get recycle_subtitle => 'Select items to recycle';
@@ -679,7 +679,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cert_share_failed => 'فشل تجهيز المشاركة، حاول مرة أخرى';
 
   @override
-  String get cert_my_certs => '🏅 شهاداتي';
+  String get cert_my_certs => 'شهاداتي';
 
   @override
   String get cert_load_error => 'حدث خطأ أثناء تحميل الشهادات';
@@ -727,7 +727,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get invite_code_copied => 'تم نسخ الرمز بنجاح! ✅';
 
   @override
-  String get invite_friend_title => 'دعوة صديق 🤝';
+  String get invite_friend_title => 'دعوة صديق';
 
   @override
   String get invite_friend_desc => 'انشر الوعي البيئي واكسب نقاطاً!';
@@ -950,10 +950,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loc_ghumdan => 'متنزه غمدان الوطني 🌳';
 
   @override
-  String get recycle_dashboard_title => 'مركز إعادة التدوير ♻️';
+  String get recycle_dashboard_title => 'نظام إدارة التدوير';
 
   @override
-  String get recycle_history_title => 'سجل طلباتي 🗂️';
+  String get recycle_history_title => 'سجل طلباتي';
 
   @override
   String get recycle_welcome => 'أهلاً بك في نماء! 🌱';
@@ -1002,7 +1002,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get store_order_cancelled => 'ملغي';
 
   @override
-  String get store_my_orders => '📦 طلباتي';
+  String get store_my_orders => 'طلباتي';
 
   @override
   String get smart_capsule_title => 'الكبسولة الذكية الزراعية 🌱';
@@ -1039,7 +1039,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'يمكن لاحقاً ربط الكبسولة داخل التطبيق بصفحة متابعة نمو النبات، وتذكير بالسقاية، ونصائح زراعية ذكية.';
 
   @override
-  String get challenges_initiatives_history => 'سجل مبادراتي ✨';
+  String get challenges_initiatives_history => 'سجل مبادراتي';
 
   @override
   String get challenges_no_initiatives =>
@@ -1168,6 +1168,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String store_error_prefix(String error) {
     return 'عذراً، حدث خطأ: $error';
   }
+
+  @override
+  String get exp_pending_review => 'بانتظار المراجعة... ⏳';
+
+  @override
+  String get exp_upload_failed => 'فشل رفع الصورة';
 
   @override
   String get splash_app_name => 'نـمـاء';

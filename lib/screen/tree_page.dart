@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math; // <--- السطر الذي سألت عنه موجود هنا الآن
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,15 +53,19 @@ class _TreePageState extends State<TreePage>
   }
 
   String _getTreeLevelName(int points, AppLocalizations l10n) {
-    if (points >= 500)
-      return l10n.arabic == "العربية" ? "غابة 🌲🌲🌲" : "Forest 🌲🌲🌲";
-    if (points >= 300)
-      return l10n.arabic == "العربية" ? "شجرة كبيرة 🌳" : "Big Tree 🌳";
-    if (points >= 150)
-      return l10n.arabic == "العربية" ? "شجرة صغيرة 🌱" : "Small Tree 🌱";
-    if (points >= 50)
-      return l10n.arabic == "العربية" ? "بذرة نامية 🌿" : "Sprout 🌿";
-    return l10n.arabic == "العربية" ? "بذرة 🫘" : "Seed 🫘";
+    if (points >= 500) {
+      return l10n.arabic == "العربية" ? "غابة" : "Forest";
+    }
+    if (points >= 300) {
+      return l10n.arabic == "العربية" ? "شجرة كبيرة" : "Big Tree";
+    }
+    if (points >= 150) {
+      return l10n.arabic == "العربية" ? "شجرة صغيرة" : "Small Tree";
+    }
+    if (points >= 50) {
+      return l10n.arabic == "العربية" ? "بذرة نامية" : "Sprout";
+    }
+    return l10n.arabic == "العربية" ? "بذرة" : "Seed";
   }
 
   int _getLevel(int points) {
@@ -264,10 +267,12 @@ class _TreePageState extends State<TreePage>
             .doc(currentUser.uid)
             .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          if (!snapshot.hasData || snapshot.data?.data() == null)
+          }
+          if (!snapshot.hasData || snapshot.data?.data() == null) {
             return const Center(child: Text("No Data"));
+          }
 
           final data = snapshot.data!.data() as Map<String, dynamic>;
           final int points = data['points'] ?? 0;
@@ -313,7 +318,7 @@ class _TreePageState extends State<TreePage>
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))
+                BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 2))
               ],
               border: Border.all(color: Colors.white, width: 2),
             ),
@@ -324,8 +329,7 @@ class _TreePageState extends State<TreePage>
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) =>
                 const Center(
-                    child: Text('🌱',
-                        style: TextStyle(fontSize: 30))),
+                    child: Icon(Icons.forest_outlined, size: 30, color: Color(0xFF386641))),
               ),
             ),
           ),
@@ -333,8 +337,8 @@ class _TreePageState extends State<TreePage>
           Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          const Text('نماء',
-              style: TextStyle(
+          Text(l10n.appName,
+              style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -360,8 +364,7 @@ class _TreePageState extends State<TreePage>
           color: Colors.white.withAlpha(50),
           borderRadius: BorderRadius.circular(15)),
           child: Row(children: [
-          const Text('🌳',
-          style: TextStyle(fontSize: 18)),
+          const Text('🌳', style: TextStyle(fontSize: 18)),
           const SizedBox(width: 6),
           Text(l10n.forest,
           style: const TextStyle(

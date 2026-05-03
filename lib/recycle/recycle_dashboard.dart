@@ -16,7 +16,7 @@ class RecycleDashboard extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: Text(isAr ? l10n.recycle_dashboard_title : "Recycle Center ♻️",
+        title: Text(isAr ? l10n.recycle_dashboard_title : "Recycle Center",
             style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 19, color: Colors.white, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
@@ -28,7 +28,7 @@ class RecycleDashboard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(isAr ? l10n.recycle_welcome : "Welcome to Namaa! 🌱",
+            Text(isAr ? l10n.recycle_welcome : "Welcome to NAMAA!",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: primaryGreen, fontFamily: 'Cairo')),
             Text(isAr ? l10n.recycle_how_to_contribute : "How would you like to help the environment today?",
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.grey, fontFamily: 'Cairo')),
@@ -52,7 +52,7 @@ class RecycleDashboard extends StatelessWidget {
               title: isAr ? "مهام بيئية يومية" : "Daily Eco Tasks",
               desc: isAr ? "نفذ مهام بسيطة في منزلك واكسب نقاطاً فورية لشجرتك." : "Complete simple daily tasks at home and earn instant points.",
               icon: Icons.task_alt_rounded,
-              color: const Color(0xFFF4A261), // لون برتقالي للتميز
+              color: const Color(0xFFF4A261),
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RecycleTasksPage())),
             ),
 
@@ -61,7 +61,7 @@ class RecycleDashboard extends StatelessWidget {
             // كرت سجل الطلبات (History)
             _buildOptionCard(
               context,
-              title: isAr ? "سجل طلباتي 🗂️" : "My Requests History 🗂️",
+              title: isAr ? "سجل طلباتي" : "My Requests History",
               desc: isAr ? "تابع طلبات إعادة التدوير السابقة وحالتها وصورها." : "Track your previous recycling requests, statuses, and photos.",
               icon: Icons.history_rounded,
               color: Colors.blueAccent,
@@ -88,14 +88,14 @@ class RecycleDashboard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
-          border: Border.all(color: color.withOpacity(0.3), width: 1),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
               child: Icon(icon, color: color, size: 35),
             ),
             const SizedBox(width: 20),
@@ -109,7 +109,7 @@ class RecycleDashboard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade400),
+            Icon((Directionality.of(context) == TextDirection.rtl) ? Icons.chevron_left : Icons.chevron_right, size: 16, color: Colors.grey.shade400),
           ],
         ),
       ),

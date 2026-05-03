@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
 
@@ -92,7 +93,7 @@ class _ReviewCard extends StatelessWidget {
   Future<void> _approve(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
     final userId = data['userId'];
-    final points = data['points'] ?? 0;
+    final int points = (data['pts'] as num?)?.toInt() ?? (data['points'] as num?)?.toInt() ?? 0;
     final taskTitle = data['taskTitle'] ?? (data['material'] != null ? l10n.admin_recycle_task(data['material']) : l10n.admin_eco_task);
 
     try {
@@ -102,7 +103,7 @@ class _ReviewCard extends StatelessWidget {
         final userSnap = await transaction.get(userRef);
         if (!userSnap.exists) throw l10n.admin_task_not_found;
         
-        int currentPoints = userSnap.data()?['points'] ?? 0;
+        int currentPoints = (userSnap.data()?['points'] as num?)?.toInt() ?? 0;
         transaction.update(userRef, {'points': currentPoints + points});
         
         transaction.update(FirebaseFirestore.instance.collection('task_reviews').doc(docId), {
@@ -110,9 +111,15 @@ class _ReviewCard extends StatelessWidget {
           'approvedAt': FieldValue.serverTimestamp(),
         });
 
+        final taskId = data['taskId'] ?? "unknown";
+        if (data['type'] == 'experiment') {
+          transaction.update(userRef, {
+            'completedExperiments': FieldValue.arrayUnion([taskId])
+          });
+        }
+
         // إضافة سجل تاريخ للمهام المكتملة لضمان عدم التكرار (اختياري حسب التصميم)
         final today = data['date'] ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-        final taskId = data['taskId'] ?? "unknown";
         final type = data['type'] == 'recycle_task' ? 'recycle_basic' : 'save_resources_basic';
         
         transaction.set(userRef.collection('completedTasks').doc('${type}_${taskId}_$today'), {
@@ -127,9 +134,7 @@ class _ReviewCard extends StatelessWidget {
         title: l10n.admin_task_approved_notif_title,
         body: l10n.admin_task_approved_notif_body(taskTitle.toString(), points),
         type: "task_approval",
-        // ملاحظة: هنا نحتاج لإرسال الإشعار لـ userId المحدد، 
-        // ولكن NotificationService الحالي يرسل للمستخدم الحالي.
-        // للتطوير: يجب تعديل الخدمة لتدعم الإرسال لـ UID معين.
+        recipientUid: userId,
       );
 
       // ignore: use_build_context_synchronously
@@ -175,7 +180,8 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final points = data['points'] ?? 0;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final int points = (data['pts'] as num?)?.toInt() ?? (data['points'] as num?)?.toInt() ?? 0;
     final taskTitle = data['taskTitle'] ?? (data['material'] != null ? l10n.admin_recycle_task(data['material']) : l10n.admin_eco_task);
     final imageUrl = data['imageUrl'];
     final createdAt = (data['createdAt'] as Timestamp?)?.toDate();
@@ -197,7 +203,7 @@ class _ReviewCard extends StatelessWidget {
               ),
             )
           else
-            const Padding(padding: EdgeInsets.all(20), child: Text("💡 إثبات بدون صورة (خصوصية)", textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Cairo', color: Colors.blue))),
+            Padding(padding: const EdgeInsets.all(20), child: Text(l10n.admin_proof_without_image, textAlign: TextAlign.center, style: const TextStyle(fontFamily: 'Cairo', color: Colors.blue))),
           
           Padding(
             padding: const EdgeInsets.all(16),
@@ -236,7 +242,7 @@ class _ReviewCard extends StatelessWidget {
                     if (userSnapshot.hasData && userSnapshot.data!.exists) {
                       final userData = userSnapshot.data!.data() as Map<String, dynamic>?;
                       if (userData != null && userData['fullName'] != null && userData['fullName'].toString().isNotEmpty) {
-                        displayName = userData['fullName'];
+                        displayName = StoreLocalizer.reviewerName(context, userData['fullName']);
                       }
                     }
                     return Text(
@@ -276,7 +282,7 @@ class _ReviewCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            "سبب الرفض: ${data['rejectionReason']}",
+                            "${isAr ? 'سبب الرفض' : 'Rejection Reason'}: ${data['rejectionReason']}",
                             style: const TextStyle(
                               fontFamily: 'Cairo',
                               fontSize: 13,

@@ -58,7 +58,7 @@ class _AdminProductsPageState extends State<AdminProductsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F5F0),
       appBar: AppBar(
-        title: Text(isAr ? '📦 إدارة المنتجات' : '📦 Products Management', 
+        title: Text(isAr ? 'إدارة المنتجات' : 'Products Management', 
           style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: primaryGreen,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -88,16 +88,23 @@ class _AdminProductsPageState extends State<AdminProductsPage> {
 
               if (confirm != true) return;
 
+              if (!context.mounted) return;
+
               try {
-                if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? 'جاري إضافة التقييمات التجريبية...' : 'Adding dummy reviews...', style: const TextStyle(fontFamily: 'Cairo'))));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? 'جاري إضافة التقييمات التجريبية...' : 'Adding dummy reviews...', style: const TextStyle(fontFamily: 'Cairo'))));
                 final snap = await FirebaseFirestore.instance.collection('products').get();
                 int count = 0;
                 for (var doc in snap.docs) {
                   for (var i = 1; i <= 3; i++) {
+                    final dummyComments = [
+                      'منتج ممتاز! جودة عالية وصديق للبيئة فعلاً. أنصح فيه بشدة',
+                      'جيد جداً، التغليف كان رائع والمنتج وصل بحالة ممتازة.',
+                      'من أفضل المنتجات البيئية اللي جربتها! شكراً نماء',
+                    ];
                     await doc.reference.collection('reviews').add({
                       'userName': isAr ? 'مستخدم تجريبي $i' : 'Test User $i',
                       'rating': 4.0 + (i % 2),
-                      'comment': isAr ? 'منتج ممتاز للبيئة، تجربة تقييم رقم $i 🌿' : 'Great eco product, test review #$i 🌿',
+                      'comment': dummyComments[(i - 1) % 3],
                       'userId': 'dummy_user_$i',
                       'createdAt': FieldValue.serverTimestamp(),
                     });

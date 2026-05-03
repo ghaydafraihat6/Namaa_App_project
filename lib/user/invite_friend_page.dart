@@ -113,6 +113,7 @@ class InviteFriendPage extends StatelessWidget {
                 ),
                 onPressed: () {
                   // ✅ تعديل 2: نص المشاركة محايد
+                  // ignore: deprecated_member_use
                   Share.share(l10n.invite_share_text(referralCode));
                 },
                 icon: const Icon(Icons.share, color: Colors.white),

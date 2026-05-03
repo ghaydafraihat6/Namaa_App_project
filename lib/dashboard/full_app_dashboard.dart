@@ -35,7 +35,6 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
     return 1;
   }
 
-  // ✅ تعديل لجعل مسميات المستويات تدعم الترجمة
   String _getLevelName(int pts, AppLocalizations l10n) {
     if (pts >= 500) return l10n.forest;
     if (pts >= 300) return l10n.tree_title;
@@ -57,7 +56,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!; // ✅ استدعاء المترجم
+    final l10n = AppLocalizations.of(context)!;
     final bool isAr = l10n.localeName == 'ar';
     final user = FirebaseAuth.instance.currentUser;
 
@@ -133,7 +132,6 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                    // ✅ استخدام الترحيب المترجم مع تمرير الاسم
                     Text(l10n.welcome_user(name),
                         style: const TextStyle(
                             fontFamily: 'Cairo',
@@ -153,7 +151,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.black.withOpacity(0.07),
+                        color: Colors.black.withValues(alpha: 0.07),
                         blurRadius: 16,
                         offset: const Offset(0, 4))
                   ],
@@ -220,7 +218,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
+                          color: Colors.black.withValues(alpha: 0.06),
                           blurRadius: 14,
                           offset: const Offset(0, 4))
                     ],
@@ -308,7 +306,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                              color: const Color(0xFF386641).withOpacity(0.35),
+                              color: const Color(0xFF386641).withValues(alpha: 0.35),
                               blurRadius: 16,
                               offset: const Offset(0, 6))
                         ],
@@ -418,7 +416,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 12,
                   offset: const Offset(0, 3))
             ],
@@ -443,7 +441,7 @@ class _FullAppDashboardState extends State<FullAppDashboard> {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
+          color: Colors.white.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(12)),
       child: Center(
         child: icon is IconData

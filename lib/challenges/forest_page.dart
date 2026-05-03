@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/user/certificate_page.dart';
+import 'package:namaa_project_app/store/store_localizer.dart';
 
 class ForestPage extends StatelessWidget {
   const ForestPage({super.key});
@@ -11,7 +11,7 @@ class ForestPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
@@ -58,7 +58,7 @@ class ForestPage extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 35),
                   child: Column(children: [
-                    const Text('🌳', style: TextStyle(fontSize: 45)),
+                    const Text('🌳', style: TextStyle(fontSize: 50)),
                     const SizedBox(height: 10),
                     Text(l10n.forestPage,
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white, fontFamily: 'Cairo')),
@@ -115,7 +115,8 @@ class ForestPage extends StatelessWidget {
                     delegate: SliverChildBuilderDelegate(
                           (context, i) {
                         final data = docs[i].data() as Map<String, dynamic>;
-                        final name = data['userName'] ?? data['name'] ?? l10n.profile;
+                        final rawName = data['userName'] ?? data['name'] ?? l10n.profile;
+                        final name = StoreLocalizer.reviewerName(context, rawName);
                         final userId = data['userId'] ?? '';
 
                         // معالجة التاريخ
@@ -136,7 +137,8 @@ class ForestPage extends StatelessWidget {
                             name,
                             treeNumber,
                             location,
-                          ),                          child: Container(
+                          ),
+                          child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(24),
@@ -147,7 +149,7 @@ class ForestPage extends StatelessWidget {
                             ),
                             child: Column(children: [
                               const Spacer(),
-                              const Text('🌲', style: TextStyle(fontSize: 50)),
+                              const Text('🌳', style: TextStyle(fontSize: 50)),
                               const SizedBox(height: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -161,11 +163,11 @@ class ForestPage extends StatelessWidget {
                                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17, fontFamily: 'Cairo')),
                               ),
                               const SizedBox(height: 4),
-                              Text('📅 $dateStr', style: const TextStyle(fontSize: 15, color: Color(0xFF424242), fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                              Text(dateStr, style: const TextStyle(fontSize: 15, color: Color(0xFF424242), fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               const SizedBox(height: 4),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: Text('📍 $location', textAlign: TextAlign.center, maxLines: 2,
+                                child: Text(location, textAlign: TextAlign.center, maxLines: 2,
                                     style: const TextStyle(fontSize: 12, color: Color(0xFF386641), fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                               ),
                               const Spacer(),
@@ -176,7 +178,7 @@ class ForestPage extends StatelessWidget {
                                   color: Color(0xFFEBF4DD),
                                   borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
                                 ),
-                                child: const Icon(Icons.workspace_premium, size: 18, color: Color(0xFF386641)),
+                                child: const Center(child: Text('🎖️', style: TextStyle(fontSize: 18))),
                               ),
                             ]),
                           ),
@@ -186,9 +188,9 @@ class ForestPage extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SliverToBoxAdapter(child: SizedBox(height: 30)),
-            ],
-          );
+                const SliverToBoxAdapter(child: SizedBox(height: 30)),
+              ],
+            );
         },
       ),
     );
@@ -215,16 +217,16 @@ class ForestPage extends StatelessWidget {
   String _randomLocation(String docId) {
     final random = Random(docId.hashCode);
     final locations = [
-      'محمية غابات عجلون 🌲',
-      'غابات دبين الايكولوجية 🌿',
-      'غابة برقش الطبيعية 🌳',
-      'غابة وصفي التل 🌳',
-      'غابات اليوبيل الوطني 🌲',
-      'غابة ملكا الطبيعية 🌿',
-      'غابات لواء الكورة 🌳',
-      'غابة الأمير فيصل 🌲',
-      'غابات اشتفينا الجميلة 🌿',
-      'متنزه غمدان الوطني 🌳',
+      'محمية غابات عجلون',
+      'غابات دبين الايكولوجية',
+      'غابة برقش الطبيعية',
+      'غابة وصفي التل',
+      'غابات اليوبيل الوطني',
+      'غابة ملكا الطبيعية',
+      'غابات لواء الكورة',
+      'غابة الأمير فيصل',
+      'غابات اشتفينا الجميلة',
+      'متنزه غمدان الوطني',
     ];
     return locations[random.nextInt(locations.length)];
   }

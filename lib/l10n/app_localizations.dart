@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appName.
   ///
   /// In en, this message translates to:
-  /// **'Namaa'**
+  /// **'NAMAA'**
   String get appName;
 
   /// No description provided for @welcome.
@@ -179,7 +179,7 @@ abstract class AppLocalizations {
   /// No description provided for @badges.
   ///
   /// In en, this message translates to:
-  /// **'🏅 My Badges'**
+  /// **'My Badges'**
   String get badges;
 
   /// No description provided for @settings.
@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @forestPage.
   ///
   /// In en, this message translates to:
-  /// **'Namaa Forest'**
+  /// **'NAMAA Forest'**
   String get forestPage;
 
   /// No description provided for @certificate.
@@ -743,7 +743,7 @@ abstract class AppLocalizations {
   /// No description provided for @tree_stage_5.
   ///
   /// In en, this message translates to:
-  /// **'Namaa Forest'**
+  /// **'NAMAA Forest'**
   String get tree_stage_5;
 
   /// No description provided for @ecoExperiments.
@@ -833,7 +833,7 @@ abstract class AppLocalizations {
   /// No description provided for @experiments_title.
   ///
   /// In en, this message translates to:
-  /// **'🧪 Daily Experiments'**
+  /// **'Daily Experiments'**
   String get experiments_title;
 
   /// No description provided for @experiments_progress_header.
@@ -893,7 +893,7 @@ abstract class AppLocalizations {
   /// No description provided for @be_the_first_to_plant.
   ///
   /// In en, this message translates to:
-  /// **'Be the first to plant a tree in Namaa Forest'**
+  /// **'Be the first to plant a tree in NAMAA Forest'**
   String get be_the_first_to_plant;
 
   /// No description provided for @by_user.
@@ -1355,7 +1355,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_version.
   ///
   /// In en, this message translates to:
-  /// **'Namaa v1.0.0'**
+  /// **'NAMAA v1.0.0'**
   String get settings_version;
 
   /// No description provided for @cert_share_failed.
@@ -1367,7 +1367,7 @@ abstract class AppLocalizations {
   /// No description provided for @cert_my_certs.
   ///
   /// In en, this message translates to:
-  /// **'🏅 My Certificates'**
+  /// **'My Certificates'**
   String get cert_my_certs;
 
   /// No description provided for @cert_load_error.
@@ -1391,7 +1391,7 @@ abstract class AppLocalizations {
   /// No description provided for @cert_app_name.
   ///
   /// In en, this message translates to:
-  /// **'Namaa App'**
+  /// **'NAMAA App'**
   String get cert_app_name;
 
   /// No description provided for @acc_changes_saved.
@@ -1463,7 +1463,7 @@ abstract class AppLocalizations {
   /// No description provided for @invite_friend_title.
   ///
   /// In en, this message translates to:
-  /// **'Invite a Friend 🤝'**
+  /// **'Invite a Friend'**
   String get invite_friend_title;
 
   /// No description provided for @invite_friend_desc.
@@ -1493,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @invite_share_text.
   ///
   /// In en, this message translates to:
-  /// **'Join me on Namaa to save the environment! Use my code: {code} to get a starter bonus 🌱✨'**
+  /// **'Join me on NAMAA to save the environment! Use my code: {code} to get a starter bonus 🌱✨'**
   String invite_share_text(String code);
 
   /// No description provided for @invite_share_btn.
@@ -1889,19 +1889,19 @@ abstract class AppLocalizations {
   /// No description provided for @recycle_dashboard_title.
   ///
   /// In en, this message translates to:
-  /// **'Recycle Center ♻️'**
+  /// **'Recycle Center'**
   String get recycle_dashboard_title;
 
   /// No description provided for @recycle_history_title.
   ///
   /// In en, this message translates to:
-  /// **'My Requests History 🗂️'**
+  /// **'My Requests History'**
   String get recycle_history_title;
 
   /// No description provided for @recycle_welcome.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Namaa! 🌱'**
+  /// **'Welcome to NAMAA! 🌱'**
   String get recycle_welcome;
 
   /// No description provided for @recycle_how_to_contribute.
@@ -1991,7 +1991,7 @@ abstract class AppLocalizations {
   /// No description provided for @store_my_orders.
   ///
   /// In en, this message translates to:
-  /// **'📦 My Orders'**
+  /// **'My Orders'**
   String get store_my_orders;
 
   /// No description provided for @smart_capsule_title.
@@ -2003,7 +2003,7 @@ abstract class AppLocalizations {
   /// No description provided for @smart_capsule_gift.
   ///
   /// In en, this message translates to:
-  /// **'Your gift from Namaa'**
+  /// **'Your gift from NAMAA'**
   String get smart_capsule_gift;
 
   /// No description provided for @smart_capsule_what_is_it.
@@ -2027,7 +2027,7 @@ abstract class AppLocalizations {
   /// No description provided for @smart_capsule_why_special_desc.
   ///
   /// In en, this message translates to:
-  /// **'Because it links buying from the Namaa store with an environmental impact and a real farming experience, which enhances the idea of sustainability and gives the user added value.'**
+  /// **'Because it links buying from the NAMAA store with an environmental impact and a real farming experience, which enhances the idea of sustainability and gives the user added value.'**
   String get smart_capsule_why_special_desc;
 
   /// No description provided for @smart_capsule_how_to_use.
@@ -2057,7 +2057,7 @@ abstract class AppLocalizations {
   /// No description provided for @challenges_initiatives_history.
   ///
   /// In en, this message translates to:
-  /// **'My Initiatives History ✨'**
+  /// **'My Initiatives History'**
   String get challenges_initiatives_history;
 
   /// No description provided for @challenges_no_initiatives.
@@ -2129,7 +2129,7 @@ abstract class AppLocalizations {
   /// No description provided for @help_a_is_free.
   ///
   /// In en, this message translates to:
-  /// **'Yes! The Namaa app is 100% free and requires no subscription.'**
+  /// **'Yes! The NAMAA app is 100% free and requires no subscription.'**
   String get help_a_is_free;
 
   /// No description provided for @help_q_contact_support.
@@ -2237,13 +2237,13 @@ abstract class AppLocalizations {
   /// No description provided for @review_text_3.
   ///
   /// In en, this message translates to:
-  /// **'Loved it! A great step towards saving the environment. Thanks Namaa.'**
+  /// **'Loved it! A great step towards saving the environment. Thanks NAMAA.'**
   String get review_text_3;
 
   /// No description provided for @store_check_db_title.
   ///
   /// In en, this message translates to:
-  /// **'🔍 Checking Namaa store DB...'**
+  /// **'🔍 Checking NAMAA store DB...'**
   String get store_check_db_title;
 
   /// No description provided for @store_check_db_count.
@@ -2282,10 +2282,22 @@ abstract class AppLocalizations {
   /// **'Sorry, an error occurred: {error}'**
   String store_error_prefix(String error);
 
+  /// No description provided for @exp_pending_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting review... ⏳'**
+  String get exp_pending_review;
+
+  /// No description provided for @exp_upload_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Image upload failed'**
+  String get exp_upload_failed;
+
   /// No description provided for @splash_app_name.
   ///
   /// In en, this message translates to:
-  /// **'Namaa'**
+  /// **'NAMAA'**
   String get splash_app_name;
 
   /// No description provided for @splash_tagline_part1.
