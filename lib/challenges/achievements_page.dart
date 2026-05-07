@@ -177,7 +177,7 @@ class AchievementsPage extends StatelessWidget {
               // قائمة الشارات
               buildBadge(
                 context: context,
-                title: isAr ? "صديق البيئة المبتدئ" : "Eco Beginner",
+                title: l10n.badge_beginner,
                 requiredPoints: 10,
                 userPoints: points,
                 emoji: "🎖️",

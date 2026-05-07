@@ -117,7 +117,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderSuccess => 'تم تأكيد طلبك!';
 
   @override
-  String get completed => 'تم الإنجاز 🎉';
+  String get completed => 'تم الإنجاز';
 
   @override
   String get takePhoto => 'التقط صورة كدليل';
@@ -359,6 +359,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bike_challenge_title => 'تحدي الدراجة';
 
   @override
+  String get bike_remaining_time => 'باقي من الوقت';
+
+  @override
   String get bike_start => 'ابدأ 🚴';
 
   @override
@@ -389,16 +392,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get experiments_button_execute => 'تنفيذ';
 
   @override
-  String get exp_plant => '🌱 زراعة نبتة منزلية';
+  String get exp_plant => 'زراعة نبتة منزلية';
 
   @override
-  String get exp_water => '💧 تقليل استهلاك الماء';
+  String get exp_water => 'تقليل استهلاك الماء';
 
   @override
-  String get exp_recycle => '♻ تدوير 5 قطع بلاستيك';
+  String get exp_recycle => 'تدوير 5 قطع بلاستيك';
 
   @override
-  String get exp_walk => '🚶 استخدام المشي اليوم';
+  String get exp_walk => 'استخدام المشي اليوم';
 
   @override
   String get forest_subtitle => 'كل شجرة هنا زرعها إنسان أحب البيئة 💚';
@@ -492,7 +495,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String experiments_reward_msg(Object pts) {
-    return '$pts نقطة مكافأة 🌟';
+    return '$pts نقطة مكافأة ☀️';
   }
 
   @override
@@ -757,10 +760,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get global_error => 'حدث خطأ: ';
 
   @override
-  String get friend_close_comparison => 'إغلاق المقارنة';
+  String get friend_close_comparison => 'إغلاق التحدي';
 
   @override
   String get friend_recent_searches => 'أصدقاء تم البحث عنهم مؤخراً';
+
+  @override
+  String get close => 'إغلاق';
+
+  @override
+  String get close_proof => 'إغلاق الإثبات';
+
+  @override
+  String get badge_beginner => 'صديق البيئة المبتدئ';
 
   @override
   String get exp_proof_uploaded => 'تم إرسال الإثبات للمراجعة بنجاح! ✅';
@@ -1170,7 +1182,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get exp_pending_review => 'بانتظار المراجعة... ⏳';
+  String get exp_pending_review => 'بانتظار المراجعة...';
 
   @override
   String get exp_upload_failed => 'فشل رفع الصورة';

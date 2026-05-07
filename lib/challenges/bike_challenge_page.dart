@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sensors_plus/sensors_plus.dart'; // مستشعر الحركة
-
-
 import 'package:namaa_project_app/l10n/app_localizations.dart';
 import 'package:namaa_project_app/services/notification_service.dart';
 
@@ -221,7 +219,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
                 children: [
                   _buildHeader(l10n, data),
                   const SizedBox(height: 30),
-                  _buildTimerCircle(),
+                  _buildTimerCircle(l10n),
                   const SizedBox(height: 40),
                   if (!_todayCompleted) _buildControlButtons(l10n) else _buildCompletionStatus(l10n, data),
                 ],
@@ -239,7 +237,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -257,7 +255,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
     );
   }
 
-  Widget _buildTimerCircle() {
+  Widget _buildTimerCircle(AppLocalizations l10n) {
     double progress = currentSeconds / targetSeconds;
     int displayMin = (targetSeconds - currentSeconds) ~/ 60;
     int displaySec = (targetSeconds - currentSeconds) % 60;
@@ -282,7 +280,7 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
               "${displayMin.toString().padLeft(2, '0')}:${displaySec.toString().padLeft(2, '0')}",
               style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF1B4332)),
             ),
-            const Text("باقي من الوقت", style: TextStyle(fontSize: 16, color: Colors.grey)),
+            Text(l10n.bike_remaining_time, style: const TextStyle(fontSize: 16, color: Colors.grey)),
           ],
         ),
       ],
@@ -290,15 +288,17 @@ class _BikeChallengePageState extends State<BikeChallengePage> {
   }
 
   Widget _buildControlButtons(AppLocalizations l10n) {
-    return ElevatedButton.icon(
+    return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: isRunning ? Colors.red.shade400 : const Color(0xFF386641),
         minimumSize: const Size(200, 60),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
       onPressed: isRunning ? _stopChallenge : _startChallenge,
-      icon: Text(isRunning ? '⏸️' : '▶️', style: const TextStyle(fontSize: 20)),
-      label: Text(isRunning ? l10n.bike_stop : l10n.bike_start, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+      child: Text(
+        isRunning ? l10n.bike_stop : l10n.bike_start, 
+        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+      ),
     );
   }
 

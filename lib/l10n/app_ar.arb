@@ -36,7 +36,7 @@
   "addToCart": "أضف للسلة",
   "confirmOrder": "تأكيد الطلب",
   "orderSuccess": "تم تأكيد طلبك!",
-  "completed": "تم الإنجاز 🎉",
+  "completed": "تم الإنجاز",
   "takePhoto": "التقط صورة كدليل",
   "dailyStreak": "يوم متواصل",
   "forestPage": "غابة نماء",
@@ -115,6 +115,7 @@
   "upload_initiative": "نشر المبادرة",
   "uploading": "جارٍ الرفع...",
   "bike_challenge_title": "تحدي الدراجة",
+  "bike_remaining_time": "باقي من الوقت",
   "bike_start": "ابدأ 🚴",
   "bike_stop": "⏸ إيقاف",
   "bike_completed_msg": "✅ أنهيت التحدي اليوم!",
@@ -125,10 +126,10 @@
   "experiments_progress_header": "إنجاز تجارب اليوم",
   "experiments_available_for_level": "التجارب المتاحة لمستواك:",
   "experiments_button_execute": "تنفيذ",
-  "exp_plant": "🌱 زراعة نبتة منزلية",
-  "exp_water": "💧 تقليل استهلاك الماء",
-  "exp_recycle": "♻ تدوير 5 قطع بلاستيك",
-  "exp_walk": "🚶 استخدام المشي اليوم",
+  "exp_plant": "زراعة نبتة منزلية",
+  "exp_water": "تقليل استهلاك الماء",
+  "exp_recycle": "تدوير 5 قطع بلاستيك",
+  "exp_walk": "استخدام المشي اليوم",
   "forest_subtitle": "كل شجرة هنا زرعها إنسان أحب البيئة 💚",
   "no_trees_yet": "لا يوجد أشجار بعد!",
   "be_the_first_to_plant": "كن أول من يزرع شجرة في غابة نماء",
@@ -185,7 +186,7 @@
       }
     }
   },
-  "experiments_reward_msg": "{pts} نقطة مكافأة 🌟",
+  "experiments_reward_msg": "{pts} نقطة مكافأة ☀️",
   "@experiments_reward_msg": {
     "placeholders": {
       "pts": {
@@ -336,8 +337,11 @@
   "invite_share_btn": "مشاركة الرمز عبر التطبيقات",
   "tree_no_data": "لا توجد بيانات",
   "global_error": "حدث خطأ: ",
-  "friend_close_comparison": "إغلاق المقارنة",
+  "friend_close_comparison": "إغلاق التحدي",
   "friend_recent_searches": "أصدقاء تم البحث عنهم مؤخراً",
+  "close": "إغلاق",
+  "close_proof": "إغلاق الإثبات",
+  "badge_beginner": "صديق البيئة المبتدئ",
   "exp_proof_uploaded": "تم إرسال الإثبات للمراجعة بنجاح! ✅",
   "exp_error": "خطأ: ",
   "exp_choose_source": "اختر مصدر الصورة كدليل",
@@ -516,7 +520,7 @@
       }
     }
   },
-  "exp_pending_review": "بانتظار المراجعة... ⏳",
+  "exp_pending_review": "بانتظار المراجعة...",
   "exp_upload_failed": "فشل رفع الصورة",
   "splash_app_name": "نـمـاء",
   "splash_tagline_part1": "بَـصـمـتُـك",

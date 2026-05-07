@@ -36,7 +36,7 @@
   "addToCart": "Add to Cart",
   "confirmOrder": "Confirm Order",
   "orderSuccess": "Order Confirmed!",
-  "completed": "Completed 🎉",
+  "completed": "Completed",
   "takePhoto": "Take a Photo as Proof",
   "dailyStreak": "Day Streak",
   "forestPage": "NAMAA Forest",
@@ -116,6 +116,7 @@
   "upload_initiative": "Publish Initiative",
   "uploading": "Uploading...",
   "bike_challenge_title": "Bike Challenge",
+  "bike_remaining_time": "Remaining Time",
   "bike_start": "Start 🚴",
   "bike_stop": "⏸ Stop",
   "bike_completed_msg": "✅ Challenge Completed Today!",
@@ -126,10 +127,10 @@
   "experiments_progress_header": "Today's Experiments Progress",
   "experiments_available_for_level": "Available for your level:",
   "experiments_button_execute": "Execute",
-  "exp_plant": "🌱 Plant a home plant",
-  "exp_water": "💧 Reduce water usage",
-  "exp_recycle": "♻ Recycle 5 plastic items",
-  "exp_walk": "🚶 Walk instead of driving today",
+  "exp_plant": "Plant a home plant",
+  "exp_water": "Reduce water usage",
+  "exp_recycle": "Recycle 5 plastic items",
+  "exp_walk": "Walk instead of driving today",
   "forest_subtitle": "Every tree here was planted by someone who loves the environment 💚",
   "no_trees_yet": "No trees yet!",
   "be_the_first_to_plant": "Be the first to plant a tree in NAMAA Forest",
@@ -198,7 +199,7 @@
       }
     }
   },
-  "experiments_reward_msg": "{pts} Reward Points 🌟",
+  "experiments_reward_msg": "{pts} Reward Points ☀️",
   "@experiments_reward_msg": {
     "placeholders": {
       "pts": {
@@ -349,8 +350,11 @@
   "invite_share_btn": "Share Code",
   "tree_no_data": "No Data Found",
   "global_error": "An error occurred: ",
-  "friend_close_comparison": "Close Comparison",
+  "friend_close_comparison": "Close Challenge",
   "friend_recent_searches": "Recently searched friends",
+  "close": "Close",
+  "close_proof": "Close Proof",
+  "badge_beginner": "Eco Beginner",
   "exp_proof_uploaded": "Proof submitted for review successfully! ✅",
   "exp_error": "Error: ",
   "exp_choose_source": "Choose image source as proof",
@@ -529,7 +533,7 @@
       }
     }
   },
-  "exp_pending_review": "Awaiting review... ⏳",
+  "exp_pending_review": "Awaiting review...",
   "exp_upload_failed": "Image upload failed",
   "splash_app_name": "NAMAA",
   "splash_tagline_part1": "Your Green",

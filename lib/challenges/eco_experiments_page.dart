@@ -200,6 +200,16 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
     );
   }
 
+  String _getExpIcon(String id) {
+    switch (id) {
+      case 'exp_plant': return '🪴';
+      case 'exp_water': return '💧';
+      case 'exp_recycle': return '♻️';
+      case 'exp_walk': return '🚶';
+      default: return '🧪';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -283,14 +293,18 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
                                 opacity: isLocked ? 0.5 : 1.0,
                                 child: ListTile(
                                   contentPadding: const EdgeInsets.all(12),
-                                  leading: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                      exp['image'],
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+                                  leading: Container(
+                                    width: 60,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF1F8E9),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        _getExpIcon(exp['id']),
+                                        style: const TextStyle(fontSize: 32),
+                                      ),
                                     ),
                                   ),
                                   title: Text(
@@ -369,8 +383,22 @@ class _EcoExperimentsPageState extends State<EcoExperimentsPage> {
 
   Widget _buildTrailingWidget(BuildContext context, bool isLocked, bool isDone, bool isPending, Map exp, DocumentReference userDoc, AppLocalizations l10n) {
     if (isLocked) return const Icon(Icons.lock_person_rounded, color: Colors.grey);
-    if (isDone) return const Icon(Icons.check_circle_rounded, color: Color(0xFF386641), size: 32);
-    if (isPending) return const Icon(Icons.hourglass_empty_rounded, color: Colors.orange, size: 28);
+    if (isDone || isPending) {
+      return ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDone ? const Color(0xFFEBF4DD) : Colors.orange.shade50,
+          foregroundColor: isDone ? const Color(0xFF386641) : Colors.orange.shade800,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+        ),
+        onPressed: null,
+        child: Text(
+          isDone ? l10n.completed : l10n.exp_pending_review,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+        ),
+      );
+    }
 
     return ElevatedButton(
       style: ElevatedButton.styleFrom(

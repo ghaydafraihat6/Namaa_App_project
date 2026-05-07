@@ -21,14 +21,14 @@ class RecycleHistoryPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAF8),
       appBar: AppBar(
-        title: Text(isAr ? l10n.recycle_history_title : "My Requests History", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
+        title: Text(l10n.recycle_history_title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 19, fontFamily: 'Cairo')),
         backgroundColor: primaryGreen,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 0,
       ),
       body: user == null
-          ? Center(child: Text(isAr ? "الرجاء تسجيل الدخول أولاً" : "Please login first"))
+          ? Center(child: Text(l10n.recycle_please_login))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('recycle_requests')
@@ -174,6 +174,7 @@ class RecycleHistoryPage extends StatelessWidget {
 
   void _showImageDialog(BuildContext context, String imageUrl) {
     if (imageUrl.isEmpty) return;
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -193,7 +194,7 @@ class RecycleHistoryPage extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                child: Text(Localizations.localeOf(context).languageCode == 'ar' ? "إغلاق الإثبات" : "Close Proof", style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                child: Text(l10n.close_proof, style: const TextStyle(color: Colors.white, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
               ),
             )
           ],

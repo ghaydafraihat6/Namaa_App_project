@@ -317,7 +317,7 @@ abstract class AppLocalizations {
   /// No description provided for @completed.
   ///
   /// In en, this message translates to:
-  /// **'Completed 🎉'**
+  /// **'Completed'**
   String get completed;
 
   /// No description provided for @takePhoto.
@@ -794,6 +794,12 @@ abstract class AppLocalizations {
   /// **'Bike Challenge'**
   String get bike_challenge_title;
 
+  /// No description provided for @bike_remaining_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining Time'**
+  String get bike_remaining_time;
+
   /// No description provided for @bike_start.
   ///
   /// In en, this message translates to:
@@ -857,25 +863,25 @@ abstract class AppLocalizations {
   /// No description provided for @exp_plant.
   ///
   /// In en, this message translates to:
-  /// **'🌱 Plant a home plant'**
+  /// **'Plant a home plant'**
   String get exp_plant;
 
   /// No description provided for @exp_water.
   ///
   /// In en, this message translates to:
-  /// **'💧 Reduce water usage'**
+  /// **'Reduce water usage'**
   String get exp_water;
 
   /// No description provided for @exp_recycle.
   ///
   /// In en, this message translates to:
-  /// **'♻ Recycle 5 plastic items'**
+  /// **'Recycle 5 plastic items'**
   String get exp_recycle;
 
   /// No description provided for @exp_walk.
   ///
   /// In en, this message translates to:
-  /// **'🚶 Walk instead of driving today'**
+  /// **'Walk instead of driving today'**
   String get exp_walk;
 
   /// No description provided for @forest_subtitle.
@@ -1037,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @experiments_reward_msg.
   ///
   /// In en, this message translates to:
-  /// **'{pts} Reward Points 🌟'**
+  /// **'{pts} Reward Points ☀️'**
   String experiments_reward_msg(Object pts);
 
   /// No description provided for @experiments_success_snack.
@@ -1517,7 +1523,7 @@ abstract class AppLocalizations {
   /// No description provided for @friend_close_comparison.
   ///
   /// In en, this message translates to:
-  /// **'Close Comparison'**
+  /// **'Close Challenge'**
   String get friend_close_comparison;
 
   /// No description provided for @friend_recent_searches.
@@ -1525,6 +1531,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recently searched friends'**
   String get friend_recent_searches;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @close_proof.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Proof'**
+  String get close_proof;
+
+  /// No description provided for @badge_beginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Eco Beginner'**
+  String get badge_beginner;
 
   /// No description provided for @exp_proof_uploaded.
   ///
@@ -2285,7 +2309,7 @@ abstract class AppLocalizations {
   /// No description provided for @exp_pending_review.
   ///
   /// In en, this message translates to:
-  /// **'Awaiting review... ⏳'**
+  /// **'Awaiting review...'**
   String get exp_pending_review;
 
   /// No description provided for @exp_upload_failed.

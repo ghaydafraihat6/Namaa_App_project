@@ -219,14 +219,14 @@ class _FriendChallengePageState extends State<FriendChallengePage> {
       const SizedBox(height: 15),
       Text(myPoints >= friendPoints ? l10n.challenge_leading_msg : l10n.challenge_keep_going_msg,
           textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
-      TextButton(onPressed: () => setState(() => _friendData = null), child: const Text("إغلاق المقارنة")),
+      TextButton(onPressed: () => setState(() => _friendData = null), child: Text(l10n.friend_close_comparison)),
     ]);
   }
 
   Widget _buildRecentFriendsList(AppLocalizations l10n) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const SizedBox(height: 30),
-      const Text("أصدقاء تم البحث عنهم مؤخراً", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+      Text(l10n.friend_recent_searches, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
       const SizedBox(height: 10),
       ..._recentFriends.map((f) => ListTile(
         leading: CircleAvatar(backgroundColor: const Color(0xFFEBF4DD), child: Text(_getTreeEmoji(f['points'] ?? 0))),

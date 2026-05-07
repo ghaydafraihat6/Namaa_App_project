@@ -85,10 +85,11 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final bool isAr = AppLocalizations.of(context)!.localeName == 'ar';
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
     if ((beforeImage == null && existingBefore == null) || (afterImage == null && existingAfter == null)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isAr ? "يرجى اختيار صورتي قبل وبعد" : "Please select before and after photos", style: const TextStyle(fontFamily: 'Cairo'))),
+        SnackBar(content: Text(l10n.ba_choose_two_images, style: const TextStyle(fontFamily: 'Cairo'))),
       );
       return;
     }
@@ -111,12 +112,12 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
         if (widget.editId != null) {
           await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').doc(widget.editId).update(payload);
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "تم تعديل المبادرة بنجاح! ✏️" : "Initiative updated successfully! ✏️", style: const TextStyle(fontFamily: 'Cairo')), backgroundColor: const Color(0xFF386641)));
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ba_edited_success, style: const TextStyle(fontFamily: 'Cairo')), backgroundColor: const Color(0xFF386641)));
         } else {
           payload['timestamp'] = FieldValue.serverTimestamp();
           await FirebaseFirestore.instance.collection('users').doc(user.uid).collection('initiatives').add(payload);
           await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'points': FieldValue.increment(10)});
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "تم نشر مبادرتك بنجاح! 🎉 +10 نقاط" : "Initiative published successfully! 🎉 +10 pts", style: const TextStyle(fontFamily: 'Cairo')), backgroundColor: const Color(0xFF386641)));
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ba_published_success, style: const TextStyle(fontFamily: 'Cairo')), backgroundColor: const Color(0xFF386641)));
           await NotificationService.send(
             title: isAr ? '📸 مبادرة جديدة!' : '📸 New Initiative!',
             body: isAr ? 'تم نشر مبادرتك البيئية بنجاح وحصلت على 10 نقاط ⭐' : 'Your eco initiative was published and you received 10 points ⭐',
@@ -134,11 +135,11 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
         });
       } else {
          if (!mounted) return;
-         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "فشل في رفع بعض الصور." : "Failed to upload some images.", style: const TextStyle(fontFamily: 'Cairo'))));
+         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.ba_upload_failed_partial, style: const TextStyle(fontFamily: 'Cairo'))));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isAr ? "حدث خطأ أثناء الرفع: $e" : "Upload error: $e", style: const TextStyle(fontFamily: 'Cairo'))));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${l10n.ba_upload_error}$e", style: const TextStyle(fontFamily: 'Cairo'))));
     } finally {
       if (mounted) setState(() => isUploading = false);
     }
@@ -146,12 +147,13 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAr = AppLocalizations.of(context)!.localeName == 'ar';
+    final l10n = AppLocalizations.of(context)!;
+    final bool isAr = l10n.localeName == 'ar';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9F8),
       appBar: AppBar(
-        title: Text(isAr ? "قبل وبعد" : "Before & After",
+        title: Text(l10n.beforeAfter,
             style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF386641),
@@ -176,9 +178,9 @@ class _BeforeAfterPageState extends State<BeforeAfterPage> {
             // مربعات اختيار الصور
             Row(
               children: [
-                Expanded(child: _buildImageSelector(isAr ? "قبل 🕰️" : "Before 🕰️", beforeImage, true)),
+                Expanded(child: _buildImageSelector(l10n.before, beforeImage, true)),
                 const SizedBox(width: 15),
-                Expanded(child: _buildImageSelector(isAr ? "بعد ✨" : "After ✨", afterImage, false)),
+                Expanded(child: _buildImageSelector(l10n.after, afterImage, false)),
               ],
             ),
 

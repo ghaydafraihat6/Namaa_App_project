@@ -107,7 +107,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
           final jsonResult = json.decode(data);
           photoUrl = jsonResult['data']['url'];
         } else {
-          throw Exception(l10n.localeName == 'ar' ? 'فشل رفع الصورة' : 'Image upload failed');
+          throw Exception(l10n.exp_upload_failed);
         }
       } catch (e) {
         _showFeedback(e.toString(), false);
@@ -118,11 +118,11 @@ class _EcoActionPageState extends State<EcoActionPage> {
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text("تأكيد المهمة ✅", style: TextStyle(fontFamily: 'Cairo')),
-          content: const Text("هل تؤكد قيامك بهذه المهمة؟", textAlign: TextAlign.center),
+          content: Text(l10n.task_confirm_question, textAlign: TextAlign.center),
           actions: [
             TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text("إلغاء")),
+                child: Text(l10n.notif_cancel)),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
@@ -153,7 +153,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
       if (mounted) {
         setState(() => _completedTasks[taskId] = 'pending');
 
-        _showFeedback(l10n.localeName == 'ar' ? "تم إرسال المهمة للمراجعة ✅" : "Task sent for review ✅", true);
+        _showFeedback(l10n.exp_proof_uploaded, true);
       }
     } catch (e) {
       _showFeedback(e.toString(), false);
@@ -181,7 +181,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
         ..files.add(await http.MultipartFile.fromPath('image', pickedFile.path));
       
       final reqResponse = await request.send();
-      if (reqResponse.statusCode != 200) throw Exception(l10n.localeName == 'ar' ? 'فشل رفع الصورة المعدلة.' : 'Modified image upload failed.');
+      if (reqResponse.statusCode != 200) throw Exception(l10n.exp_upload_failed);
 
       final responseData = await reqResponse.stream.bytesToString();
       final String photoUrl = json.decode(responseData)['data']['url'];
@@ -487,6 +487,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
   // --- الحوارات (Dialogs) ---
 
   void _showUploadedImage(String title, String imageUrl, bool isAr) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -499,7 +500,7 @@ class _EcoActionPageState extends State<EcoActionPage> {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(ctx), 
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF386641)),
-              child: Text(isAr ? "إغلاق" : "Close", style: const TextStyle(color: Colors.white))
+              child: Text(l10n.close, style: const TextStyle(color: Colors.white))
             ),
           )
         ],
